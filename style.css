@@ -1,0 +1,317 @@
+/* =================================================================
+   1. VARIABLES GLOBALES & CHARTE GRAPHIQUE
+   ================================================================ */
+:root {
+    --primary: #111827;      /* Bleu nuit très sombre */
+    --accent: #f59e0b;       /* Jaune d'or lumineux (Cavalier) */
+    --accent-hover: #d97706; /* Jaune soutenu au survol */
+    --bg: #e5e7eb;           /* Fond de page gris clair */
+    --card-bg: #ffffff;      /* Fond des encadrés blanc */
+    --text: #1f2937;         /* Couleur du texte principal */
+}
+
+
+/* =================================================================
+   2. STYLES GÉNÉRAUX & STRUCTURE DE LA PAGE
+   ================================================================ */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; 
+    padding: 0; 
+    background-color: var(--bg); 
+    color: var(--text); 
+    line-height: 1.6;
+}
+
+header {
+    background-color: var(--primary); 
+    color: white; 
+    padding: 2rem 1.5rem; 
+    text-align: center;
+    border-bottom: 4px solid var(--accent);
+}
+
+.site-header { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 0.5rem; 
+}
+
+.header-top { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 15px; 
+    flex-wrap: wrap; 
+}
+
+.site-logo { 
+    height: 60px; 
+    width: auto; 
+    object-fit: contain; 
+    filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3)); 
+}
+
+.site-title { 
+    margin: 0; 
+    font-size: 2.2rem; 
+    letter-spacing: 0.5px; 
+}
+
+.site-tagline { 
+    margin: 0.5rem 0 0 0; 
+    color: var(--accent); 
+    font-weight: 500; 
+    font-size: 1.1rem; 
+    letter-spacing: 1px; 
+    text-transform: uppercase; 
+}
+
+.container {
+    max-width: 1200px; 
+    margin: 2rem auto; 
+    padding: 0 1rem;
+}
+
+.section { display: none; }
+.section.active { display: block; }
+
+.grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 1.5rem; 
+    margin-top: 1.5rem; 
+}
+
+.card { 
+    background: var(--card-bg); 
+    padding: 1.5rem; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+    border-top: 3px solid var(--primary); 
+}
+
+
+/* =================================================================
+   3. NAVIGATION
+   ================================================================ */
+nav {
+    background: #1f2937; 
+    display: flex; 
+    justify-content: center; 
+    flex-wrap: wrap; 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000;
+}
+
+nav button {
+    background: none; 
+    border: none; 
+    color: #e5e7eb; 
+    padding: 1rem 1.5rem; 
+    font-size: 1rem;
+    cursor: pointer; 
+    transition: 0.3s; 
+    font-weight: 500;
+}
+
+nav button:hover { color: var(--accent); }
+nav button.active { background: var(--accent); color: var(--primary); font-weight: bold; }
+nav button.btn-admin { background: #27ae60; }
+
+
+/* =================================================================
+   4. ÉLÉMENTS D'INTERFACE & COMPOSANTS
+   ================================================================ */
+.btn { 
+    display: inline-block; 
+    background: var(--accent); 
+    color: var(--primary); 
+    padding: 0.6rem 1.2rem; 
+    text-decoration: none; 
+    border-radius: 4px; 
+    font-weight: bold; 
+    margin-top: 1rem; 
+    border: none; 
+    cursor: pointer; 
+    transition: 0.2s; 
+}
+.btn:hover { background: var(--accent-hover); }
+
+form input, form textarea { 
+    width: 100%; 
+    padding: 10px; 
+    margin: 8px 0; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    box-sizing: border-box; 
+}
+
+.badge { 
+    background: #27ae60; 
+    color: white; 
+    padding: 3px 8px; 
+    border-radius: 4px; 
+    font-size: 0.85rem; 
+}
+.badge.past { background: #7f8c8d; }
+
+/* Switch */
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1; transition: .3s; border-radius: 24px;
+}
+.slider:before {
+    position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px;
+    background-color: white; transition: .3s; border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider:before { transform: translateX(20px); }
+
+/* Réseaux sociaux */
+.link-social-only { display: inline-block; transition: transform 0.2s ease, filter 0.2s ease; cursor: pointer; }
+.social-logo-img { height: 40px; width: auto; object-fit: contain; }
+.link-social-only:hover { transform: scale(1.08); filter: brightness(1.1); }
+.link-social-only:active { transform: scale(0.95); }
+.social-container { display: flex; gap: 24px; margin-bottom: 1.5rem; justify-content: center; align-items: center; }
+
+/* Timeline (Historique) */
+.timeline { margin-top: 2rem; position: relative; padding-left: 1.5rem; border-left: 3px solid var(--accent); }
+.timeline-item { position: relative; margin-bottom: 1.5rem; }
+.timeline-item.last { margin-bottom: 0; }
+.timeline-dot { position: absolute; left: calc(-1.5rem - 9.5px); top: 0.25rem; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; border: 2px solid var(--card-bg); }
+
+/* Chiffres clés */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-top: 1rem; text-align: center; }
+.stat-box { background: var(--bg); padding: 1rem; border-radius: 6px; border: 1px solid #d1d5db; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.stat-value { font-size: 2rem; font-weight: bold; color: var(--accent); line-height: 1; }
+.stat-label { font-size: 0.9rem; color: var(--text); margin-top: 0.5rem; font-weight: 500; }
+
+.members-tip { font-size: 0.78rem; color: #6b7280; margin-top: 1.25rem; line-height: 1.4; font-style: italic; }
+.map-box { margin-top: 1rem; width: 100%; height: 250px; border-radius: 6px; overflow: hidden; border: 2px solid var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+/* Grille d'accueil (Bannière & Défi) */
+.club-hero-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; align-items: start; }
+.card.welcome-banner { background: linear-gradient(135deg, #111827 0%, #1f2937 100%); color: white; border-top: 4px solid var(--accent); padding: 2rem; display: flex; flex-direction: column; justify-content: center; }
+.welcome-badge { display: inline-block; background: rgba(245, 158, 11, 0.15); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 1rem; align-self: flex-start; border: 1px solid rgba(245, 158, 11, 0.3); }
+.welcome-title { margin-top: 0; color: var(--accent); font-size: 1.8rem; margin-bottom: 0.75rem; line-height: 1.3; }
+.welcome-text { font-size: 1.05rem; line-height: 1.6; color: #e5e7eb; margin-bottom: 1.5rem; }
+.welcome-actions { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+.btn-secondary-custom { background: transparent; color: white; padding: 0.6rem 1.2rem; text-decoration: none; border-radius: 4px; font-weight: bold; border: 2px solid #4b5563; transition: 0.2s; }
+.btn-secondary-custom:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Encart Tactique */
+.card.puzzle-card { border-top: 4px solid var(--primary); display: flex; flex-direction: column; justify-content: space-between; background: #f9fafb; }
+.puzzle-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+.puzzle-tag { font-size: 0.8rem; font-weight: bold; color: #4b5563; text-transform: uppercase; }
+.puzzle-week { font-size: 0.75rem; background: #e5e7eb; padding: 2px 6px; border-radius: 4px; color: #374151; font-weight: 600; }
+.puzzle-board-container { width: 100%; max-width: 200px; margin: 0.5rem auto 1rem auto; border-radius: 6px; overflow: hidden; border: 2px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); background: #fff; text-align: center; }
+.puzzle-board-img { width: 100%; height: auto; display: block; }
+.puzzle-text { display: none; margin-bottom: 0.75rem; }
+.puzzle-card .puzzle-btn { background: var(--primary); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.85rem; width: auto; max-width: 220px; margin: 1rem auto 0 auto; text-align: center; text-decoration: none; display: block; }
+.puzzle-card .puzzle-btn:hover { background: #1f2937; color: var(--accent); }
+#puzzleSolutionContainer.hidden { display: none !important; }
+
+
+/* =================================================================
+   5. TABLEAUX & PLANNING
+   ================================================================ */
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+th { background-color: var(--primary); color: white; }
+
+.planning-table tbody tr { transition: background-color 0.2s ease; }
+.planning-table tbody tr.seance-active-row { background-color: #fef08a !important; font-weight: bold; }
+.planning-table tbody tr.seance-active-row td:last-child { display: flex; justify-content: space-between; align-items: center; }
+
+.table-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-left: 15px; text-transform: uppercase; white-space: nowrap; }
+.table-badge.live { background-color: #ef4444; color: white; animation: pulseLive 1.5s infinite; }
+.table-badge.pending { background-color: var(--accent); color: var(--primary); }
+
+@keyframes pulseLive {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.planning-wrapper { overflow-x: auto; margin-top: 1rem; }
+.planning-table-custom { width: 100%; border-collapse: collapse; min-width: 500px; background: #fefce8; border-radius: 6px; overflow: hidden; }
+.planning-table-custom th { background-color: var(--primary); color: white; padding: 12px; text-align: left; }
+.planning-table-custom td { padding: 12px; border-bottom: 1px solid #e5e7eb; }
+
+.table-scroll-container { max-height: 70vh !important; overflow-y: auto !important; overflow-x: auto; margin-top: 1.5rem; border-bottom: 1px solid #e5e7eb; }
+#membersTable { width: 100%; border-collapse: collapse; min-width: 800px; background: white; }
+#membersTable thead th { position: sticky !important; top: 0 !important; z-index: 20 !important; background-color: var(--primary) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important; padding: 14px 12px; color: white; }
+
+
+/* =================================================================
+   6. MODULE ÉVÉNEMENTS, CALENDRIER & LIGHTBOX
+   ================================================================ */
+.event-content-wrapper { display: flex; justify-content: space-between; gap: 1.5rem; align-items: flex-start; }
+.event-info-side { flex: 1; }
+.event-poster-side img { width: 110px; height: 150px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; cursor: zoom-in; transition: transform 0.2s, box-shadow 0.2s; }
+.event-poster-side img:hover { transform: scale(1.03); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+
+/* Lightbox */
+.lightbox-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(17, 24, 39, 0.85); display: flex; justify-content: center; align-items: center;
+    z-index: 2000; opacity: 0; visibility: hidden; transition: opacity 0.3s; cursor: zoom-out;
+}
+.lightbox-overlay.active { opacity: 1; visibility: visible; }
+.lightbox-overlay img {
+    max-width: 90%; max-height: 90vh; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 2px solid var(--accent); transform: scale(0.9); transition: transform 0.3s;
+}
+.lightbox-overlay.active img { transform: scale(1); }
+
+
+/* =================================================================
+   7. GALERIE PHOTOS (VIE DU CLUB)
+   ================================================================ */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.gallery-item {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: #111827;
+    cursor: pointer;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.08);
+    filter: brightness(1.1);
+}
+
+
+/* =================================================================
+   8. RESPONSIVE DESIGN (MÉDIA QUERIES)
+   ================================================================ */
+@media (max-width: 850px) {
+    .club-hero-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 550px) {
+    .event-content-wrapper { flex-direction: column-reverse; gap: 1rem; }
+    .event-poster-side img { width: 100%; height: auto; max-height: 200px; }
+}

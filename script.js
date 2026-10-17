@@ -1,0 +1,857 @@
+/* =================================================================
+   1. CONFIGURATION GLOBALE, CACHE & UTILITAIRE SÉCURISÉ
+   ================================================================ */
+const CONFIG = {
+    CACHE_VERSION: 'v1',
+    CACHE_DURATION: 15 * 60 * 1000, // 15 minutes
+    MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
+    EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww'
+};
+
+const safeStorage = {
+    getItem: function(key) {
+        try { return localStorage.getItem(key); } 
+        catch (e) { console.warn("localStorage.getItem inaccessible :", e); return null; }
+    },
+    setItem: function(key, value) {
+        try { localStorage.setItem(key, value); } 
+        catch (e) { console.warn("localStorage.setItem inaccessible :", e); }
+    },
+    removeItem: function(key) {
+        try { localStorage.removeItem(key); } 
+        catch (e) { console.warn("localStorage.removeItem inaccessible :", e); }
+    }
+};
+
+
+/* =================================================================
+   2. NAVIGATION DES ONGLETS
+   ================================================================ */
+function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(sectionId).classList.add('active');
+    const targetBtn = document.getElementById('btn-' + sectionId);
+    if (targetBtn) targetBtn.classList.add('active');
+}
+
+
+/* =================================================================
+   3. GESTION DE LA REDIRECTION NETLIFY ADMIN
+   ================================================================ */
+if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+        if (!user) {
+            window.netlifyIdentity.on("login", () => {
+                document.location.href = "/admin/";
+            });
+        }
+    });
+}
+
+
+/* =================================================================
+   4. MODULE ZOOM DES AFFICHES (LIGHTBOX)
+   ================================================================ */
+function zoomImage(src) {
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightboxImg');
+    if (lb && lbImg) {
+        lbImg.src = src;
+        lb.classList.add('active');
+    }
+}
+
+function closeZoom() {
+    const lb = document.getElementById('lightbox');
+    if (lb) lb.classList.remove('active');
+}
+
+
+/* =================================================================
+   5. MODULE MEMBRES (GOOGLE SHEETS, CACHE SÉCURISÉ, TRI & RECHERCHE)
+   ================================================================ */
+let listeMembresGlobale = [];
+let directionTri = { colonne: null, ordre: 'asc' };
+
+function afficherMembres(membres) {
+    const tbody = document.getElementById('membersTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    membres.forEach(membre => {
+        const tr = document.createElement('tr');
+        
+        let fideCellule = '';
+        if (membre.fideId && membre.fideId !== '' && membre.fideId !== 'N/A') {
+            fideCellule = `<a href="https://ratings.fide.com/profile/${membre.fideId}" target="_blank" rel="noopener" class="btn" style="margin: 0; padding: 0.4rem 0.8rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;">🔗 Fiche FIDE</a>`;
+        }
+
+        tr.innerHTML = `
+            <td><strong>${membre.nomPrenom}</strong></td>
+            <td style="text-align:center;">${membre.classique}</td>
+            <td style="text-align:center;">${membre.rapide}</td>
+            <td style="text-align:center;">${membre.blitz}</td>
+            <td style="text-align:center;">${membre.categorie}</td>
+            <td style="text-align:center;">${membre.genre}</td>
+            <td style="text-align:center;">${fideCellule}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function trierTableau(propriete) {
+    const estNumerique = ['classique', 'rapide', 'blitz'].includes(propriete);
+
+    if (directionTri.colonne === propriete) {
+        if (estNumerique && directionTri.ordre === 'desc') {
+            directionTri.colonne = 'nomPrenom';
+            directionTri.ordre = 'asc';
+        } else {
+            directionTri.ordre = directionTri.ordre === 'asc' ? 'desc' : 'asc';
+        }
+    } else {
+        directionTri.colonne = propriete;
+        directionTri.ordre = estNumerique ? 'desc' : 'asc';
+    }
+
+    const mappingIcones = {
+        'nomPrenom': 'th-nomPrenom',
+        'classique': 'th-classique',
+        'rapide': 'th-rapide',
+        'blitz': 'th-blitz'
+    };
+    
+    Object.entries(mappingIcones).forEach(([key, thId]) => {
+        const th = document.getElementById(thId);
+        const icon = th ? th.querySelector('.sort-icon') : null;
+        if (icon) {
+            if (directionTri.colonne === key) {
+                icon.textContent = directionTri.ordre === 'desc' ? '▼' : '▲';
+                icon.style.color = '#ffffff';
+            } else {
+                icon.textContent = '↕';
+                icon.style.color = 'var(--accent)';
+            }
+        }
+    });
+
+    listeMembresGlobale.sort((a, b) => {
+        let propActive = directionTri.colonne;
+        let estActuellementNumerique = ['classique', 'rapide', 'blitz'].includes(propActive);
+
+        let valA = a[propActive];
+        let valB = b[propActive];
+
+        if (estActuellementNumerique) {
+            let numA = parseInt(String(valA).replace(/\s/g, ''), 10) || 0;
+            let numB = parseInt(String(valB).replace(/\s/g, ''), 10) || 0;
+            return directionTri.ordre === 'asc' ? numA - numB : numB - numA;
+        } else {
+            let strA = String(valA).trim();
+            let strB = String(valB).trim();
+            return directionTri.ordre === 'asc' 
+                ? strA.localeCompare(strB, 'fr', { sensitivity: 'base' }) 
+                : strB.localeCompare(strA, 'fr', { sensitivity: 'base' });
+        }
+    });
+
+    filterByInputName();
+}
+
+function brancherLesEntetes() {
+    const mapping = {
+        'th-nomPrenom': 'nomPrenom', 'th-classique': 'classique',
+        'th-rapide': 'rapide', 'th-blitz': 'blitz',
+        'th-categorie': 'categorie', 'th-genre': 'genre', 'th-fide': 'fideId'
+    };
+
+    for (const [id, propriete] of Object.entries(mapping)) {
+        const th = document.getElementById(id);
+        if (th) {
+            th.style.cursor = 'pointer';
+            th.setAttribute('title', 'Cliquez pour trier');
+            
+            const thClone = th.cloneNode(true);
+            th.parentNode.replaceChild(thClone, th);
+            
+            thClone.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.textContent.includes('🔍')) return;
+                trierTableau(propriete);
+            });
+        }
+    }
+}
+
+function toggleSearchInput(event) {
+    if (event) event.stopPropagation();
+    const container = document.getElementById('searchContainer');
+    const input = document.getElementById('nameSearchInput');
+    if (container && input) {
+        const visible = container.style.display === 'block';
+        container.style.display = visible ? 'none' : 'block';
+        if (!visible) {
+            input.focus();
+        } else {
+            input.value = '';
+            afficherMembres(listeMembresGlobale);
+        }
+    }
+}
+
+function filterByInputName() {
+    const input = document.getElementById('nameSearchInput');
+    if (!input) return;
+    
+    const saisie = input.value.toLowerCase().trim()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    if (saisie === '') {
+        afficherMembres(listeMembresGlobale);
+    } else {
+        const membresFiltres = listeMembresGlobale.filter(m => {
+            const nomNormalise = m.nomPrenom.toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            return nomNormalise.includes(saisie);
+        });
+        afficherMembres(membresFiltres);
+    }
+}
+
+window.googleDocCallback = function(data) {
+    const scriptEl = document.getElementById('jsonp-membres-script');
+    if (scriptEl) scriptEl.remove();
+
+    try {
+        const rows = data.table.rows;
+        listeMembresGlobale = [];
+
+        for (let i = 0; i < rows.length; i++) {
+            const cellules = rows[i].c;
+            if (!cellules || cellules.length === 0) continue;
+
+            const getVal = (index) => {
+                if (!cellules[index] || cellules[index].v === null) return '';
+                return String(cellules[index].v).trim().replace(/^["']|["']\$/g, '').trim();
+            };
+
+            const membre = {
+                nomPrenom: getVal(0),
+                classique: getVal(1) || '0',
+                rapide: getVal(2) || '0',
+                blitz: getVal(3) || '0',
+                categorie: getVal(4),
+                genre: getVal(5),
+                fideId: getVal(6)
+            };
+
+            if (membre.nomPrenom !== '') listeMembresGlobale.push(membre);
+        }
+
+        listeMembresGlobale.sort((a, b) => a.nomPrenom.localeCompare(b.nomPrenom, 'fr'));
+        
+        safeStorage.setItem('cache_membres', JSON.stringify(listeMembresGlobale));
+        safeStorage.setItem('cache_membres_timestamp', Date.now().toString());
+        safeStorage.setItem('cache_membres_version', CONFIG.CACHE_VERSION);
+
+        afficherMembres(listeMembresGlobale);
+        brancherLesEntetes();
+    } catch (error) {
+        console.error("Erreur lors du traitement du flux Google Sheets :", error);
+    }
+};
+
+function loadMembresData() {
+    const savedVersion = safeStorage.getItem('cache_membres_version');
+    const cacheMembres = safeStorage.getItem('cache_membres');
+    const cacheTimestamp = safeStorage.getItem('cache_membres_timestamp');
+
+    if (savedVersion === CONFIG.CACHE_VERSION && cacheMembres && cacheTimestamp && (Date.now() - parseInt(cacheTimestamp, 10) < CONFIG.CACHE_DURATION)) {
+        listeMembresGlobale = JSON.parse(cacheMembres);
+        afficherMembres(listeMembresGlobale);
+        brancherLesEntetes();
+    } else {
+        safeStorage.removeItem('cache_membres');
+        safeStorage.removeItem('cache_membres_timestamp');
+        safeStorage.setItem('cache_membres_version', CONFIG.CACHE_VERSION);
+
+        const url = `https://docs.google.com/spreadsheets/d/${CONFIG.MEMBRES_SHEET_ID}/gviz/tq?tqx=responseHandler:googleDocCallback`;
+        const script = document.createElement('script');
+        script.id = 'jsonp-membres-script';
+        script.src = url;
+        script.onerror = function() { console.error("Lien Excel des membres inaccessible."); script.remove(); };
+        document.head.appendChild(script);
+    }
+}
+
+
+/* =================================================================
+   6. MODULE ÉVÉNEMENTS & MINI-CALENDRIER (GOOGLE SHEETS, CACHE SÉCURISÉ)
+   ================================================================ */
+let allClubEvents = []; 
+let currentCalendarDate = new Date(); 
+
+function loadDynamicEvents() {
+    const savedVersion = safeStorage.getItem('cache_evenements_version');
+    const cacheEvents = safeStorage.getItem('cache_evenements');
+    const cacheTimestamp = safeStorage.getItem('cache_evenements_timestamp');
+
+    if (savedVersion === CONFIG.CACHE_VERSION && cacheEvents && cacheTimestamp && (Date.now() - parseInt(cacheTimestamp, 10) < CONFIG.CACHE_DURATION)) {
+        allClubEvents = JSON.parse(cacheEvents);
+        allClubEvents.forEach(e => e.dateTime = new Date(e.dateTime));
+        renderDynamicEventsGrid(); 
+    } else {
+        safeStorage.removeItem('cache_evenements');
+        safeStorage.removeItem('cache_evenements_timestamp');
+        safeStorage.setItem('cache_evenements_version', CONFIG.CACHE_VERSION);
+
+        const eventsUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.EVENTS_SHEET_ID}/gviz/tq?tqx=responseHandler:handleEventsCallback`;
+        const script = document.createElement('script');
+        script.id = 'jsonp-events-script';
+        script.src = eventsUrl;
+        script.onerror = function() { console.error("Lien Excel des événements inaccessible."); script.remove(); };
+        document.body.appendChild(script);
+    }
+}
+
+function getCellValue(cells, index) {
+    if (!cells || !cells[index]) return '';
+    if (cells[index].v !== null && cells[index].v !== undefined) return String(cells[index].v).trim();
+    if (cells[index].f !== null && cells[index].f !== undefined) return String(cells[index].f).trim();
+    return '';
+}
+
+function handleEventsCallback(response) {
+    const scriptEl = document.getElementById('jsonp-events-script');
+    if (scriptEl) scriptEl.remove();
+
+    const gridContainer = document.getElementById('eventsGrid');
+    if (!gridContainer || !response || !response.table) return;
+
+    const rows = response.table.rows;
+    const now = new Date();
+    allClubEvents = []; 
+
+    rows.forEach(row => {
+        const cells = row.c;
+        if (!cells || cells.length < 5) return;
+        
+        let rawDate = getCellValue(cells, 0); 
+        const rawTime = getCellValue(cells, 1); 
+        const type = getCellValue(cells, 2); 
+        const titre = getCellValue(cells, 3); 
+        const lieu = getCellValue(cells, 4); 
+        const cadence = getCellValue(cells, 5); 
+        const rondes = getCellValue(cells, 6); 
+        const commentaire = getCellValue(cells, 7); 
+        const lienAffiche = getCellValue(cells, 8); 
+
+        if (rawDate.toLowerCase() === 'date' || !rawDate || !rawTime) return;
+
+        let year, month, day;
+        if (rawDate.includes('/')) {
+            const dateParts = rawDate.split('/');
+            day = parseInt(dateParts[0], 10);   
+            month = parseInt(dateParts[1], 10); 
+            year = parseInt(dateParts[2], 10);  
+        } else if (cells[0].v && String(cells[0].v).includes('Date')) {
+            const extract = String(cells[0].v).match(/\d+/g);
+            if (extract && extract.length >= 3) {
+                year = parseInt(extract[0], 10);
+                month = parseInt(extract[1], 10) + 1; 
+                day = parseInt(extract[2], 10);
+                rawDate = `${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`;
+            }
+        } else {
+            return; 
+        }
+
+        let hour = 0, minute = 0;
+        if (cells[1]) {
+            if (cells[1].f) {
+                const timeParts = cells[1].f.split(':');
+                hour = parseInt(timeParts[0], 10) || 0;   
+                minute = parseInt(timeParts[1], 10) || 0; 
+            } else if (cells[1].v && typeof cells[1].v === 'object') {
+                hour = cells[1].v.hours !== undefined ? cells[1].v.hours : 0;
+                minute = cells[1].v.minutes !== undefined ? cells[1].v.minutes : 0;
+            } else if (cells[1].v) {
+                const timeParts = String(cells[1].v).split(':');
+                hour = parseInt(timeParts[0], 10) || 0;   
+                minute = parseInt(timeParts[1], 10) || 0; 
+            }
+        }
+
+        const eventDateTime = new Date(year, month - 1, day, hour, minute);
+        if (isNaN(eventDateTime.getTime())) return;
+
+        const formattedISO = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+        allClubEvents.push({
+            dateTime: eventDateTime,
+            isoDate: formattedISO,
+            year: String(year),
+            rawDate: rawDate,
+            rawTime: (hour < 10 ? '0' : '') + hour + 'h' + (minute < 10 ? '0' : '') + minute,
+            type: type.toLowerCase(),
+            titre: titre,
+            lieu: lieu,
+            cadence: cadence,
+            rondes: rondes,
+            commentaire: commentaire,
+            lienAffiche: lienAffiche,
+            isPast: eventDateTime < now
+        });
+    });
+
+    allClubEvents.sort((a, b) => a.dateTime - b.dateTime);
+
+    safeStorage.setItem('cache_evenements', JSON.stringify(allClubEvents));
+    safeStorage.setItem('cache_evenements_timestamp', Date.now().toString());
+    safeStorage.setItem('cache_evenements_version', CONFIG.CACHE_VERSION);
+
+    renderDynamicEventsGrid();
+}
+
+function renderDynamicEventsGrid() {
+    const gridContainer = document.getElementById('eventsGrid');
+    if (!gridContainer) return;
+    gridContainer.innerHTML = '';
+
+    if (allClubEvents.length === 0) {
+        gridContainer.innerHTML = `<p style="font-style: italic; color: #7f8c8d; text-align: center; padding: 2rem;">Aucun événement enregistré.</p>`;
+        updateYearSelect();
+        generateCalendar();
+        return;
+    }
+
+    allClubEvents.forEach(event => {
+        const card = document.createElement('div');
+        card.className = 'card event-card';
+        card.setAttribute('data-year', event.year);
+        card.setAttribute('data-date', event.isoDate);
+        card.setAttribute('data-type', event.type);
+
+        if (event.isPast) card.style.opacity = "0.65"; 
+
+        let badgeText = "🏆 Tournoi";
+        let badgeBg = "#ecc94b";
+        let badgeColor = "#2d3748";
+
+        if (event.type === 'cours') {
+            badgeText = "📚 Cours";
+            badgeBg = "#2980b9";
+            badgeColor = "#ffffff";
+        }
+
+        let statusBadgeHTML = event.isPast 
+            ? `<span class="badge dynamic-badge" style="background-color: #7f8c8d; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">Terminé</span>`
+            : `<span class="badge dynamic-badge" style="background-color: #2ecc71; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">À venir</span>`;
+
+        let cardHTML = `
+            <div class="event-content-wrapper" style="display: flex; gap: 1.5rem; align-items: start;">
+                <div class="event-info-side" style="flex: 2;">
+                    <h3 style="margin-top: 0; margin-bottom: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                        ${statusBadgeHTML}
+                        <span class="badge type-badge" style="background: ${badgeBg}; color: ${badgeColor}; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">${badgeText}</span>
+                        <span class="event-title-text" style="margin-left: 0.25rem; font-weight: bold; color: var(--primary);">${event.titre}</span>
+                    </h3>
+                    <p style="margin: 0.3rem 0;">📅 <strong>Date :</strong> Le ${event.rawDate} à ${event.rawTime}</p>
+                    <p style="margin: 0.3rem 0;">📍 <strong>Lieu :</strong> ${event.lieu}</p>
+        `;
+
+        if (event.cadence) cardHTML += `<p style="margin: 0.3rem 0;" class="cadence-field">⏳ <strong>Cadence :</strong> ${event.cadence}</p>`;
+        if (event.rondes) cardHTML += `<p style="margin: 0.3rem 0;" class="rondes-field">🔄 <strong>Nombre de rondes :</strong> ${event.rondes}</p>`;
+        cardHTML += `</div>`; 
+
+        if (event.lienAffiche) {
+            const cleanSrc = event.lienAffiche.startsWith('http') ? event.lienAffiche : 'assets/uploads/' + event.lienAffiche;
+            cardHTML += `
+                <div class="event-poster-side" style="flex: 1; text-align: right;">
+                    <img src="${cleanSrc}" alt="Affiche" onclick="zoomImage(this.src)" style="max-width: 100px; cursor: pointer; border-radius: 4px; border: 1px solid #ddd;" onerror="this.parentElement.style.display='none'">
+                </div>
+            `;
+        }
+        cardHTML += `</div>`; 
+
+        if (event.commentaire) {
+            cardHTML += `<p style="margin: 0.75rem 0 0 0; color: #555; font-style: italic;">💬 ${event.commentaire}</p>`;
+        }
+
+        card.innerHTML = cardHTML;
+        gridContainer.appendChild(card);
+    });
+
+    updateYearSelect();
+    filterEvents();
+    setTimeout(generateCalendar, 50);
+
+    setTimeout(() => {
+        const currentYearStr = String(new Date().getFullYear());
+        const firstVisibleFutureCard = allClubEvents.find(e => e.year === currentYearStr && !e.isPast);
+        if (firstVisibleFutureCard) {
+            const cardElements = document.querySelectorAll('.event-card');
+            for (let card of cardElements) {
+                if (card.getAttribute('data-date') === firstVisibleFutureCard.isoDate) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    break;
+                }
+            }
+        }
+    }, 400);
+}
+
+function filterEvents() {
+    const select = document.getElementById('yearSelect');
+    const hidePastCheckbox = document.getElementById('hidePastCheckbox');
+    if (!select || !hidePastCheckbox) return;
+    
+    const selectedYear = select.value;
+    const hidePast = hidePastCheckbox.checked;
+    
+    document.querySelectorAll('.event-card').forEach(card => {
+        const eventYear = card.getAttribute('data-year');
+        const isPastEvent = card.style.opacity === "0.65";
+        
+        const matchYear = (selectedYear === 'all' || eventYear === selectedYear);
+        const matchPast = !(hidePast && isPastEvent);
+        
+        card.style.display = (matchYear && matchPast) ? 'block' : 'none';
+    });
+}
+
+function updateYearSelect() {
+    const yearSelect = document.getElementById('yearSelect');
+    if (!yearSelect) return;
+
+    const currentYear = String(new Date().getFullYear());
+    const years = [...new Set(allClubEvents.map(e => e.year))].sort();
+    
+    yearSelect.innerHTML = '<option value="all">Toutes les années</option>';
+    years.forEach(y => {
+        const isSelected = (y === currentYear) ? 'selected' : '';
+        yearSelect.innerHTML += `<option value="${y}" ${isSelected}>${y}</option>`;
+    });
+
+    if (typeof filterEvents === 'function') filterEvents(); 
+}
+
+function generateCalendar() {
+    const monthYearHeader = document.getElementById('calendarMonthYear');
+    const daysGrid = document.getElementById('calendarDaysGrid');
+    if (!monthYearHeader || !daysGrid) return;
+
+    daysGrid.innerHTML = ''; 
+
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    monthYearHeader.textContent = `${monthNames[month]} ${year}`;
+
+    let firstDayIndex = new Date(year, month, 1).getDay() - 1;
+    if (firstDayIndex === -1) firstDayIndex = 6; 
+
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < firstDayIndex; i++) {
+        daysGrid.appendChild(document.createElement('div'));
+    }
+
+    for (let day = 1; day <= totalDays; day++) {
+        const dayCell = document.createElement('div');
+        dayCell.style.cssText = "position: relative; padding: 6px 0; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.2s ease;";
+
+        const dayNumber = document.createElement('span');
+        dayNumber.textContent = day;
+        dayCell.appendChild(dayNumber);
+
+        const currentISO = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayEvents = allClubEvents.filter(e => e.isoDate === currentISO);
+
+        if (dayEvents.length > 0) {
+            dayCell.style.backgroundColor = "var(--bg-light, #f7fafc)";
+            dayCell.style.border = "1px solid var(--accent, #ecc94b)";
+            dayCell.style.color = "var(--primary, #2d3748)";
+            dayCell.style.cursor = "pointer";
+
+            const dot = document.createElement('div');
+            dot.style.cssText = "width: 5px; height: 5px; background-color: var(--accent, #ecc94b); border-radius: 50%; margin-top: 2px;";
+            dayCell.appendChild(dot);
+
+            let tooltipHTML = `<div style="text-align:left; font-size:0.8rem; line-height:1.4;">`;
+            dayEvents.forEach(e => {
+                const badge = e.type === 'cours' ? '📚' : '🏆';
+                tooltipHTML += `<div style="margin-bottom:4px; font-weight:bold; color:#ecc94b;">${badge} ${e.titre}</div>`;
+                tooltipHTML += `<div style="color:#fff; font-size:0.75rem;">🕒 ${e.rawTime} - 📍 ${e.lieu}</div>`;
+            });
+            tooltipHTML += `</div>`;
+
+            dayCell.setAttribute('data-tooltip-content', tooltipHTML);
+            
+            dayCell.onmouseenter = function() {
+                showCustomTooltip(this, this.getAttribute('data-tooltip-content'));
+                this.style.backgroundColor = "var(--accent, #ecc94b)";
+                this.style.color = "white";
+                if(this.querySelector('div')) this.querySelector('div').style.backgroundColor = "white";
+            };
+            
+            dayCell.onmouseleave = function() {
+                hideCustomTooltip();
+                this.style.backgroundColor = "var(--bg-light, #f7fafc)";
+                this.style.color = "var(--primary, #2d3748)";
+                if(this.querySelector('div')) this.querySelector('div').style.backgroundColor = "var(--accent, #ecc94b)";
+            };
+
+            dayCell.onclick = () => {
+                const cardElements = document.querySelectorAll('.event-card');
+                const yearSelect = document.getElementById('yearSelect');
+                const hidePastCheckbox = document.getElementById('hidePastCheckbox');
+
+                const targetEventData = allClubEvents.find(e => e.isoDate === currentISO);
+                if (targetEventData && targetEventData.isPast && hidePastCheckbox && hidePastCheckbox.checked) {
+                    hidePastCheckbox.checked = false;
+                }
+
+                if (yearSelect && yearSelect.value !== 'all' && yearSelect.value !== String(year)) {
+                    yearSelect.value = String(year);
+                }
+
+                if (typeof filterEvents === 'function') filterEvents();
+
+                setTimeout(() => {
+                    for (let card of cardElements) {
+                        if (card.getAttribute('data-date') === currentISO) {
+                            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            card.style.boxShadow = "0 0 15px var(--accent)";
+                            setTimeout(() => card.style.boxShadow = "", 1500);
+                            break;
+                        }
+                    }
+                }, 50);
+            };
+        }
+
+        daysGrid.appendChild(dayCell);
+    }
+}
+
+function changeMonth(direction) {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+    generateCalendar();
+}
+
+let activeTooltipElement = null;
+
+function showCustomTooltip(target, content) {
+    if (activeTooltipElement) hideCustomTooltip();
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'calendar-custom-tooltip';
+    tooltip.innerHTML = content;
+    tooltip.style.cssText = "position: absolute; background-color: #2d3748; border: 2px solid #ecc94b; color: white; padding: 10px; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 5000; pointer-events: none; width: 220px;";
+
+    document.body.appendChild(tooltip);
+    activeTooltipElement = tooltip;
+
+    const rect = target.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+    tooltip.style.top = `${rect.top + scrollTop - tooltip.offsetHeight - 10}px`;
+    tooltip.style.left = `${rect.left + scrollLeft + (rect.width / 2) - (tooltip.offsetWidth / 2)}px`;
+}
+
+function hideCustomTooltip() {
+    if (activeTooltipElement) {
+        activeTooltipElement.remove();
+        activeTooltipElement = null;
+    }
+}
+
+
+/* =================================================================
+   7. MODULE TACTIQUE DU JOUR (API EXTERNE & SECOURS INTELLIGENT)
+   ================================================================ */
+async function chargerTactiqueDuJour() {
+    const dateEl = document.getElementById('puzzleDateNum');
+    const imgEl = document.getElementById('puzzleImg');
+    const btnEl = document.getElementById('puzzleBtn');
+    const descEl = document.getElementById('puzzleDesc');
+    const solutionContainer = document.getElementById('puzzleSolutionContainer');
+    const solutionTextEl = document.getElementById('puzzleSolutionText');
+    
+    const now = new Date();
+    if (dateEl) dateEl.textContent = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    try {
+        const response = await fetch('https://api.chess.com/pub/puzzle');
+        if (!response.ok) throw new Error("Erreur réseau API");
+        
+        const data = await response.json();
+        if (imgEl) imgEl.src = data.image;
+        if (descEl) descEl.style.display = 'none';
+        if (solutionContainer) solutionContainer.classList.add('hidden');
+
+        if (btnEl) {
+            btnEl.href = data.url;
+            btnEl.target = "_blank";
+            btnEl.textContent = "Tester la solution";
+            btnEl.onclick = null; 
+        }
+    } catch (error) {
+        console.warn("API Chess.com inaccessible, activation du mode secours :", error);
+        
+        if (imgEl) imgEl.src = "https://fen2image.chessvision.ai/7Q/1pq2kp1/p2ppb2/8/4B1P1/3P4/PP3P2/K7";
+        if (descEl) { descEl.textContent = "Trait aux Blancs."; descEl.style.display = 'block'; }
+        if (solutionTextEl) solutionTextEl.innerHTML = "<strong>Solution :</strong> 1. Fg6!!<br>Si 1… RxFg6 2. Dh5#<br>Si 1… Re7 2. De8#";
+        if (solutionContainer) solutionContainer.classList.add('hidden');
+        if (btnEl) {
+            btnEl.removeAttribute('target');
+            btnEl.href = "#";
+            btnEl.textContent = "Afficher la solution";
+            btnEl.onclick = function(e) { e.preventDefault(); togglePuzzleSolution(); };
+        }
+    }
+}
+
+function togglePuzzleSolution() {
+    const container = document.getElementById('puzzleSolutionContainer');
+    const btn = document.getElementById('puzzleBtn');
+    if (!container || !btn) return;
+
+    const isHidden = container.classList.contains('hidden');
+    if (isHidden) {
+        container.classList.remove('hidden');
+        btn.textContent = "Masquer la solution";
+    } else {
+        container.classList.add('hidden');
+        btn.textContent = "Afficher la solution";
+    }
+}
+
+
+/* =================================================================
+   8. MODULE STATUT DES SÉANCES (DANS LE TABLEAU DE PLANNING)
+   ================================================================ */
+function convertirHeureEnMinutes(heureStr) {
+    const [h, m] = heureStr.split(':').map(Number);
+    return h * 60 + m;
+}
+
+function verifierStatutSeanceClub() {
+    const rows = document.querySelectorAll('.planning-table tbody tr');
+    if (rows.length === 0) return;
+
+    rows.forEach(row => {
+        row.classList.remove('seance-active-row');
+        const existingBadge = row.querySelector('.table-badge');
+        if (existingBadge) existingBadge.remove();
+    });
+
+    const maintenant = new Date();
+    const jourActuel = maintenant.getDay(); 
+    const heureActuelleMinutes = maintenant.getHours() * 60 + maintenant.getMinutes();
+
+    let indexCible = -1;
+    let typeStatut = '';
+
+    rows.forEach((row, index) => {
+        const j = parseInt(row.getAttribute('data-jour'), 10);
+        const debutMin = convertirHeureEnMinutes(row.getAttribute('data-debut'));
+        const finMin = convertirHeureEnMinutes(row.getAttribute('data-fin'));
+
+        if (j === jourActuel && heureActuelleMinutes >= debutMin && heureActuelleMinutes <= finMin) {
+            indexCible = index;
+            typeStatut = 'live';
+        }
+    });
+
+    if (indexCible === -1) {
+        let minEcartMinutes = Infinity;
+        rows.forEach((row, index) => {
+            const j = parseInt(row.getAttribute('data-jour'), 10);
+            const debutMin = convertirHeureEnMinutes(row.getAttribute('data-debut'));
+
+            let ecartJours = j - jourActuel;
+            if (ecartJours < 0 || (ecartJours === 0 && debutMin <= heureActuelleMinutes)) ecartJours += 7; 
+
+            const ecartTotalMinutes = ecartJours * 24 * 60 + (debutMin - heureActuelleMinutes);
+            if (ecartTotalMinutes < minEcartMinutes) {
+                minEcartMinutes = ecartTotalMinutes;
+                indexCible = index;
+                typeStatut = 'pending';
+            }
+        });
+    }
+
+    if (indexCible !== -1) {
+        const targetRow = rows[indexCible];
+        targetRow.classList.add('seance-active-row');
+
+        const badge = document.createElement('span');
+        if (typeStatut === 'live') {
+            badge.className = "table-badge live";
+            badge.textContent = "🔴 En direct";
+        } else {
+            badge.className = "table-badge pending";
+            badge.textContent = "Prochaine séance";
+        }
+
+        const lastCell = targetRow.querySelector('td:last-child');
+        if (lastCell) lastCell.appendChild(badge);
+    }
+}
+
+
+/* =================================================================
+   9. MODULE GALERIE PHOTOS AUTOMATIQUE VIA JSON
+   ================================================================ */
+async function chargerGaleriePhotos() {
+    const galleryContainer = document.getElementById('dynamicGalleryGrid');
+    if (!galleryContainer) return;
+
+    try {
+        const response = await fetch('assets/images/galerie/galerie.json');
+        if (!response.ok) throw new Error("Impossible de charger la liste des photos.");
+        
+        const photosGalerie = await response.json();
+        galleryContainer.innerHTML = '';
+
+        if (!photosGalerie || photosGalerie.length === 0) {
+            galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-style: italic;">Aucune photo pour le moment.</p>`;
+            return;
+        }
+
+        photosGalerie.forEach(nomFichier => {
+            const src = `assets/images/galerie/${nomFichier}`;
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = "Photo du club d'échecs de Fismes";
+            img.onclick = () => zoomImage(src);
+            img.onerror = function() { this.parentElement.style.display = 'none'; };
+
+            item.appendChild(img);
+            galleryContainer.appendChild(item);
+        });
+
+    } catch (error) {
+        console.error("Erreur galerie :", error);
+        galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #e74c3c; font-style: italic;">Erreur lors du chargement de la galerie.</p>`;
+    }
+}
+
+
+/* =================================================================
+   10. POINT D'ENTRÉE GLOBAL (DOM LOADED)
+   ================================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+    loadMembresData();           
+    loadDynamicEvents();          
+    chargerTactiqueDuJour(); 
+    verifierStatutSeanceClub();
+    chargerGaleriePhotos();
+});
