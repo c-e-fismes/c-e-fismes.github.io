@@ -3,23 +3,25 @@
    ================================================================ */
 const CONFIG = {
     CACHE_VERSION: 'v1',
-    CACHE_DURATION: 15 * 60 * 1000, // 15 minutes
+    CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
-    EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww'
+    EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
+	DRIVE_API_KEY: 'AIzaSyATxOeKvdfDyKn5-zesBZ2hm5LiG_ky56k',
+    DRIVE_FOLDER_ID: '1k9hHi9_s5hufPL1jxH9bxvmBbIZUsikb'
 };
 
 const safeStorage = {
     getItem: function(key) {
         try { return localStorage.getItem(key); } 
-        catch (e) { console.warn("localStorage.getItem inaccessible :", e); return null; }
+        catch (e) { return null; }
     },
     setItem: function(key, value) {
         try { localStorage.setItem(key, value); } 
-        catch (e) { console.warn("localStorage.setItem inaccessible :", e); }
+        catch (e) {}
     },
     removeItem: function(key) {
         try { localStorage.removeItem(key); } 
-        catch (e) { console.warn("localStorage.removeItem inaccessible :", e); }
+        catch (e) {}
     }
 };
 
@@ -70,7 +72,43 @@ function closeZoom() {
 
 
 /* =================================================================
-   5. MODULE MEMBRES (GOOGLE SHEETS, CACHE SÉCURISÉ, TRI & RECHERCHE)
+   5. MODULE COMPTE À REBOURS DU PROCHAIN ÉVÉNEMENT
+   ================================================================ */
+function initCountdown() {
+    const timerEl = document.getElementById('countdownTimer');
+    const containerEl = document.getElementById('countdownContainer');
+    if (!timerEl || !containerEl) return;
+
+    const nextEvent = allClubEvents.find(e => !e.isPast);
+    
+    if (!nextEvent) {
+        containerEl.style.display = 'none'; 
+        return;
+    }
+
+    function calculateTime() {
+        const now = new Date();
+        const diff = nextEvent.dateTime - now;
+
+        if (diff <= 0) {
+            timerEl.textContent = `C'est aujourd'hui : ${nextEvent.titre} !`;
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        timerEl.innerHTML = `<strong>${days}j ${hours}h ${minutes}m</strong> — <a href="#evenements" onclick="showSection('evenements')" style="color: var(--accent); text-decoration: underline;">${nextEvent.titre}</a>`;
+    }
+
+    calculateTime();
+    setInterval(calculateTime, 60000); 
+}
+
+
+/* =================================================================
+   6. MODULE MEMBRES (GOOGLE SHEETS, CACHE SÉCURISÉ, TRI & RECHERCHE)
    ================================================================ */
 let listeMembresGlobale = [];
 let directionTri = { colonne: null, ordre: 'asc' };
@@ -280,14 +318,20 @@ function loadMembresData() {
         const script = document.createElement('script');
         script.id = 'jsonp-membres-script';
         script.src = url;
-        script.onerror = function() { console.error("Lien Excel des membres inaccessible."); script.remove(); };
+        script.onerror = function() { 
+            script.remove(); 
+            const tbody = document.getElementById('membersTableBody');
+            if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #e74c3c; font-style: italic; padding: 2rem;">Impossible de charger la liste des membres pour le moment. Veuillez réessayer ultérieurement.</td></tr>`;
+            }
+        };
         document.head.appendChild(script);
     }
 }
 
 
 /* =================================================================
-   6. MODULE ÉVÉNEMENTS & MINI-CALENDRIER (GOOGLE SHEETS, CACHE SÉCURISÉ)
+   7. MODULE ÉVÉNEMENTS & MINI-CALENDRIER (GOOGLE SHEETS, CACHE SÉCURISÉ)
    ================================================================ */
 let allClubEvents = []; 
 let currentCalendarDate = new Date(); 
@@ -310,7 +354,13 @@ function loadDynamicEvents() {
         const script = document.createElement('script');
         script.id = 'jsonp-events-script';
         script.src = eventsUrl;
-        script.onerror = function() { console.error("Lien Excel des événements inaccessible."); script.remove(); };
+        script.onerror = function() { 
+            script.remove(); 
+            const gridContainer = document.getElementById('eventsGrid');
+            if (gridContainer) {
+                gridContainer.innerHTML = `<p style="font-style: italic; color: #e74c3c; text-align: center; padding: 2rem;">Impossible de charger le calendrier des événements pour le moment. Veuillez réessayer ultérieurement.</p>`;
+            }
+        };
         document.body.appendChild(script);
     }
 }
@@ -486,6 +536,7 @@ function renderDynamicEventsGrid() {
     updateYearSelect();
     filterEvents();
     setTimeout(generateCalendar, 50);
+	initCountdown();
 
     setTimeout(() => {
         const currentYearStr = String(new Date().getFullYear());
@@ -671,7 +722,7 @@ function hideCustomTooltip() {
 
 
 /* =================================================================
-   7. MODULE TACTIQUE DU JOUR (API EXTERNE & SECOURS INTELLIGENT)
+   8. MODULE TACTIQUE DU JOUR (API EXTERNE & SECOURS INTELLIGENT)
    ================================================================ */
 async function chargerTactiqueDuJour() {
     const dateEl = document.getElementById('puzzleDateNum');
@@ -700,8 +751,6 @@ async function chargerTactiqueDuJour() {
             btnEl.onclick = null; 
         }
     } catch (error) {
-        console.warn("API Chess.com inaccessible, activation du mode secours :", error);
-        
         if (imgEl) imgEl.src = "https://fen2image.chessvision.ai/7Q/1pq2kp1/p2ppb2/8/4B1P1/3P4/PP3P2/K7";
         if (descEl) { descEl.textContent = "Trait aux Blancs."; descEl.style.display = 'block'; }
         if (solutionTextEl) solutionTextEl.innerHTML = "<strong>Solution :</strong> 1. Fg6!!<br>Si 1… RxFg6 2. Dh5#<br>Si 1… Re7 2. De8#";
@@ -732,7 +781,7 @@ function togglePuzzleSolution() {
 
 
 /* =================================================================
-   8. MODULE STATUT DES SÉANCES (DANS LE TABLEAU DE PLANNING)
+   9. MODULE STATUT DES SÉANCES (DANS LE TABLEAU DE PLANNING)
    ================================================================ */
 function convertirHeureEnMinutes(heureStr) {
     const [h, m] = heureStr.split(':').map(Number);
@@ -805,48 +854,272 @@ function verifierStatutSeanceClub() {
 
 
 /* =================================================================
-   9. MODULE GALERIE PHOTOS AUTOMATIQUE VIA JSON
+   10. MODULE GALERIE PHOTOS UNIFIÉ (ALBUMS, RACINE & PAGINATION)
    ================================================================ */
+let elementsRacineGlobales = [];
+let photosAlbumGlobales = [];
+let pageGalerieActuelle = 1;
+let albumActuelId = null;
+let nomAlbumActuel = "";
+
+function getColonnesParLigne() {
+    const galleryContainer = document.getElementById('dynamicGalleryGrid');
+    if (!galleryContainer) return 5;
+
+    let containerWidth = galleryContainer.clientWidth;
+    if (containerWidth === 0) {
+        containerWidth = window.innerWidth - 48;
+        if (containerWidth > 1120) containerWidth = 1120;
+    }
+
+    const minItemWidth = 180; 
+    const gap = 16;           
+
+    const cols = Math.floor((containerWidth + gap) / (minItemWidth + gap));
+    return Math.max(1, cols);
+}
+
 async function chargerGaleriePhotos() {
+    albumActuelId = null;
+    nomAlbumActuel = "";
+    
     const galleryContainer = document.getElementById('dynamicGalleryGrid');
     if (!galleryContainer) return;
 
-    try {
-        const response = await fetch('assets/images/galerie/galerie.json');
-        if (!response.ok) throw new Error("Impossible de charger la liste des photos.");
-        
-        const photosGalerie = await response.json();
-        galleryContainer.innerHTML = '';
+    supprimerControlesExtras();
 
-        if (!photosGalerie || photosGalerie.length === 0) {
-            galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-style: italic;">Aucune photo pour le moment.</p>`;
+    if (!CONFIG.DRIVE_API_KEY || CONFIG.DRIVE_API_KEY === 'VOTRE_CLE_API_GOOGLE') {
+        galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-style: italic;">Galerie Google Drive non configurée.</p>`;
+        return;
+    }
+
+    try {
+        galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--text); font-style: italic;">Chargement de la galerie...</p>`;
+
+        const query = `'${CONFIG.DRIVE_FOLDER_ID}' in parents and (mimeType = 'application/vnd.google-apps.folder' or mimeType contains 'image/') and trashed = false`;
+        const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${CONFIG.DRIVE_API_KEY}&fields=files(id,name,mimeType,thumbnailLink)`;
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Erreur lors de la récupération du contenu Google Drive.");
+        
+        const data = await response.json();
+        const fichiers = data.files || [];
+
+        if (fichiers.length === 0) {
+            galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-style: italic;">Aucune photo dans le dossier pour le moment.</p>`;
             return;
         }
 
-        photosGalerie.forEach(nomFichier => {
-            const src = `assets/images/galerie/${nomFichier}`;
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
+        const sousDossiers = fichiers.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
+        const photosRacine = fichiers.filter(f => f.mimeType.startsWith('image/'));
 
-            const img = document.createElement('img');
-            img.src = src;
-            img.alt = "Photo du club d'échecs de Fismes";
-            img.onclick = () => zoomImage(src);
-            img.onerror = function() { this.parentElement.style.display = 'none'; };
-
-            item.appendChild(img);
-            galleryContainer.appendChild(item);
+        const promessesAlbums = sousDossiers.map(async (album) => {
+            let coverUrl = '';
+            try {
+                const imgQuery = `'${album.id}' in parents and (mimeType contains 'image/') and trashed = false`;
+                const imgUrl = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(imgQuery)}&key=${CONFIG.DRIVE_API_KEY}&pageSize=1&fields=files(thumbnailLink,id)`;
+                const imgRes = await fetch(imgUrl);
+                const imgData = await imgRes.json();
+                if (imgData.files && imgData.files.length > 0) {
+                    const img = imgData.files[0];
+                    coverUrl = img.thumbnailLink ? img.thumbnailLink.replace('=s220', '=s400') : `https://lh3.googleusercontent.com/d/${img.id}`;
+                }
+            } catch (e) {
+                console.warn("Impossible de charger la couverture de l'album", album.name);
+            }
+            return { type: 'album', id: album.id, name: album.name, coverUrl: coverUrl };
         });
 
+        const albumsAvecCouverture = await Promise.all(promessesAlbums);
+
+        const photosFormattees = photosRacine.map(f => ({
+            type: 'photo',
+            id: f.id,
+            name: f.name,
+            thumbnailLink: f.thumbnailLink
+        }));
+
+        elementsRacineGlobales = [...albumsAvecCouverture, ...photosFormattees];
+
+        pageGalerieActuelle = 1;
+        afficherPageGalerie();
+
     } catch (error) {
-        console.error("Erreur galerie :", error);
+        console.error("Erreur galerie Google Drive :", error);
         galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #e74c3c; font-style: italic;">Erreur lors du chargement de la galerie.</p>`;
     }
 }
 
+async function chargerPhotosAlbum(folderId, folderName) {
+    albumActuelId = folderId;
+    nomAlbumActuel = folderName;
+
+    const galleryContainer = document.getElementById('dynamicGalleryGrid');
+    if (!galleryContainer) return;
+
+    galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--text); font-style: italic;">Chargement de l'album "${folderName}"...</p>`;
+    supprimerControlesExtras();
+    afficherBoutonRetour();
+
+    try {
+        const query = `'${folderId}' in parents and (mimeType contains 'image/') and trashed = false`;
+        const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${CONFIG.DRIVE_API_KEY}&fields=files(id,name,thumbnailLink)`;
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Erreur lors de la récupération des photos.");
+        
+        const data = await response.json();
+        photosAlbumGlobales = data.files || [];
+        
+        if (photosAlbumGlobales.length === 0) {
+            galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-style: italic;">Cet album est vide pour le moment.</p>`;
+            return;
+        }
+
+        pageGalerieActuelle = 1;
+        afficherPageGalerie();
+
+    } catch (error) {
+        console.error("Erreur photos Google Drive :", error);
+        galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #e74c3c; font-style: italic;">Erreur lors du chargement des photos.</p>`;
+    }
+}
+
+function afficherPageGalerie() {
+    const galleryContainer = document.getElementById('dynamicGalleryGrid');
+    if (!galleryContainer) return;
+
+    galleryContainer.innerHTML = '';
+
+    const listeActive = (albumActuelId === null) ? elementsRacineGlobales : photosAlbumGlobales;
+    const cols = getColonnesParLigne();
+    const elementsParPage = cols * 2;
+
+    const debut = (pageGalerieActuelle - 1) * elementsParPage;
+    const fin = debut + elementsParPage;
+    const elementsPage = listeActive.slice(debut, fin);
+
+    elementsPage.forEach(itemData => {
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+
+        if (albumActuelId === null && itemData.type === 'album') {
+            item.className = 'gallery-item album-card';
+            
+            if (itemData.coverUrl) {
+                item.style.backgroundImage = `url('${itemData.coverUrl}')`;
+            } else {
+                item.style.backgroundColor = 'var(--primary)';
+            }
+
+            item.onclick = () => chargerPhotosAlbum(itemData.id, itemData.name);
+
+            item.innerHTML = `
+                <h4 style="color: var(--accent); margin: 0 0 4px 0; font-size: 1rem; word-break: break-word; padding: 0 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${itemData.name}</h4>
+                <span style="font-size: 0.75rem; color: #ffffff; background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 4px;">Ouvrir l'album</span>
+            `;
+        } else {
+            const photo = itemData;
+            const fullImageUrl = `https://lh3.googleusercontent.com/d/${photo.id}`;
+            const thumbUrl = photo.thumbnailLink ? photo.thumbnailLink.replace('=s220', '=s400') : fullImageUrl;
+
+            const img = document.createElement('img');
+            img.src = thumbUrl;
+            img.alt = photo.name || "Photo du club d'échecs de Fismes";
+            img.onclick = () => zoomImage(fullImageUrl);
+            img.onerror = function() { this.parentElement.style.display = 'none'; };
+
+            item.appendChild(img);
+        }
+
+        galleryContainer.appendChild(item);
+    });
+
+    mettreAJourControlesGalerie(elementsParPage);
+}
+
+function afficherBoutonRetour() {
+    let retourContainer = document.getElementById('galleryBackContainer');
+    if (!retourContainer) {
+        retourContainer = document.createElement('div');
+        retourContainer.id = 'galleryBackContainer';
+        retourContainer.style.cssText = 'margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;';
+        
+        const galleryCard = document.getElementById('dynamicGalleryGrid').parentElement;
+        galleryCard.insertBefore(retourContainer, document.getElementById('dynamicGalleryGrid'));
+    }
+
+    retourContainer.innerHTML = `
+        <button id="backToAlbumsBtn" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: var(--primary); color: white;">← Retour aux albums</button>
+        <span style="font-weight: bold; color: var(--primary); font-size: 1.05rem;">📁 ${nomAlbumActuel}</span>
+    `;
+
+    document.getElementById('backToAlbumsBtn').onclick = () => {
+        chargerGaleriePhotos(); 
+    };
+}
+
+function supprimerControlesExtras() {
+    const retourContainer = document.getElementById('galleryBackContainer');
+    if (retourContainer) retourContainer.remove();
+
+    const paginationContainer = document.getElementById('galleryPagination');
+    if (paginationContainer) paginationContainer.remove();
+}
+
+function mettreAJourControlesGalerie(elementsParPage) {
+    const listeActive = (albumActuelId === null) ? elementsRacineGlobales : photosAlbumGlobales;
+    const totalPages = Math.ceil(listeActive.length / elementsParPage);
+    
+    let paginationContainer = document.getElementById('galleryPagination');
+    if (!paginationContainer) {
+        paginationContainer = document.createElement('div');
+        paginationContainer.id = 'galleryPagination';
+        paginationContainer.style.cssText = 'grid-column: 1 / -1; display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1rem;';
+        
+        const galleryCard = document.getElementById('dynamicGalleryGrid').parentElement;
+        galleryCard.appendChild(paginationContainer);
+    }
+
+    if (totalPages <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+
+    paginationContainer.innerHTML = `
+        <button id="prevGalleryBtn" class="btn" style="margin-top: 0; padding: 0.4rem 0.8rem; font-size: 0.85rem; ${pageGalerieActuelle === 1 ? 'opacity: 0.4; cursor: not-allowed;' : ''}">← Précédent</button>
+        <span style="font-weight: 500; font-size: 0.9rem; color: var(--text); line-height: 1;">Page ${pageGalerieActuelle} / ${totalPages}</span>
+        <button id="nextGalleryBtn" class="btn" style="margin-top: 0; padding: 0.4rem 0.8rem; font-size: 0.85rem; ${pageGalerieActuelle === totalPages ? 'opacity: 0.4; cursor: not-allowed;' : ''}">Suivant →</button>
+    `;
+
+    const prevBtn = document.getElementById('prevGalleryBtn');
+    const nextBtn = document.getElementById('nextGalleryBtn');
+
+    if (prevBtn && pageGalerieActuelle > 1) {
+        prevBtn.onclick = () => {
+            pageGalerieActuelle--;
+            afficherPageGalerie();
+        };
+    }
+
+    if (nextBtn && pageGalerieActuelle < totalPages) {
+        nextBtn.onclick = () => {
+            pageGalerieActuelle++;
+            afficherPageGalerie();
+        };
+    }
+}
+
+window.addEventListener('resize', () => {
+    const listeActive = (albumActuelId === null) ? elementsRacineGlobales : photosAlbumGlobales;
+    if (listeActive.length > 0) {
+        afficherPageGalerie();
+    }
+});
+
 
 /* =================================================================
-   10. POINT D'ENTRÉE GLOBAL (DOM LOADED)
+   11. POINT D'ENTRÉE GLOBAL (DOM LOADED)
    ================================================================ */
 document.addEventListener('DOMContentLoaded', () => {
     loadMembresData();           
