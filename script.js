@@ -515,11 +515,11 @@ function renderDynamicEventsGrid() {
         if (event.rondes) cardHTML += `<p style="margin: 0.3rem 0;" class="rondes-field">🔄 <strong>Nombre de rondes :</strong> ${event.rondes}</p>`;
         cardHTML += `</div>`; 
 
-        if (event.lienAffiche) {
+		if (event.lienAffiche) {
             const cleanSrc = event.lienAffiche.startsWith('http') ? event.lienAffiche : 'assets/uploads/' + event.lienAffiche;
             cardHTML += `
                 <div class="event-poster-side" style="flex: 1; text-align: right;">
-                    <img src="${cleanSrc}" alt="Affiche" onclick="zoomImage(this.src)" style="max-width: 100px; cursor: pointer; border-radius: 4px; border: 1px solid #ddd;" onerror="this.parentElement.style.display='none'">
+                    <img src="${cleanSrc}" alt="Affiche" loading="lazy" onclick="zoomImage(this.src)" style="max-width: 100px; cursor: pointer; border-radius: 4px; border: 1px solid #ddd;" onerror="this.parentElement.style.display='none'">
                 </div>
             `;
         }
@@ -1018,13 +1018,14 @@ function afficherPageGalerie() {
                 <h4 style="color: var(--accent); margin: 0 0 4px 0; font-size: 1rem; word-break: break-word; padding: 0 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${itemData.name}</h4>
                 <span style="font-size: 0.75rem; color: #ffffff; background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 4px;">Ouvrir l'album</span>
             `;
-        } else {
+		} else {
             const photo = itemData;
             const fullImageUrl = `https://lh3.googleusercontent.com/d/${photo.id}`;
             const thumbUrl = photo.thumbnailLink ? photo.thumbnailLink.replace('=s220', '=s400') : fullImageUrl;
 
             const img = document.createElement('img');
             img.src = thumbUrl;
+            img.loading = 'lazy'; // <-- Ajout du lazy loading ici
             img.alt = photo.name || "Photo du club d'échecs de Fismes";
             img.onclick = () => zoomImage(fullImageUrl);
             img.onerror = function() { this.parentElement.style.display = 'none'; };
