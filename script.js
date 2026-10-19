@@ -35,14 +35,57 @@ function showSection(sectionId) {
     if (targetBtn) targetBtn.classList.add('active');
 }
 
-function zoomImage(src) {
+/* --- Module Zoom & Navigation Lightbox --- */
+let currentLightboxImages = [];
+let currentLightboxIndex = 0;
+
+function zoomImage(src, imageList = null, index = 0) {
     const lb = document.getElementById('lightbox');
     const lbImg = document.getElementById('lightboxImg');
-    if (lb && lbImg) {
-        lbImg.src = '';
-        lb.classList.add('active');
-        lbImg.src = src;
+    if (!lb || !lbImg) return;
+
+    if (imageList) {
+        currentLightboxImages = imageList;
+        currentLightboxIndex = index;
+    } else {
+        currentLightboxImages = [src];
+        currentLightboxIndex = 0;
     }
+
+    lbImg.src = '';
+    lb.classList.add('active');
+    lbImg.src = currentLightboxImages[currentLightboxIndex];
+    
+    updateLightboxNavVisibility();
+}
+
+function changeLightboxImage(direction) {
+    if (currentLightboxImages.length <= 1) return;
+
+    currentLightboxIndex += direction;
+
+    if (currentLightboxIndex < 0) {
+        currentLightboxIndex = currentLightboxImages.length - 1;
+    } else if (currentLightboxIndex >= currentLightboxImages.length) {
+        currentLightboxIndex = 0;
+    }
+
+    const lbImg = document.getElementById('lightboxImg');
+    if (lbImg) {
+        lbImg.src = '';
+        setTimeout(() => {
+            lbImg.src = currentLightboxImages[currentLightboxIndex];
+        }, 50);
+    }
+}
+
+function updateLightboxNavVisibility() {
+    const prevBtn = document.querySelector('.lightbox-prev');
+    const nextBtn = document.querySelector('.lightbox-next');
+    const showNav = currentLightboxImages.length > 1;
+
+    if (prevBtn) prevBtn.style.display = showNav ? 'flex' : 'none';
+    if (nextBtn) nextBtn.style.display = showNav ? 'flex' : 'none';
 }
 
 function closeZoom() {
@@ -57,6 +100,15 @@ function closeZoom() {
         }
     }
 }
+
+document.addEventListener('keydown', (e) => {
+    const lb = document.getElementById('lightbox');
+    if (lb && lb.classList.contains('active')) {
+        if (e.key === 'ArrowLeft') changeLightboxImage(-1);
+        if (e.key === 'ArrowRight') changeLightboxImage(1);
+        if (e.key === 'Escape') closeZoom();
+    }
+});
 
 
 /* =================================================================
@@ -1077,6 +1129,11 @@ function afficherPageGalerie() {
     const fin = debut + elementsParPage;
     const elementsPage = listeActive.slice(debut, fin);
 
+    // Prépare la liste des URLs de toutes les photos du dossier/page actif pour la lightbox
+    const listeUrlsPhotos = listeActive
+        .filter(item => item.type !== 'album')
+        .map(photo => `https://lh3.googleusercontent.com/d/${photo.id}`);
+
     elementsPage.forEach(itemData => {
         const item = document.createElement('div');
         item.className = 'gallery-item';
@@ -1105,7 +1162,10 @@ function afficherPageGalerie() {
             img.src = thumbUrl;
             img.loading = 'lazy';
             img.alt = photo.name || "Photo du club d'échecs de Fismes";
-            img.onclick = () => zoomImage(fullImageUrl);
+            
+            const indexActuel = listeUrlsPhotos.indexOf(fullImageUrl);
+            img.onclick = () => zoomImage(fullImageUrl, listeUrlsPhotos, indexActuel);
+            
             img.onerror = function() { this.parentElement.style.display = 'none'; };
 
             item.appendChild(img);

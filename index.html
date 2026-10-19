@@ -256,9 +256,11 @@
             </div>
         </div>
 
-        <div id="lightbox" class="lightbox-overlay" onclick="closeZoom()">
-            <img id="lightboxImg" src="" alt="Affiche Agrandie">
-        </div>
+		<div id="lightbox" class="lightbox-overlay" onclick="closeZoom()">
+			<button class="lightbox-btn lightbox-prev" onclick="event.stopPropagation(); changeLightboxImage(-1)" title="Photo précédente">‹</button>
+			<img id="lightboxImg" src="" alt="Affiche Agrandie">
+			<button class="lightbox-btn lightbox-next" onclick="event.stopPropagation(); changeLightboxImage(1)" title="Photo suivante">›</button>
+		</div>
 
         <!-- SECTION : RÉSULTATS & MEMBRES -->
         <div id="resultats" class="section">
