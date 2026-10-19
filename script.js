@@ -1,12 +1,13 @@
 /* =================================================================
-   1. CONFIGURATION GLOBALE, CACHE & UTILITAIRE SÉCURISÉ
+   1. CONFIGURATION GLOBALE, NAVIGATION & UTILITAIRES
    ================================================================ */
 const CONFIG = {
     CACHE_VERSION: 'v1',
     CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
-	DRIVE_API_KEY: 'AIzaSyATxOeKvdfDyKn5-zesBZ2hm5LiG_ky56k',
+    PLANNING_SHEET_ID: '1-TRwpHJa93G5JyKkWjWAaIrj4-ip9QNwGx5RCG-HSuA',
+	DRIVE_API_KEY: 'AIzaSyDAuWBtbVPUXwI8e27RRYREgGu64u3HK74',
     DRIVE_FOLDER_ID: '1k9hHi9_s5hufPL1jxH9bxvmBbIZUsikb'
 };
 
@@ -25,10 +26,6 @@ const safeStorage = {
     }
 };
 
-
-/* =================================================================
-   2. NAVIGATION DES ONGLETS
-   ================================================================ */
 function showSection(sectionId) {
     document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
@@ -38,300 +35,258 @@ function showSection(sectionId) {
     if (targetBtn) targetBtn.classList.add('active');
 }
 
-
-/* =================================================================
-   3. GESTION DE LA REDIRECTION NETLIFY ADMIN
-   ================================================================ */
-if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", user => {
-        if (!user) {
-            window.netlifyIdentity.on("login", () => {
-                document.location.href = "/admin/";
-            });
-        }
-    });
-}
-
-
-/* =================================================================
-   4. MODULE ZOOM DES AFFICHES (LIGHTBOX)
-   ================================================================ */
 function zoomImage(src) {
     const lb = document.getElementById('lightbox');
     const lbImg = document.getElementById('lightboxImg');
     if (lb && lbImg) {
-        lbImg.src = src;
+        lbImg.src = '';
         lb.classList.add('active');
+        lbImg.src = src;
     }
 }
 
 function closeZoom() {
     const lb = document.getElementById('lightbox');
-    if (lb) lb.classList.remove('active');
-}
-
-
-/* =================================================================
-   5. MODULE COMPTE À REBOURS DU PROCHAIN ÉVÉNEMENT
-   ================================================================ */
-function initCountdown() {
-    const timerEl = document.getElementById('countdownTimer');
-    const containerEl = document.getElementById('countdownContainer');
-    if (!timerEl || !containerEl) return;
-
-    const nextEvent = allClubEvents.find(e => !e.isPast);
-    
-    if (!nextEvent) {
-        containerEl.style.display = 'none'; 
-        return;
-    }
-
-    function calculateTime() {
-        const now = new Date();
-        const diff = nextEvent.dateTime - now;
-
-        if (diff <= 0) {
-            timerEl.textContent = `C'est aujourd'hui : ${nextEvent.titre} !`;
-            return;
+    const lbImg = document.getElementById('lightboxImg');
+    if (lb) {
+        lb.classList.remove('active');
+        if (lbImg) {
+            setTimeout(() => {
+                lbImg.src = '';
+            }, 300);
         }
-
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-        timerEl.innerHTML = `<strong>${days}j ${hours}h ${minutes}m</strong> — <a href="#evenements" onclick="showSection('evenements')" style="color: var(--accent); text-decoration: underline;">${nextEvent.titre}</a>`;
     }
-
-    calculateTime();
-    setInterval(calculateTime, 60000); 
 }
 
 
 /* =================================================================
-   6. MODULE MEMBRES (GOOGLE SHEETS, CACHE SÉCURISÉ, TRI & RECHERCHE)
+   2. ONGLET "LE CLUB" (TACTIQUE, PLANNING & STATUT DES SÉANCES)
    ================================================================ */
-let listeMembresGlobale = [];
-let directionTri = { colonne: null, ordre: 'asc' };
 
-function afficherMembres(membres) {
-    const tbody = document.getElementById('membersTableBody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
+/* --- Tactique du jour --- */
+async function chargerTactiqueDuJour() {
+    const dateEl = document.getElementById('puzzleDateNum');
+    const imgEl = document.getElementById('puzzleImg');
+    const btnEl = document.getElementById('puzzleBtn');
+    const descEl = document.getElementById('puzzleDesc');
+    const solutionContainer = document.getElementById('puzzleSolutionContainer');
+    const solutionTextEl = document.getElementById('puzzleSolutionText');
     
-    membres.forEach(membre => {
-        const tr = document.createElement('tr');
+    const now = new Date();
+    if (dateEl) dateEl.textContent = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    try {
+        const response = await fetch('https://api.chess.com/pub/puzzle');
+        if (!response.ok) throw new Error("Erreur réseau API");
         
-        let fideCellule = '';
-        if (membre.fideId && membre.fideId !== '' && membre.fideId !== 'N/A') {
-            fideCellule = `<a href="https://ratings.fide.com/profile/${membre.fideId}" target="_blank" rel="noopener" class="btn" style="margin: 0; padding: 0.4rem 0.8rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;">🔗 Fiche FIDE</a>`;
+        const data = await response.json();
+        if (imgEl) imgEl.src = data.image;
+        if (descEl) descEl.style.display = 'none';
+        if (solutionContainer) solutionContainer.classList.add('hidden');
+
+        if (btnEl) {
+            btnEl.href = data.url;
+            btnEl.target = "_blank";
+            btnEl.textContent = "Tester la solution";
+            btnEl.onclick = null; 
         }
+    } catch (error) {
+        if (imgEl) imgEl.src = "https://fen2image.chessvision.ai/7Q/1pq2kp1/p2ppb2/8/4B1P1/3P4/PP3P2/K7";
+        if (descEl) { descEl.textContent = "Trait aux Blancs."; descEl.style.display = 'block'; }
+        if (solutionTextEl) solutionTextEl.innerHTML = "<strong>Solution :</strong> 1. Fg6!!<br>Si 1… RxFg6 2. Dh5#<br>Si 1… Re7 2. De8#";
+        if (solutionContainer) solutionContainer.classList.add('hidden');
+        if (btnEl) {
+            btnEl.removeAttribute('target');
+            btnEl.href = "#";
+            btnEl.textContent = "Afficher la solution";
+            btnEl.onclick = function(e) { e.preventDefault(); togglePuzzleSolution(); };
+        }
+    }
+}
+
+function togglePuzzleSolution() {
+    const container = document.getElementById('puzzleSolutionContainer');
+    const btn = document.getElementById('puzzleBtn');
+    if (!container || !btn) return;
+
+    const isHidden = container.classList.contains('hidden');
+    if (isHidden) {
+        container.classList.remove('hidden');
+        btn.textContent = "Masquer la solution";
+    } else {
+        container.classList.add('hidden');
+        btn.textContent = "Afficher la solution";
+    }
+}
+
+/* --- Planning & Statut des séances --- */
+function convertirNomJourEnChiffre(nomJour) {
+    const jours = {
+        'dimanche': 0, 'lundi': 1, 'mardi': 2, 
+        'mercredi': 3, 'jeudi': 4, 'vendredi': 5, 'samedi': 6
+    };
+    const normalise = nomJour.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return jours[normalise] !== undefined ? jours[normalise] : 1;
+}
+
+function getTimeValue(cell) {
+    if (!cell) return '';
+    if (cell.f) return cell.f.trim(); 
+    if (cell.v === null || cell.v === undefined) return '';
+    
+    const val = String(cell.v);
+    if (val.startsWith('Date(')) {
+        const match = val.match(/\d+/g);
+        if (match && match.length >= 6) {
+            const h = String(match[3]).padStart(2, '0');
+            const m = String(match[4]).padStart(2, '0');
+            return `${h}:${m}`;
+        }
+    }
+    return val.trim();
+}
+
+function formaterHeure(heureStr) {
+    if (!heureStr) return '';
+    return heureStr.replace(':', 'h');
+}
+
+window.googlePlanningCallback = function(data) {
+    const scriptEl = document.getElementById('jsonp-planning-script');
+    if (scriptEl) scriptEl.remove();
+
+    const tbody = document.getElementById('planningTableBody');
+    if (!tbody || !data || !data.table) return;
+    tbody.innerHTML = '';
+
+    const rows = data.table.rows;
+
+    rows.forEach(row => {
+        const cellules = row.c;
+        if (!cellules || cellules.length < 5) return;
+
+        const getVal = (index) => {
+            if (!cellules[index] || cellules[index].v === null) return '';
+            return String(cellules[index].v).trim();
+        };
+
+        const jourNom = getVal(0);
+        const heureDebut = getTimeValue(cellules[1]); 
+        const heureFin = getTimeValue(cellules[2]);   
+        const commune = getVal(3);
+        const lieu = getVal(4);
+
+        if (!jourNom || !heureDebut) return;
+
+        const numJour = convertirNomJourEnChiffre(jourNom);
+        const debutFormate = formaterHeure(heureDebut);
+        const finFormate = formaterHeure(heureFin);
+        const affichageHoraire = `${debutFormate} - ${finFormate}`;
+
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-jour', numJour);
+        tr.setAttribute('data-debut', heureDebut);
+        tr.setAttribute('data-fin', heureFin);
 
         tr.innerHTML = `
-            <td><strong>${membre.nomPrenom}</strong></td>
-            <td style="text-align:center;">${membre.classique}</td>
-            <td style="text-align:center;">${membre.rapide}</td>
-            <td style="text-align:center;">${membre.blitz}</td>
-            <td style="text-align:center;">${membre.categorie}</td>
-            <td style="text-align:center;">${membre.genre}</td>
-            <td style="text-align:center;">${fideCellule}</td>
+            <td style="font-weight: bold;">${jourNom}</td>
+            <td>${affichageHoraire}</td>
+            <td>${commune}</td>
+            <td>${lieu}</td>
         `;
         tbody.appendChild(tr);
     });
-}
 
-function trierTableau(propriete) {
-    const estNumerique = ['classique', 'rapide', 'blitz'].includes(propriete);
-
-    if (directionTri.colonne === propriete) {
-        if (estNumerique && directionTri.ordre === 'desc') {
-            directionTri.colonne = 'nomPrenom';
-            directionTri.ordre = 'asc';
-        } else {
-            directionTri.ordre = directionTri.ordre === 'asc' ? 'desc' : 'asc';
-        }
-    } else {
-        directionTri.colonne = propriete;
-        directionTri.ordre = estNumerique ? 'desc' : 'asc';
-    }
-
-    const mappingIcones = {
-        'nomPrenom': 'th-nomPrenom',
-        'classique': 'th-classique',
-        'rapide': 'th-rapide',
-        'blitz': 'th-blitz'
-    };
-    
-    Object.entries(mappingIcones).forEach(([key, thId]) => {
-        const th = document.getElementById(thId);
-        const icon = th ? th.querySelector('.sort-icon') : null;
-        if (icon) {
-            if (directionTri.colonne === key) {
-                icon.textContent = directionTri.ordre === 'desc' ? '▼' : '▲';
-                icon.style.color = '#ffffff';
-            } else {
-                icon.textContent = '↕';
-                icon.style.color = 'var(--accent)';
-            }
-        }
-    });
-
-    listeMembresGlobale.sort((a, b) => {
-        let propActive = directionTri.colonne;
-        let estActuellementNumerique = ['classique', 'rapide', 'blitz'].includes(propActive);
-
-        let valA = a[propActive];
-        let valB = b[propActive];
-
-        if (estActuellementNumerique) {
-            let numA = parseInt(String(valA).replace(/\s/g, ''), 10) || 0;
-            let numB = parseInt(String(valB).replace(/\s/g, ''), 10) || 0;
-            return directionTri.ordre === 'asc' ? numA - numB : numB - numA;
-        } else {
-            let strA = String(valA).trim();
-            let strB = String(valB).trim();
-            return directionTri.ordre === 'asc' 
-                ? strA.localeCompare(strB, 'fr', { sensitivity: 'base' }) 
-                : strB.localeCompare(strA, 'fr', { sensitivity: 'base' });
-        }
-    });
-
-    filterByInputName();
-}
-
-function brancherLesEntetes() {
-    const mapping = {
-        'th-nomPrenom': 'nomPrenom', 'th-classique': 'classique',
-        'th-rapide': 'rapide', 'th-blitz': 'blitz',
-        'th-categorie': 'categorie', 'th-genre': 'genre', 'th-fide': 'fideId'
-    };
-
-    for (const [id, propriete] of Object.entries(mapping)) {
-        const th = document.getElementById(id);
-        if (th) {
-            th.style.cursor = 'pointer';
-            th.setAttribute('title', 'Cliquez pour trier');
-            
-            const thClone = th.cloneNode(true);
-            th.parentNode.replaceChild(thClone, th);
-            
-            thClone.addEventListener('click', (e) => {
-                if (e.target.tagName === 'INPUT' || e.target.textContent.includes('🔍')) return;
-                trierTableau(propriete);
-            });
-        }
-    }
-}
-
-function toggleSearchInput(event) {
-    if (event) event.stopPropagation();
-    const container = document.getElementById('searchContainer');
-    const input = document.getElementById('nameSearchInput');
-    if (container && input) {
-        const visible = container.style.display === 'block';
-        container.style.display = visible ? 'none' : 'block';
-        if (!visible) {
-            input.focus();
-        } else {
-            input.value = '';
-            afficherMembres(listeMembresGlobale);
-        }
-    }
-}
-
-function filterByInputName() {
-    const input = document.getElementById('nameSearchInput');
-    if (!input) return;
-    
-    const saisie = input.value.toLowerCase().trim()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    
-    if (saisie === '') {
-        afficherMembres(listeMembresGlobale);
-    } else {
-        const membresFiltres = listeMembresGlobale.filter(m => {
-            const nomNormalise = m.nomPrenom.toLowerCase()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            return nomNormalise.includes(saisie);
-        });
-        afficherMembres(membresFiltres);
-    }
-}
-
-window.googleDocCallback = function(data) {
-    const scriptEl = document.getElementById('jsonp-membres-script');
-    if (scriptEl) scriptEl.remove();
-
-    try {
-        const rows = data.table.rows;
-        listeMembresGlobale = [];
-
-        for (let i = 0; i < rows.length; i++) {
-            const cellules = rows[i].c;
-            if (!cellules || cellules.length === 0) continue;
-
-            const getVal = (index) => {
-                if (!cellules[index] || cellules[index].v === null) return '';
-                return String(cellules[index].v).trim().replace(/^["']|["']\$/g, '').trim();
-            };
-
-            const membre = {
-                nomPrenom: getVal(0),
-                classique: getVal(1) || '0',
-                rapide: getVal(2) || '0',
-                blitz: getVal(3) || '0',
-                categorie: getVal(4),
-                genre: getVal(5),
-                fideId: getVal(6)
-            };
-
-            if (membre.nomPrenom !== '') listeMembresGlobale.push(membre);
-        }
-
-        listeMembresGlobale.sort((a, b) => a.nomPrenom.localeCompare(b.nomPrenom, 'fr'));
-        
-        safeStorage.setItem('cache_membres', JSON.stringify(listeMembresGlobale));
-        safeStorage.setItem('cache_membres_timestamp', Date.now().toString());
-        safeStorage.setItem('cache_membres_version', CONFIG.CACHE_VERSION);
-
-        afficherMembres(listeMembresGlobale);
-        brancherLesEntetes();
-    } catch (error) {
-        console.error("Erreur lors du traitement du flux Google Sheets :", error);
-    }
+    verifierStatutSeanceClub();
 };
 
-function loadMembresData() {
-    const savedVersion = safeStorage.getItem('cache_membres_version');
-    const cacheMembres = safeStorage.getItem('cache_membres');
-    const cacheTimestamp = safeStorage.getItem('cache_membres_timestamp');
+function loadPlanningData() {
+    const url = `https://docs.google.com/spreadsheets/d/${CONFIG.PLANNING_SHEET_ID}/gviz/tq?tqx=responseHandler:googlePlanningCallback`;
+    const script = document.createElement('script');
+    script.id = 'jsonp-planning-script';
+    script.src = url;
+    script.onerror = function() {
+        script.remove();
+        const tbody = document.getElementById('planningTableBody');
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #e74c3c; font-style: italic; padding: 1rem;">Impossible de charger le planning.</td></tr>`;
+        }
+    };
+    document.head.appendChild(script);
+}
 
-    if (savedVersion === CONFIG.CACHE_VERSION && cacheMembres && cacheTimestamp && (Date.now() - parseInt(cacheTimestamp, 10) < CONFIG.CACHE_DURATION)) {
-        listeMembresGlobale = JSON.parse(cacheMembres);
-        afficherMembres(listeMembresGlobale);
-        brancherLesEntetes();
-    } else {
-        safeStorage.removeItem('cache_membres');
-        safeStorage.removeItem('cache_membres_timestamp');
-        safeStorage.setItem('cache_membres_version', CONFIG.CACHE_VERSION);
+function convertirHeureEnMinutes(heureStr) {
+    const [h, m] = heureStr.split(':').map(Number);
+    return h * 60 + m;
+}
 
-        const url = `https://docs.google.com/spreadsheets/d/${CONFIG.MEMBRES_SHEET_ID}/gviz/tq?tqx=responseHandler:googleDocCallback`;
-        const script = document.createElement('script');
-        script.id = 'jsonp-membres-script';
-        script.src = url;
-        script.onerror = function() { 
-            script.remove(); 
-            const tbody = document.getElementById('membersTableBody');
-            if (tbody) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #e74c3c; font-style: italic; padding: 2rem;">Impossible de charger la liste des membres pour le moment. Veuillez réessayer ultérieurement.</td></tr>`;
+function verifierStatutSeanceClub() {
+    const rows = document.querySelectorAll('.planning-table tbody tr');
+    if (rows.length === 0) return;
+
+    rows.forEach(row => {
+        row.classList.remove('seance-active-row');
+        const existingBadge = row.querySelector('.table-badge');
+        if (existingBadge) existingBadge.remove();
+    });
+
+    const maintenant = new Date();
+    const jourActuel = maintenant.getDay(); 
+    const heureActuelleMinutes = maintenant.getHours() * 60 + maintenant.getMinutes();
+
+    let indexCible = -1;
+    let typeStatut = '';
+
+    rows.forEach((row, index) => {
+        const j = parseInt(row.getAttribute('data-jour'), 10);
+        const debutMin = convertirHeureEnMinutes(row.getAttribute('data-debut'));
+        const finMin = convertirHeureEnMinutes(row.getAttribute('data-fin'));
+
+        if (j === jourActuel && heureActuelleMinutes >= debutMin && heureActuelleMinutes <= finMin) {
+            indexCible = index;
+            typeStatut = 'live';
+        }
+    });
+
+    if (indexCible === -1) {
+        let minEcartMinutes = Infinity;
+        rows.forEach((row, index) => {
+            const j = parseInt(row.getAttribute('data-jour'), 10);
+            const debutMin = convertirHeureEnMinutes(row.getAttribute('data-debut'));
+
+            let ecartJours = j - jourActuel;
+            if (ecartJours < 0 || (ecartJours === 0 && debutMin <= heureActuelleMinutes)) ecartJours += 7; 
+
+            const ecartTotalMinutes = ecartJours * 24 * 60 + (debutMin - heureActuelleMinutes);
+            if (ecartTotalMinutes < minEcartMinutes) {
+                minEcartMinutes = ecartTotalMinutes;
+                indexCible = index;
+                typeStatut = 'pending';
             }
-        };
-        document.head.appendChild(script);
+        });
+    }
+
+    if (indexCible !== -1) {
+        const targetRow = rows[indexCible];
+        targetRow.classList.add('seance-active-row');
+
+        const badge = document.createElement('span');
+        if (typeStatut === 'live') {
+            badge.className = "table-badge live";
+            badge.textContent = "🔴 En direct";
+        } else {
+            badge.className = "table-badge pending";
+            badge.textContent = "Prochaine séance";
+        }
+
+        const lastCell = targetRow.querySelector('td:last-child');
+        if (lastCell) lastCell.appendChild(badge);
     }
 }
 
 
 /* =================================================================
-   7. MODULE ÉVÉNEMENTS & MINI-CALENDRIER (GOOGLE SHEETS, CACHE SÉCURISÉ)
+   3. ONGLET "ÉVÉNEMENTS & CALENDRIER"
    ================================================================ */
 let allClubEvents = []; 
 let currentCalendarDate = new Date(); 
@@ -720,141 +675,264 @@ function hideCustomTooltip() {
     }
 }
 
+function initCountdown() {
+    const timerEl = document.getElementById('countdownTimer');
+    const containerEl = document.getElementById('countdownContainer');
+    if (!timerEl || !containerEl) return;
+
+    const nextEvent = allClubEvents.find(e => !e.isPast);
+    
+    if (!nextEvent) {
+        containerEl.style.display = 'none'; 
+        return;
+    }
+
+    function calculateTime() {
+        const now = new Date();
+        const diff = nextEvent.dateTime - now;
+
+        if (diff <= 0) {
+            timerEl.textContent = `C'est aujourd'hui : ${nextEvent.titre} !`;
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        timerEl.innerHTML = `<strong>${days}j ${hours}h ${minutes}m</strong> — <a href="#evenements" onclick="showSection('evenements')" style="color: var(--accent); text-decoration: underline;">${nextEvent.titre}</a>`;
+    }
+
+    calculateTime();
+    setInterval(calculateTime, 60000); 
+}
+
 
 /* =================================================================
-   8. MODULE TACTIQUE DU JOUR (API EXTERNE & SECOURS INTELLIGENT)
+   4. ONGLET "RÉSULTATS & MEMBRES"
    ================================================================ */
-async function chargerTactiqueDuJour() {
-    const dateEl = document.getElementById('puzzleDateNum');
-    const imgEl = document.getElementById('puzzleImg');
-    const btnEl = document.getElementById('puzzleBtn');
-    const descEl = document.getElementById('puzzleDesc');
-    const solutionContainer = document.getElementById('puzzleSolutionContainer');
-    const solutionTextEl = document.getElementById('puzzleSolutionText');
+let listeMembresGlobale = [];
+let directionTri = { colonne: null, ordre: 'asc' };
+
+function afficherMembres(membres) {
+    const tbody = document.getElementById('membersTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
     
-    const now = new Date();
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+    membres.forEach(membre => {
+        const tr = document.createElement('tr');
+        
+        let fideCellule = '';
+        if (membre.fideId && membre.fideId !== '' && membre.fideId !== 'N/A') {
+            fideCellule = `<a href="https://ratings.fide.com/profile/${membre.fideId}" target="_blank" rel="noopener" class="btn" style="margin: 0; padding: 0.4rem 0.8rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;">🔗 Fiche FIDE</a>`;
+        }
+
+        tr.innerHTML = `
+            <td><strong>${membre.nomPrenom}</strong></td>
+            <td style="text-align:center;">${membre.classique}</td>
+            <td style="text-align:center;">${membre.rapide}</td>
+            <td style="text-align:center;">${membre.blitz}</td>
+            <td style="text-align:center;">${membre.categorie}</td>
+            <td style="text-align:center;">${membre.genre}</td>
+            <td style="text-align:center;">${fideCellule}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function trierTableau(propriete) {
+    const estNumerique = ['classique', 'rapide', 'blitz'].includes(propriete);
+
+    if (directionTri.colonne === propriete) {
+        if (estNumerique && directionTri.ordre === 'desc') {
+            directionTri.colonne = 'nomPrenom';
+            directionTri.ordre = 'asc';
+        } else {
+            directionTri.ordre = directionTri.ordre === 'asc' ? 'desc' : 'asc';
+        }
+    } else {
+        directionTri.colonne = propriete;
+        directionTri.ordre = estNumerique ? 'desc' : 'asc';
+    }
+
+    const mappingIcones = {
+        'nomPrenom': 'th-nomPrenom',
+        'classique': 'th-classique',
+        'rapide': 'th-rapide',
+        'blitz': 'th-blitz'
+    };
+    
+    Object.entries(mappingIcones).forEach(([key, thId]) => {
+        const th = document.getElementById(thId);
+        const icon = th ? th.querySelector('.sort-icon') : null;
+        if (icon) {
+            if (directionTri.colonne === key) {
+                icon.textContent = directionTri.ordre === 'desc' ? '▼' : '▲';
+                icon.style.color = '#ffffff';
+            } else {
+                icon.textContent = '↕';
+                icon.style.color = 'var(--accent)';
+            }
+        }
+    });
+
+    listeMembresGlobale.sort((a, b) => {
+        let propActive = directionTri.colonne;
+        let estActuellementNumerique = ['classique', 'rapide', 'blitz'].includes(propActive);
+
+        let valA = a[propActive];
+        let valB = b[propActive];
+
+        if (estActuellementNumerique) {
+            let numA = parseInt(String(valA).replace(/\s/g, ''), 10) || 0;
+            let numB = parseInt(String(valB).replace(/\s/g, ''), 10) || 0;
+            return directionTri.ordre === 'asc' ? numA - numB : numB - numA;
+        } else {
+            let strA = String(valA).trim();
+            let strB = String(valB).trim();
+            return directionTri.ordre === 'asc' 
+                ? strA.localeCompare(strB, 'fr', { sensitivity: 'base' }) 
+                : strB.localeCompare(strA, 'fr', { sensitivity: 'base' });
+        }
+    });
+
+    filterByInputName();
+}
+
+function brancherLesEntetes() {
+    const mapping = {
+        'th-nomPrenom': 'nomPrenom', 'th-classique': 'classique',
+        'th-rapide': 'rapide', 'th-blitz': 'blitz',
+        'th-categorie': 'categorie', 'th-genre': 'genre', 'th-fide': 'fideId'
+    };
+
+    for (const [id, propriete] of Object.entries(mapping)) {
+        const th = document.getElementById(id);
+        if (th) {
+            th.style.cursor = 'pointer';
+            th.setAttribute('title', 'Cliquez pour trier');
+            
+            const thClone = th.cloneNode(true);
+            th.parentNode.replaceChild(thClone, th);
+            
+            thClone.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.textContent.includes('🔍')) return;
+                trierTableau(propriete);
+            });
+        }
+    }
+}
+
+function toggleSearchInput(event) {
+    if (event) event.stopPropagation();
+    const container = document.getElementById('searchContainer');
+    const input = document.getElementById('nameSearchInput');
+    if (container && input) {
+        const visible = container.style.display === 'block';
+        container.style.display = visible ? 'none' : 'block';
+        if (!visible) {
+            input.focus();
+        } else {
+            input.value = '';
+            afficherMembres(listeMembresGlobale);
+        }
+    }
+}
+
+function filterByInputName() {
+    const input = document.getElementById('nameSearchInput');
+    if (!input) return;
+    
+    const saisie = input.value.toLowerCase().trim()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    if (saisie === '') {
+        afficherMembres(listeMembresGlobale);
+    } else {
+        const membresFiltres = listeMembresGlobale.filter(m => {
+            const nomNormalise = m.nomPrenom.toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            return nomNormalise.includes(saisie);
+        });
+        afficherMembres(membresFiltres);
+    }
+}
+
+window.googleDocCallback = function(data) {
+    const scriptEl = document.getElementById('jsonp-membres-script');
+    if (scriptEl) scriptEl.remove();
 
     try {
-        const response = await fetch('https://api.chess.com/pub/puzzle');
-        if (!response.ok) throw new Error("Erreur réseau API");
+        const rows = data.table.rows;
+        listeMembresGlobale = [];
+
+        for (let i = 0; i < rows.length; i++) {
+            const cellules = rows[i].c;
+            if (!cellules || cellules.length === 0) continue;
+
+            const getVal = (index) => {
+                if (!cellules[index] || cellules[index].v === null) return '';
+                return String(cellules[index].v).trim().replace(/^["']|["']\$/g, '').trim();
+            };
+
+            const membre = {
+                nomPrenom: getVal(0),
+                classique: getVal(1) || '0',
+                rapide: getVal(2) || '0',
+                blitz: getVal(3) || '0',
+                categorie: getVal(4),
+                genre: getVal(5),
+                fideId: getVal(6)
+            };
+
+            if (membre.nomPrenom !== '') listeMembresGlobale.push(membre);
+        }
+
+        listeMembresGlobale.sort((a, b) => a.nomPrenom.localeCompare(b.nomPrenom, 'fr'));
         
-        const data = await response.json();
-        if (imgEl) imgEl.src = data.image;
-        if (descEl) descEl.style.display = 'none';
-        if (solutionContainer) solutionContainer.classList.add('hidden');
+        safeStorage.setItem('cache_membres', JSON.stringify(listeMembresGlobale));
+        safeStorage.setItem('cache_membres_timestamp', Date.now().toString());
+        safeStorage.setItem('cache_membres_version', CONFIG.CACHE_VERSION);
 
-        if (btnEl) {
-            btnEl.href = data.url;
-            btnEl.target = "_blank";
-            btnEl.textContent = "Tester la solution";
-            btnEl.onclick = null; 
-        }
+        afficherMembres(listeMembresGlobale);
+        brancherLesEntetes();
     } catch (error) {
-        if (imgEl) imgEl.src = "https://fen2image.chessvision.ai/7Q/1pq2kp1/p2ppb2/8/4B1P1/3P4/PP3P2/K7";
-        if (descEl) { descEl.textContent = "Trait aux Blancs."; descEl.style.display = 'block'; }
-        if (solutionTextEl) solutionTextEl.innerHTML = "<strong>Solution :</strong> 1. Fg6!!<br>Si 1… RxFg6 2. Dh5#<br>Si 1… Re7 2. De8#";
-        if (solutionContainer) solutionContainer.classList.add('hidden');
-        if (btnEl) {
-            btnEl.removeAttribute('target');
-            btnEl.href = "#";
-            btnEl.textContent = "Afficher la solution";
-            btnEl.onclick = function(e) { e.preventDefault(); togglePuzzleSolution(); };
-        }
+        console.error("Erreur lors du traitement du flux Google Sheets :", error);
     }
-}
+};
 
-function togglePuzzleSolution() {
-    const container = document.getElementById('puzzleSolutionContainer');
-    const btn = document.getElementById('puzzleBtn');
-    if (!container || !btn) return;
+function loadMembresData() {
+    const savedVersion = safeStorage.getItem('cache_membres_version');
+    const cacheMembres = safeStorage.getItem('cache_membres');
+    const cacheTimestamp = safeStorage.getItem('cache_membres_timestamp');
 
-    const isHidden = container.classList.contains('hidden');
-    if (isHidden) {
-        container.classList.remove('hidden');
-        btn.textContent = "Masquer la solution";
+    if (savedVersion === CONFIG.CACHE_VERSION && cacheMembres && cacheTimestamp && (Date.now() - parseInt(cacheTimestamp, 10) < CONFIG.CACHE_DURATION)) {
+        listeMembresGlobale = JSON.parse(cacheMembres);
+        afficherMembres(listeMembresGlobale);
+        brancherLesEntetes();
     } else {
-        container.classList.add('hidden');
-        btn.textContent = "Afficher la solution";
-    }
-}
+        safeStorage.removeItem('cache_membres');
+        safeStorage.removeItem('cache_membres_timestamp');
+        safeStorage.setItem('cache_membres_version', CONFIG.CACHE_VERSION);
 
-
-/* =================================================================
-   9. MODULE STATUT DES SÉANCES (DANS LE TABLEAU DE PLANNING)
-   ================================================================ */
-function convertirHeureEnMinutes(heureStr) {
-    const [h, m] = heureStr.split(':').map(Number);
-    return h * 60 + m;
-}
-
-function verifierStatutSeanceClub() {
-    const rows = document.querySelectorAll('.planning-table tbody tr');
-    if (rows.length === 0) return;
-
-    rows.forEach(row => {
-        row.classList.remove('seance-active-row');
-        const existingBadge = row.querySelector('.table-badge');
-        if (existingBadge) existingBadge.remove();
-    });
-
-    const maintenant = new Date();
-    const jourActuel = maintenant.getDay(); 
-    const heureActuelleMinutes = maintenant.getHours() * 60 + maintenant.getMinutes();
-
-    let indexCible = -1;
-    let typeStatut = '';
-
-    rows.forEach((row, index) => {
-        const j = parseInt(row.getAttribute('data-jour'), 10);
-        const debutMin = convertirHeureEnMinutes(row.getAttribute('data-debut'));
-        const finMin = convertirHeureEnMinutes(row.getAttribute('data-fin'));
-
-        if (j === jourActuel && heureActuelleMinutes >= debutMin && heureActuelleMinutes <= finMin) {
-            indexCible = index;
-            typeStatut = 'live';
-        }
-    });
-
-    if (indexCible === -1) {
-        let minEcartMinutes = Infinity;
-        rows.forEach((row, index) => {
-            const j = parseInt(row.getAttribute('data-jour'), 10);
-            const debutMin = convertirHeureEnMinutes(row.getAttribute('data-debut'));
-
-            let ecartJours = j - jourActuel;
-            if (ecartJours < 0 || (ecartJours === 0 && debutMin <= heureActuelleMinutes)) ecartJours += 7; 
-
-            const ecartTotalMinutes = ecartJours * 24 * 60 + (debutMin - heureActuelleMinutes);
-            if (ecartTotalMinutes < minEcartMinutes) {
-                minEcartMinutes = ecartTotalMinutes;
-                indexCible = index;
-                typeStatut = 'pending';
+        const url = `https://docs.google.com/spreadsheets/d/${CONFIG.MEMBRES_SHEET_ID}/gviz/tq?tqx=responseHandler:googleDocCallback`;
+        const script = document.createElement('script');
+        script.id = 'jsonp-membres-script';
+        script.src = url;
+        script.onerror = function() { 
+            script.remove(); 
+            const tbody = document.getElementById('membersTableBody');
+            if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #e74c3c; font-style: italic; padding: 2rem;">Impossible de charger la liste des membres pour le moment. Veuillez réessayer ultérieurement.</td></tr>`;
             }
-        });
-    }
-
-    if (indexCible !== -1) {
-        const targetRow = rows[indexCible];
-        targetRow.classList.add('seance-active-row');
-
-        const badge = document.createElement('span');
-        if (typeStatut === 'live') {
-            badge.className = "table-badge live";
-            badge.textContent = "🔴 En direct";
-        } else {
-            badge.className = "table-badge pending";
-            badge.textContent = "Prochaine séance";
-        }
-
-        const lastCell = targetRow.querySelector('td:last-child');
-        if (lastCell) lastCell.appendChild(badge);
+        };
+        document.head.appendChild(script);
     }
 }
 
 
 /* =================================================================
-   10. MODULE GALERIE PHOTOS UNIFIÉ (ALBUMS, RACINE & PAGINATION)
+   5. ONGLET "VIE DU CLUB" (GALERIE PHOTOS GOOGLE DRIVE)
    ================================================================ */
 let elementsRacineGlobales = [];
 let photosAlbumGlobales = [];
@@ -1025,7 +1103,7 @@ function afficherPageGalerie() {
 
             const img = document.createElement('img');
             img.src = thumbUrl;
-            img.loading = 'lazy'; // <-- Ajout du lazy loading ici
+            img.loading = 'lazy';
             img.alt = photo.name || "Photo du club d'échecs de Fismes";
             img.onclick = () => zoomImage(fullImageUrl);
             img.onerror = function() { this.parentElement.style.display = 'none'; };
@@ -1120,11 +1198,22 @@ window.addEventListener('resize', () => {
 
 
 /* =================================================================
-   11. POINT D'ENTRÉE GLOBAL (DOM LOADED)
+   6. ADMINISTRATION & POINT D'ENTRÉE GLOBAL
    ================================================================ */
+if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+        if (!user) {
+            window.netlifyIdentity.on("login", () => {
+                document.location.href = "/admin/";
+            });
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     loadMembresData();           
     loadDynamicEvents();          
+    loadPlanningData();
     chargerTactiqueDuJour(); 
     verifierStatutSeanceClub();
     chargerGaleriePhotos();
