@@ -417,7 +417,7 @@ th { background-color: var(--primary); color: white; }
         display: none !important;
     }
 
-	.table-fide-btn {
+    .table-fide-btn {
         padding: 0.2rem 0.5rem;
         font-size: 0.75rem;
     }
@@ -432,6 +432,28 @@ th { background-color: var(--primary); color: white; }
     body {
         font-size: 0.9rem;
         overflow-x: hidden;
+    }
+
+    nav {
+        justify-content: flex-start;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+    }
+
+    nav button {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    nav::-webkit-scrollbar {
+        height: 4px;
+    }
+    nav::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: 4px;
     }
 
     h2 {

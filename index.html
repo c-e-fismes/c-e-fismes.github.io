@@ -105,28 +105,37 @@
                 </div>
             </div>
 
-            <div class="card">
+			<div class="card" style="margin-bottom: 1.5rem;">
                 <h3 style="margin-top: 0;">📊 Le club en chiffres</h3>
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <div class="stat-value">419</div>
-                        <div class="stat-label">Adhérents depuis la création</div>
+                <p>Un aperçu en temps réel de notre communauté et de notre dynamique sportive :</p>
+                
+                <div class="grid" style="margin-top: 1rem;">
+                    <!-- Carte 1 : Les effectifs -->
+                    <div class="card" style="margin-bottom: 0; background: var(--bg); border-top: 3px solid var(--primary);">
+                        <h4 style="margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
+                            👥 Les effectifs
+                        </h4>
+                        <ul style="padding-left: 1.2rem; margin-bottom: 0; line-height: 1.8;">
+                            <li><strong>Adhérents depuis la création :</strong> <span style="font-weight: bold; color: var(--accent);">419</span></li>
+                            <li><strong>Membres actuellement :</strong> <span id="stat-total-membres" style="font-weight: bold; color: var(--accent);">-</span></li>
+                            <li><strong>Part des féminines :</strong> <span id="stat-feminines" style="font-weight: bold; color: var(--accent);">-</span></li>
+                        </ul>
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-value">55</div>
-                        <div class="stat-label">Membres actuellement</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">30</div>
-                        <div class="stat-label">Jeunes classés</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">20%</div>
-                        <div class="stat-label">Féminines</div>
+
+                    <!-- Carte 2 : Performance -->
+                    <div class="card" style="margin-bottom: 0; background: var(--bg); border-top: 3px solid var(--primary);">
+                        <h4 style="margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
+                            🏆 Performance
+                        </h4>
+                        <ul style="padding-left: 1.2rem; margin-bottom: 0; line-height: 1.8;">
+                            <li><strong>Joueurs classés FIDE :</strong> <span id="stat-joueurs-fide" style="font-weight: bold; color: var(--accent);">-</span></li>
+                            <li><strong>Top Elo actuel :</strong> <span id="stat-top-elo" style="font-weight: bold; color: var(--accent);">-</span></li>
+                            <li><strong>Moyenne Elo Rapide Top 5 :</strong> <span id="stat-niveau-moyen" style="font-weight: bold; color: var(--accent);">-</span></li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </div>
+		</div>
 
         <!-- SECTION : DÉCOUVRIR LES ÉCHECS -->
         <div id="decouvrir" class="section">

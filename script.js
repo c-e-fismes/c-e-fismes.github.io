@@ -7,7 +7,7 @@ const CONFIG = {
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
     PLANNING_SHEET_ID: '1-TRwpHJa93G5JyKkWjWAaIrj4-ip9QNwGx5RCG-HSuA',
-	DRIVE_API_KEY: 'AIzaSyDAuWBtbVPUXwI8e27RRYREgGu64u3HK74',
+    DRIVE_API_KEY: 'AIzaSyDAuWBtbVPUXwI8e27RRYREgGu64u3HK74',
     DRIVE_FOLDER_ID: '1k9hHi9_s5hufPL1jxH9bxvmBbIZUsikb'
 };
 
@@ -35,7 +35,6 @@ function showSection(sectionId) {
     if (targetBtn) targetBtn.classList.add('active');
 }
 
-/* --- Module Zoom & Navigation Lightbox --- */
 let currentLightboxImages = [];
 let currentLightboxIndex = 0;
 
@@ -115,7 +114,6 @@ document.addEventListener('keydown', (e) => {
    2. ONGLET "LE CLUB" (TACTIQUE, PLANNING & STATUT DES SÉANCES)
    ================================================================ */
 
-/* --- Tactique du jour --- */
 async function chargerTactiqueDuJour() {
     const dateEl = document.getElementById('puzzleDateNum');
     const imgEl = document.getElementById('puzzleImg');
@@ -171,7 +169,6 @@ function togglePuzzleSolution() {
     }
 }
 
-/* --- Planning & Statut des séances --- */
 function convertirNomJourEnChiffre(nomJour) {
     const jours = {
         'dimanche': 0, 'lundi': 1, 'mardi': 2, 
@@ -522,7 +519,7 @@ function renderDynamicEventsGrid() {
         if (event.rondes) cardHTML += `<p style="margin: 0.3rem 0;" class="rondes-field">🔄 <strong>Nombre de rondes :</strong> ${event.rondes}</p>`;
         cardHTML += `</div>`; 
 
-		if (event.lienAffiche) {
+        if (event.lienAffiche) {
             const cleanSrc = event.lienAffiche.startsWith('http') ? event.lienAffiche : 'assets/uploads/' + event.lienAffiche;
             cardHTML += `
                 <div class="event-poster-side" style="flex: 1; text-align: right;">
@@ -543,7 +540,7 @@ function renderDynamicEventsGrid() {
     updateYearSelect();
     filterEvents();
     setTimeout(generateCalendar, 50);
-	initCountdown();
+    initCountdown();
 
     setTimeout(() => {
         const currentYearStr = String(new Date().getFullYear());
@@ -790,6 +787,58 @@ function afficherMembres(membres) {
         `;
         tbody.appendChild(tr);
     });
+
+    mettreAJourStatistiquesClub();
+}
+
+function mettreAJourStatistiquesClub() {
+    if (!listeMembresGlobale || listeMembresGlobale.length === 0) return;
+
+    const totalMembres = listeMembresGlobale.length;
+    
+    const nbFeminines = listeMembresGlobale.filter(m => {
+        const g = String(m.genre).trim().toUpperCase();
+        return g === 'F' || g === 'FEMININE';
+    }).length;
+    const pourcentFeminines = Math.round((nbFeminines / totalMembres) * 100);
+
+    const nbFide = listeMembresGlobale.filter(m => {
+        const fide = String(m.fideId).trim().toUpperCase();
+        return fide !== '' && fide !== 'N/A' && fide !== '-';
+    }).length;
+
+    let maxEloGlobal = 0;
+    const rapidesArr = [];
+
+    listeMembresGlobale.forEach(m => {
+        const eloClassique = parseInt(String(m.classique).replace(/\s/g, ''), 10) || 0;
+        const eloRapide = parseInt(String(m.rapide).replace(/\s/g, ''), 10) || 0;
+        const eloBlitz = parseInt(String(m.blitz).replace(/\s/g, ''), 10) || 0;
+
+        const maxMember = Math.max(eloClassique, eloRapide, eloBlitz);
+        if (maxMember > maxEloGlobal) maxEloGlobal = maxMember;
+
+        if (eloRapide > 0) {
+            rapidesArr.push(eloRapide);
+        }
+    });
+
+    rapidesArr.sort((a, b) => b - a);
+    const top5Rapide = rapidesArr.slice(0, 5);
+    const sommeTop5 = top5Rapide.reduce((acc, val) => acc + val, 0);
+    const moyenneTop5Rapide = top5Rapide.length > 0 ? Math.round(sommeTop5 / top5Rapide.length) : 0;
+
+    const elMembres = document.getElementById('stat-total-membres');
+    const elFeminines = document.getElementById('stat-feminines');
+    const elFide = document.getElementById('stat-joueurs-fide');
+    const elTopElo = document.getElementById('stat-top-elo');
+    const elMoyenneElo = document.getElementById('stat-niveau-moyen');
+
+    if (elMembres) elMembres.textContent = totalMembres;
+    if (elFeminines) elFeminines.textContent = pourcentFeminines + '%';
+    if (elFide) elFide.textContent = nbFide;
+    if (elTopElo) elTopElo.textContent = maxEloGlobal > 0 ? maxEloGlobal : '-';
+    if (elMoyenneElo) elMoyenneElo.textContent = moyenneTop5Rapide > 0 ? moyenneTop5Rapide : '-';
 }
 
 function trierTableau(propriete) {
@@ -1129,7 +1178,6 @@ function afficherPageGalerie() {
     const fin = debut + elementsParPage;
     const elementsPage = listeActive.slice(debut, fin);
 
-    // Prépare la liste des URLs de toutes les photos du dossier/page actif pour la lightbox
     const listeUrlsPhotos = listeActive
         .filter(item => item.type !== 'album')
         .map(photo => `https://lh3.googleusercontent.com/d/${photo.id}`);
@@ -1153,7 +1201,7 @@ function afficherPageGalerie() {
                 <h4 style="color: var(--accent); margin: 0 0 4px 0; font-size: 1rem; word-break: break-word; padding: 0 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${itemData.name}</h4>
                 <span style="font-size: 0.75rem; color: #ffffff; background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 4px;">Ouvrir l'album</span>
             `;
-		} else {
+        } else {
             const photo = itemData;
             const fullImageUrl = `https://lh3.googleusercontent.com/d/${photo.id}`;
             const thumbUrl = photo.thumbnailLink ? photo.thumbnailLink.replace('=s220', '=s400') : fullImageUrl;
