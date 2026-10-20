@@ -307,16 +307,6 @@ th { background-color: var(--primary); color: white; }
 .lightbox-prev { left: 15px; }
 .lightbox-next { right: 15px; }
 
-@media (max-width: 600px) {
-    .lightbox-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 1.6rem;
-    }
-    .lightbox-prev { left: 8px; }
-    .lightbox-next { right: 8px; }
-}
-
 /* =================================================================
    7. GALERIE PHOTOS
    ================================================================ */
@@ -390,13 +380,94 @@ th { background-color: var(--primary); color: white; }
 }
 
 /* =================================================================
-   8. RESPONSIVE DESIGN
+   8. RESPONSIVE DESIGN & MEDIA QUERIES
    ================================================================ */
 @media (max-width: 850px) {
     .club-hero-grid { grid-template-columns: 1fr; }
+    nav button {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        font-size: 0.92rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .site-title {
+        font-size: 1.6rem;
+    }
+
+    .site-tagline {
+        font-size: 0.9rem;
+    }
+
+    .card.welcome-banner {
+        padding: 1.25rem !important;
+    }
+    .welcome-title {
+        font-size: 1.4rem !important;
+        line-height: 1.2 !important;
+    }
+    .welcome-text {
+        font-size: 0.95rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    table th, table td {
+        padding: 8px 10px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .container {
+        margin: 1rem auto;
+        padding: 0 0.5rem;
+    }
+    .card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem !important;
+    }
+    .stat-box {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .lightbox-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.6rem;
+    }
+    .lightbox-prev { left: 8px; }
+    .lightbox-next { right: 8px; }
 }
 
 @media (max-width: 550px) {
     .event-content-wrapper { flex-direction: column-reverse; gap: 1rem; }
     .event-poster-side img { width: 100%; height: auto; max-height: 200px; }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 1.5rem 1rem;
+    }
+    .site-logo {
+        height: 70px;
+    }
+    .site-title {
+        font-size: 1.3rem;
+    }
+    nav button {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.8rem;
+    }
 }
