@@ -218,7 +218,7 @@
 
         <!-- SECTION : ÉVÉNEMENTS & CALENDRIER -->
         <div id="evenements" class="section">
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start;">
+            <div class="events-main-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start;">
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
                         <h2 style="margin: 0;">Calendrier & Événements</h2>
@@ -241,7 +241,7 @@
                     </div>
                 </div>
 
-                <div class="card" style="padding: 1rem; border-top: 3px solid var(--accent); position: sticky; top: 80px;">
+                <div class="card calendar-card-sidebar" style="padding: 1rem; border-top: 3px solid var(--accent); position: sticky; top: 80px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <button onclick="changeMonth(-1)" style="background: none; border: none; font-weight: bold; font-size: 1.2rem; cursor: pointer; color: var(--text);">‹</button>
                         <h3 id="calendarMonthYear" style="margin: 0; font-size: 1.1rem; text-transform: capitalize; text-align: center; flex-grow: 1;">-</h3>
@@ -300,7 +300,7 @@
         <!-- SECTION : VIE DU CLUB -->
         <div id="vie" class="section">
             <h2>Vie du Club</h2>
-            <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="grid">
                 <div class="card">
                     <h3>📰 Actualités</h3>
                     <p>Suivez les aventures du club au quotidien sur nos réseaux officiels :</p>

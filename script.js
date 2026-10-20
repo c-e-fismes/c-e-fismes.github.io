@@ -776,7 +776,7 @@ function afficherMembres(membres) {
         
         let fideCellule = '';
         if (membre.fideId && membre.fideId !== '' && membre.fideId !== 'N/A') {
-            fideCellule = `<a href="https://ratings.fide.com/profile/${membre.fideId}" target="_blank" rel="noopener" class="btn" style="margin: 0; padding: 0.4rem 0.8rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;">🔗 Fiche FIDE</a>`;
+            fideCellule = `<a href="https://ratings.fide.com/profile/${membre.fideId}" target="_blank" rel="noopener" class="table-fide-btn">🔗 Fiche FIDE</a>`;
         }
 
         tr.innerHTML = `
