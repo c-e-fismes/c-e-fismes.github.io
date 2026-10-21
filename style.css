@@ -237,6 +237,45 @@ input:checked + .slider:before { transform: translateX(20px); }
 .puzzle-card .puzzle-btn:hover { background: #1f2937; color: var(--accent); }
 #puzzleSolutionContainer.hidden { display: none !important; }
 
+/* Conteneur défilant compact pour les gazettes */
+.gazette-scroll-container {
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-top: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: var(--bg);
+}
+
+.gazette-scroll-container ul {
+    list-style: none;
+    padding: 0.5rem 0.75rem;
+    margin: 0;
+}
+
+.gazette-scroll-container li {
+    padding: 0.4rem 0;
+    border-bottom: 1px dotted #cbd5e1;
+}
+
+.gazette-scroll-container li:last-child {
+    border-bottom: none;
+}
+
+.gazette-scroll-container a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gazette-scroll-container a:hover {
+    color: var(--accent);
+}
+
 /* =================================================================
    5. TABLEAUX & PLANNING
    ================================================================ */
