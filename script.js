@@ -8,7 +8,8 @@ const CONFIG = {
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
     PLANNING_SHEET_ID: '1-TRwpHJa93G5JyKkWjWAaIrj4-ip9QNwGx5RCG-HSuA',
     DRIVE_API_KEY: 'AIzaSyDAuWBtbVPUXwI8e27RRYREgGu64u3HK74',
-    DRIVE_FOLDER_ID: '1k9hHi9_s5hufPL1jxH9bxvmBbIZUsikb'
+    DRIVE_PHOTOS_FOLDER_ID: '1k9hHi9_s5hufPL1jxH9bxvmBbIZUsikb',
+	DRIVE_POSTERS_FOLDER_ID: '1iIfPZiGPyJokoDaqkc-oHsMz60c3cp9i'
 };
 
 const safeStorage = {
@@ -344,7 +345,7 @@ let drivePostersMap = {};
 async function loadDrivePostersMapping() {
     if (!CONFIG.DRIVE_API_KEY || CONFIG.DRIVE_API_KEY === 'VOTRE_CLE_API_GOOGLE') return;
     try {
-        const query = `'${CONFIG.DRIVE_FOLDER_ID}' in parents and trashed = false`;
+        const query = `'${CONFIG.DRIVE_POSTERS_FOLDER_ID}' in parents and trashed = false`;
         const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${CONFIG.DRIVE_API_KEY}&fields=files(id,name)`;
         const response = await fetch(url);
         if (!response.ok) return;
@@ -1109,7 +1110,7 @@ async function chargerGaleriePhotos() {
     try {
         galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--text); font-style: italic;">Chargement de la galerie...</p>`;
 
-        const query = `'${CONFIG.DRIVE_FOLDER_ID}' in parents and (mimeType = 'application/vnd.google-apps.folder' or mimeType contains 'image/') and trashed = false`;
+        const query = `'${CONFIG.DRIVE_PHOTOS_FOLDER_ID}' in parents and (mimeType = 'application/vnd.google-apps.folder' or mimeType contains 'image/') and trashed = false`;
         const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${CONFIG.DRIVE_API_KEY}&fields=files(id,name,mimeType,thumbnailLink)`;
 
         const response = await fetch(url);
