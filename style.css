@@ -23,7 +23,7 @@ body {
 }
 
 header {
-    background: linear-gradient(135deg, rgba(17, 24, 39, 0.90) 0%, rgba(31, 41, 55, 0.80) 100%), url('assets/images/header-bg.jpg');
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.90) 0%, rgba(31, 41, 55, 0.80) 100%), url('images/header-bg.jpg');
     background-size: cover;
     background-position: center;
     color: white; 
