@@ -10,7 +10,7 @@ const CONFIG = {
     DRIVE_API_KEY: 'AIzaSyDAuWBtbVPUXwI8e27RRYREgGu64u3HK74',
     DRIVE_PHOTOS_FOLDER_ID: '1k9hHi9_s5hufPL1jxH9bxvmBbIZUsikb',
 	DRIVE_POSTERS_FOLDER_ID: '1iIfPZiGPyJokoDaqkc-oHsMz60c3cp9i',
-    DRIVE_GAZETTE_FOLDER_ID: '1xJNiT1oez2Ov3Ec3WHvTEnCQOG1F4oE-'
+    DRIVE_GAZETTE_FOLDER_ID: '1xJNiT1oez2Ov3Ec3WHvTEnCQOG1F4oE'
 };
 
 const safeStorage = {
@@ -1091,20 +1091,17 @@ function loadMembresData() {
 
 
 /* =================================================================
-   5. ONGLET "VIE DU CLUB" (GALERIE PHOTOS GOOGLE DRIVE)
+   5. ONGLET "VIE DU CLUB" (GALERIE PHOTOS & GAZETTES GOOGLE DRIVE)
    ================================================================ */
-let elementsRacineGlobales = [];
-let photosAlbumGlobales = [];
-let pageGalerieActuelle = 1;
-let albumActuelId = null;
-let nomAlbumActuel = "";
+let allGazettesGlobal = [];
 
 async function chargerGazettesDrive() {
     const gazetteListEl = document.getElementById('gazetteList');
     if (!gazetteListEl) return;
 
     if (!CONFIG.DRIVE_API_KEY || CONFIG.DRIVE_API_KEY === 'VOTRE_CLE_API_GOOGLE' || !CONFIG.DRIVE_GAZETTE_FOLDER_ID || CONFIG.DRIVE_GAZETTE_FOLDER_ID === 'VOTRE_ID_DOSSIER_GAZETTE') {
-        return; // Conserve les liens statiques par défaut si non configuré
+        gazetteListEl.innerHTML = '<li style="color: #7f8c8d; font-style: italic;">Dossier Drive non configuré.</li>';
+        return;
     }
 
     try {
@@ -1115,22 +1112,92 @@ async function chargerGazettesDrive() {
         if (!response.ok) throw new Error("Erreur réseau Google Drive");
 
         const data = await response.json();
-        const files = data.files || [];
+        allGazettesGlobal = data.files || [];
 
-        if (files.length > 0) {
-            gazetteListEl.innerHTML = '';
-            files.forEach(file => {
-                const li = document.createElement('li');
-                const fileUrl = `https://drive.google.com/file/d/${file.id}/view?usp=sharing`;
-                
-                li.innerHTML = `<a href="${fileUrl}" target="_blank" rel="noopener">${file.name}</a>`;
-                gazetteListEl.appendChild(li);
-            });
-        }
+        renderGazettesUI();
+
     } catch (error) {
         console.warn("Impossible de charger les gazettes Google Drive", error);
+        gazetteListEl.innerHTML = '<li style="color: #7f8c8d; font-style: italic;">Erreur de chargement.</li>';
     }
 }
+
+function renderGazettesUI() {
+    const gazetteListEl = document.getElementById('gazetteList');
+    const modalListEl = document.getElementById('gazetteModalList');
+    if (!gazetteListEl) return;
+
+    gazetteListEl.innerHTML = '';
+    if (modalListEl) modalListEl.innerHTML = '';
+
+    if (allGazettesGlobal.length === 0) {
+        gazetteListEl.innerHTML = '<li style="color: #7f8c8d; font-style: italic;">Aucune gazette pour le moment.</li>';
+        return;
+    }
+
+    const latestGazettes = allGazettesGlobal.slice(0, 5);
+    latestGazettes.forEach(file => {
+        const li = document.createElement('li');
+        const fileUrl = `https://drive.google.com/file/d/${file.id}/view?usp=sharing`;
+        li.innerHTML = `<a href="${fileUrl}" target="_blank" rel="noopener">📄 ${file.name}</a>`;
+        gazetteListEl.appendChild(li);
+    });
+
+    if (allGazettesGlobal.length > 5) {
+        const btnLi = document.createElement('li');
+        btnLi.style.textAlign = 'center';
+        btnLi.style.marginTop = '0.75rem';
+        btnLi.innerHTML = `<button type="button" class="btn" onclick="openGazetteModal()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; margin-top: 0;">📚 Voir toutes les archives (${allGazettesGlobal.length} numéros)</button>`;
+        gazetteListEl.appendChild(btnLi);
+    }
+
+    if (modalListEl) {
+        populateModalList(allGazettesGlobal);
+    }
+}
+
+function populateModalList(gazettes) {
+    const modalListEl = document.getElementById('gazetteModalList');
+    if (!modalListEl) return;
+    modalListEl.innerHTML = '';
+
+    gazettes.forEach(file => {
+        const li = document.createElement('li');
+        li.style.cssText = 'padding: 0.5rem; border-bottom: 1px solid #ddd;';
+        const fileUrl = `https://drive.google.com/file/d/${file.id}/view?usp=sharing`;
+        li.innerHTML = `<a href="${fileUrl}" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none; font-weight: 500; display: block;">📄 ${file.name}</a>`;
+        modalListEl.appendChild(li);
+    });
+}
+
+function openGazetteModal() {
+    const modal = document.getElementById('gazetteModal');
+    if (modal) modal.classList.add('active');
+}
+
+function closeGazetteModal() {
+    const modal = document.getElementById('gazetteModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function filterGazetteModal() {
+    const input = document.getElementById('gazetteSearchInput');
+    if (!input) return;
+    const filter = input.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    const filtered = allGazettesGlobal.filter(file => {
+        const nameNorm = file.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return nameNorm.includes(filter);
+    });
+
+    populateModalList(filtered);
+}
+
+let elementsRacineGlobales = [];
+let photosAlbumGlobales = [];
+let pageGalerieActuelle = 1;
+let albumActuelId = null;
+let nomAlbumActuel = "";
 
 function getColonnesParLigne() {
     const galleryContainer = document.getElementById('dynamicGalleryGrid');
@@ -1415,8 +1482,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPlanningData();
     chargerTactiqueDuJour(); 
     verifierStatutSeanceClub();
+    chargerGaleriePhotos();
     chargerGazettesDrive();
-	chargerGaleriePhotos();
     initFooterYear();
 });
 

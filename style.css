@@ -237,43 +237,35 @@ input:checked + .slider:before { transform: translateX(20px); }
 .puzzle-card .puzzle-btn:hover { background: #1f2937; color: var(--accent); }
 #puzzleSolutionContainer.hidden { display: none !important; }
 
-/* Conteneur défilant compact pour les gazettes */
-.gazette-scroll-container {
-    max-height: 180px;
-    overflow-y: auto;
-    padding-right: 8px;
-    margin-top: 0.5rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    background: var(--bg);
-}
-
-.gazette-scroll-container ul {
+/* Style épuré pour les derniers numéros de la Gazette */
+.gazette-preview-list {
     list-style: none;
-    padding: 0.5rem 0.75rem;
-    margin: 0;
+    padding: 0;
+    margin: 0.5rem 0;
 }
 
-.gazette-scroll-container li {
+.gazette-preview-list li {
     padding: 0.4rem 0;
-    border-bottom: 1px dotted #cbd5e1;
+    border-bottom: 1px dotted #e5e7eb;
 }
 
-.gazette-scroll-container li:last-child {
+.gazette-preview-list li:last-child {
     border-bottom: none;
 }
 
-.gazette-scroll-container a {
+.gazette-preview-list a {
     color: var(--primary);
     text-decoration: none;
     font-weight: 500;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-size: 0.95rem;
 }
 
-.gazette-scroll-container a:hover {
+.gazette-preview-list a:hover {
     color: var(--accent);
+    text-decoration: underline;
 }
 
 /* =================================================================
