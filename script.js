@@ -9,7 +9,8 @@ const CONFIG = {
     PLANNING_SHEET_ID: '1-TRwpHJa93G5JyKkWjWAaIrj4-ip9QNwGx5RCG-HSuA',
     DRIVE_API_KEY: 'AIzaSyDAuWBtbVPUXwI8e27RRYREgGu64u3HK74',
     DRIVE_PHOTOS_FOLDER_ID: '1k9hHi9_s5hufPL1jxH9bxvmBbIZUsikb',
-	DRIVE_POSTERS_FOLDER_ID: '1iIfPZiGPyJokoDaqkc-oHsMz60c3cp9i'
+	DRIVE_POSTERS_FOLDER_ID: '1iIfPZiGPyJokoDaqkc-oHsMz60c3cp9i',
+    DRIVE_GAZETTE_FOLDER_ID: '1xJNiT1oez2Ov3Ec3WHvTEnCQOG1F4oE-'
 };
 
 const safeStorage = {
@@ -26,6 +27,51 @@ const safeStorage = {
         catch (e) {}
     }
 };
+
+const cacheManager = {
+    get: function(key) {
+        const savedVersion = safeStorage.getItem(`${key}_version`);
+        const cacheData = safeStorage.getItem(key);
+        const cacheTimestamp = safeStorage.getItem(`${key}_timestamp`);
+
+        if (savedVersion === CONFIG.CACHE_VERSION && cacheData && cacheTimestamp) {
+            if (Date.now() - parseInt(cacheTimestamp, 10) < CONFIG.CACHE_DURATION) {
+                try {
+                    return JSON.parse(cacheData);
+                } catch (e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    },
+    set: function(key, data) {
+        safeStorage.setItem(key, JSON.stringify(data));
+        safeStorage.setItem(`${key}_timestamp`, Date.now().toString());
+        safeStorage.setItem(`${key}_version`, CONFIG.CACHE_VERSION);
+    },
+    clear: function(key) {
+        safeStorage.removeItem(key);
+        safeStorage.removeItem(`${key}_timestamp`);
+        safeStorage.removeItem(`${key}_version`);
+    }
+};
+
+function afficherEtatFichier(elementId, message, estErreur = false, colspan = 1) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    const couleur = estErreur ? '#e74c3c' : 'var(--text)';
+    const style = `text-align: center; color: ${couleur}; font-style: italic; padding: 2rem;`;
+
+    if (el.tagName === 'TBODY') {
+        el.innerHTML = `<tr><td colspan="${colspan}" style="${style}">${message}</td></tr>`;
+    } else {
+        el.style.gridColumn = '1 / -1';
+        el.style.cssText += style;
+        el.textContent = message;
+    }
+}
 
 function showSection(sectionId) {
     document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
@@ -257,10 +303,7 @@ function loadPlanningData() {
     script.src = url;
     script.onerror = function() {
         script.remove();
-        const tbody = document.getElementById('planningTableBody');
-        if (tbody) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #e74c3c; font-style: italic; padding: 1rem;">Impossible de charger le planning.</td></tr>`;
-        }
+        afficherEtatFichier('planningTableBody', 'Impossible de charger le planning.', true, 4);
     };
     document.head.appendChild(script);
 }
@@ -364,18 +407,14 @@ async function loadDrivePostersMapping() {
 async function loadDynamicEvents() {
     await loadDrivePostersMapping();
 
-    const savedVersion = safeStorage.getItem('cache_evenements_version');
-    const cacheEvents = safeStorage.getItem('cache_evenements');
-    const cacheTimestamp = safeStorage.getItem('cache_evenements_timestamp');
+    const cachedEvents = cacheManager.get('cache_evenements');
 
-    if (savedVersion === CONFIG.CACHE_VERSION && cacheEvents && cacheTimestamp && (Date.now() - parseInt(cacheTimestamp, 10) < CONFIG.CACHE_DURATION)) {
-        allClubEvents = JSON.parse(cacheEvents);
+    if (cachedEvents) {
+        allClubEvents = cachedEvents;
         allClubEvents.forEach(e => e.dateTime = new Date(e.dateTime));
         renderDynamicEventsGrid(); 
     } else {
-        safeStorage.removeItem('cache_evenements');
-        safeStorage.removeItem('cache_evenements_timestamp');
-        safeStorage.setItem('cache_evenements_version', CONFIG.CACHE_VERSION);
+        cacheManager.clear('cache_evenements');
 
         const eventsUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.EVENTS_SHEET_ID}/gviz/tq?tqx=responseHandler:handleEventsCallback`;
         const script = document.createElement('script');
@@ -383,10 +422,7 @@ async function loadDynamicEvents() {
         script.src = eventsUrl;
         script.onerror = function() { 
             script.remove(); 
-            const gridContainer = document.getElementById('eventsGrid');
-            if (gridContainer) {
-                gridContainer.innerHTML = `<p style="font-style: italic; color: #e74c3c; text-align: center; padding: 2rem;">Impossible de charger le calendrier des événements pour le moment. Veuillez réessayer ultérieurement.</p>`;
-            }
+            afficherEtatFichier('eventsGrid', 'Impossible de charger le calendrier des événements pour le moment. Veuillez réessayer ultérieurement.', true);
         };
         document.body.appendChild(script);
     }
@@ -482,12 +518,8 @@ function handleEventsCallback(response) {
         });
     });
 
-    allClubEvents.sort((a, b) => a.dateTime - b.dateTime);
-
-    safeStorage.setItem('cache_evenements', JSON.stringify(allClubEvents));
-    safeStorage.setItem('cache_evenements_timestamp', Date.now().toString());
-    safeStorage.setItem('cache_evenements_version', CONFIG.CACHE_VERSION);
-
+	allClubEvents.sort((a, b) => a.dateTime - b.dateTime);
+    cacheManager.set('cache_evenements', allClubEvents);
     renderDynamicEventsGrid();
 }
 
@@ -497,7 +529,7 @@ function renderDynamicEventsGrid() {
     gridContainer.innerHTML = '';
 
     if (allClubEvents.length === 0) {
-        gridContainer.innerHTML = `<p style="font-style: italic; color: #7f8c8d; text-align: center; padding: 2rem;">Aucun événement enregistré.</p>`;
+        afficherEtatFichier('eventsGrid', 'Aucun événement enregistré.');
         updateYearSelect();
         generateCalendar();
         return;
@@ -1024,32 +1056,26 @@ window.googleDocCallback = function(data) {
             if (membre.nomPrenom !== '') listeMembresGlobale.push(membre);
         }
 
-        listeMembresGlobale.sort((a, b) => a.nomPrenom.localeCompare(b.nomPrenom, 'fr'));
-        
-        safeStorage.setItem('cache_membres', JSON.stringify(listeMembresGlobale));
-        safeStorage.setItem('cache_membres_timestamp', Date.now().toString());
-        safeStorage.setItem('cache_membres_version', CONFIG.CACHE_VERSION);
+		listeMembresGlobale.sort((a, b) => a.nomPrenom.localeCompare(b.nomPrenom, 'fr'));
+        cacheManager.set('cache_membres', listeMembresGlobale);
 
         afficherMembres(listeMembresGlobale);
         brancherLesEntetes();
-    } catch (error) {
+
+	} catch (error) {
         console.error("Erreur lors du traitement du flux Google Sheets :", error);
     }
 };
 
 function loadMembresData() {
-    const savedVersion = safeStorage.getItem('cache_membres_version');
-    const cacheMembres = safeStorage.getItem('cache_membres');
-    const cacheTimestamp = safeStorage.getItem('cache_membres_timestamp');
+    const cachedMembres = cacheManager.get('cache_membres');
 
-    if (savedVersion === CONFIG.CACHE_VERSION && cacheMembres && cacheTimestamp && (Date.now() - parseInt(cacheTimestamp, 10) < CONFIG.CACHE_DURATION)) {
-        listeMembresGlobale = JSON.parse(cacheMembres);
+    if (cachedMembres) {
+        listeMembresGlobale = cachedMembres;
         afficherMembres(listeMembresGlobale);
         brancherLesEntetes();
     } else {
-        safeStorage.removeItem('cache_membres');
-        safeStorage.removeItem('cache_membres_timestamp');
-        safeStorage.setItem('cache_membres_version', CONFIG.CACHE_VERSION);
+        cacheManager.clear('cache_membres');
 
         const url = `https://docs.google.com/spreadsheets/d/${CONFIG.MEMBRES_SHEET_ID}/gviz/tq?tqx=responseHandler:googleDocCallback`;
         const script = document.createElement('script');
@@ -1057,10 +1083,7 @@ function loadMembresData() {
         script.src = url;
         script.onerror = function() { 
             script.remove(); 
-            const tbody = document.getElementById('membersTableBody');
-            if (tbody) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #e74c3c; font-style: italic; padding: 2rem;">Impossible de charger la liste des membres pour le moment. Veuillez réessayer ultérieurement.</td></tr>`;
-            }
+            afficherEtatFichier('membersTableBody', 'Impossible de charger la liste des membres pour le moment. Veuillez réessayer ultérieurement.', true, 7);
         };
         document.head.appendChild(script);
     }
@@ -1075,6 +1098,39 @@ let photosAlbumGlobales = [];
 let pageGalerieActuelle = 1;
 let albumActuelId = null;
 let nomAlbumActuel = "";
+
+async function chargerGazettesDrive() {
+    const gazetteListEl = document.getElementById('gazetteList');
+    if (!gazetteListEl) return;
+
+    if (!CONFIG.DRIVE_API_KEY || CONFIG.DRIVE_API_KEY === 'VOTRE_CLE_API_GOOGLE' || !CONFIG.DRIVE_GAZETTE_FOLDER_ID || CONFIG.DRIVE_GAZETTE_FOLDER_ID === 'VOTRE_ID_DOSSIER_GAZETTE') {
+        return; // Conserve les liens statiques par défaut si non configuré
+    }
+
+    try {
+        const query = `'${CONFIG.DRIVE_GAZETTE_FOLDER_ID}' in parents and mimeType = 'application/pdf' and trashed = false`;
+        const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${CONFIG.DRIVE_API_KEY}&fields=files(id,name)&orderBy=name desc`;
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Erreur réseau Google Drive");
+
+        const data = await response.json();
+        const files = data.files || [];
+
+        if (files.length > 0) {
+            gazetteListEl.innerHTML = '';
+            files.forEach(file => {
+                const li = document.createElement('li');
+                const fileUrl = `https://drive.google.com/file/d/${file.id}/view?usp=sharing`;
+                
+                li.innerHTML = `<a href="${fileUrl}" target="_blank" rel="noopener">${file.name}</a>`;
+                gazetteListEl.appendChild(li);
+            });
+        }
+    } catch (error) {
+        console.warn("Impossible de charger les gazettes Google Drive", error);
+    }
+}
 
 function getColonnesParLigne() {
     const galleryContainer = document.getElementById('dynamicGalleryGrid');
@@ -1103,12 +1159,12 @@ async function chargerGaleriePhotos() {
     supprimerControlesExtras();
 
     if (!CONFIG.DRIVE_API_KEY || CONFIG.DRIVE_API_KEY === 'VOTRE_CLE_API_GOOGLE') {
-        galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-style: italic;">Galerie Google Drive non configurée.</p>`;
+        afficherEtatFichier('dynamicGalleryGrid', 'Galerie Google Drive non configurée.', true);
         return;
     }
 
     try {
-        galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--text); font-style: italic;">Chargement de la galerie...</p>`;
+        afficherEtatFichier('dynamicGalleryGrid', 'Chargement de la galerie...');
 
         const query = `'${CONFIG.DRIVE_PHOTOS_FOLDER_ID}' in parents and (mimeType = 'application/vnd.google-apps.folder' or mimeType contains 'image/') and trashed = false`;
         const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${CONFIG.DRIVE_API_KEY}&fields=files(id,name,mimeType,thumbnailLink)`;
@@ -1120,7 +1176,7 @@ async function chargerGaleriePhotos() {
         const fichiers = data.files || [];
 
         if (fichiers.length === 0) {
-            galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-style: italic;">Aucune photo dans le dossier pour le moment.</p>`;
+            afficherEtatFichier('dynamicGalleryGrid', 'Aucune photo dans le dossier pour le moment.');
             return;
         }
 
@@ -1160,7 +1216,7 @@ async function chargerGaleriePhotos() {
 
     } catch (error) {
         console.error("Erreur galerie Google Drive :", error);
-        galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #e74c3c; font-style: italic;">Erreur lors du chargement de la galerie.</p>`;
+        afficherEtatFichier('dynamicGalleryGrid', 'Erreur lors du chargement de la galerie.', true);
     }
 }
 
@@ -1171,7 +1227,7 @@ async function chargerPhotosAlbum(folderId, folderName) {
     const galleryContainer = document.getElementById('dynamicGalleryGrid');
     if (!galleryContainer) return;
 
-    galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--text); font-style: italic;">Chargement de l'album "${folderName}"...</p>`;
+    afficherEtatFichier('dynamicGalleryGrid', `Chargement de l'album "${folderName}"...`);
     supprimerControlesExtras();
     afficherBoutonRetour();
 
@@ -1186,7 +1242,7 @@ async function chargerPhotosAlbum(folderId, folderName) {
         photosAlbumGlobales = data.files || [];
         
         if (photosAlbumGlobales.length === 0) {
-            galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-style: italic;">Cet album est vide pour le moment.</p>`;
+            afficherEtatFichier('dynamicGalleryGrid', 'Cet album est vide pour le moment.');
             return;
         }
 
@@ -1195,7 +1251,7 @@ async function chargerPhotosAlbum(folderId, folderName) {
 
     } catch (error) {
         console.error("Erreur photos Google Drive :", error);
-        galleryContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #e74c3c; font-style: italic;">Erreur lors du chargement des photos.</p>`;
+        afficherEtatFichier('dynamicGalleryGrid', 'Erreur lors du chargement des photos.', true);
     }
 }
 
@@ -1359,7 +1415,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPlanningData();
     chargerTactiqueDuJour(); 
     verifierStatutSeanceClub();
-    chargerGaleriePhotos();
+    chargerGazettesDrive();
+	chargerGaleriePhotos();
     initFooterYear();
 });
 
