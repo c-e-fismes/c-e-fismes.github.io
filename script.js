@@ -1139,16 +1139,22 @@ function renderGazettesUI() {
     latestGazettes.forEach(file => {
         const li = document.createElement('li');
         const fileUrl = `https://drive.google.com/file/d/${file.id}/view?usp=sharing`;
-        li.innerHTML = `<a href="${fileUrl}" target="_blank" rel="noopener">📄 ${file.name}</a>`;
+        li.innerHTML = `📄 <a href="${fileUrl}" target="_blank" rel="noopener">${file.name}</a>`;
         gazetteListEl.appendChild(li);
     });
 
+    const existingBtnContainer = document.getElementById('gazetteBtnContainer');
+    if (existingBtnContainer) existingBtnContainer.remove();
+
     if (allGazettesGlobal.length > 5) {
-        const btnLi = document.createElement('li');
-        btnLi.style.textAlign = 'center';
-        btnLi.style.marginTop = '0.75rem';
-        btnLi.innerHTML = `<button type="button" class="btn" onclick="openGazetteModal()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; margin-top: 0;">📚 Voir toutes les archives (${allGazettesGlobal.length} numéros)</button>`;
-        gazetteListEl.appendChild(btnLi);
+        const cardContainer = gazetteListEl.closest('.card');
+        if (cardContainer) {
+            const btnContainer = document.createElement('div');
+            btnContainer.id = 'gazetteBtnContainer';
+            btnContainer.style.cssText = 'text-align: center; margin-top: 1rem;';
+            btnContainer.innerHTML = `<button type="button" class="btn" onclick="openGazetteModal()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; margin-top: 0;">📚 Voir toutes les archives (${allGazettesGlobal.length} numéros)</button>`;
+            cardContainer.appendChild(btnContainer);
+        }
     }
 
     if (modalListEl) {
@@ -1172,11 +1178,17 @@ function populateModalList(gazettes) {
 
 function openGazetteModal() {
     const modal = document.getElementById('gazetteModal');
+    const input = document.getElementById('gazetteSearchInput');
+    if (input) input.value = '';
+    populateModalList(allGazettesGlobal);
     if (modal) modal.classList.add('active');
 }
 
 function closeGazetteModal() {
     const modal = document.getElementById('gazetteModal');
+    const input = document.getElementById('gazetteSearchInput');
+    if (input) input.value = '';
+    populateModalList(allGazettesGlobal);
     if (modal) modal.classList.remove('active');
 }
 
@@ -1489,7 +1501,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 /* =================================================================
-   7. FOOTER & MODALE MENTIONS LÉGALES
+   7. FOOTER & MENTIONS LÉGALES
    ================================================================ */
 function initFooterYear() {
     const yearEl = document.getElementById('currentYear');
