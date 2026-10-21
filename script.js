@@ -339,8 +339,30 @@ function verifierStatutSeanceClub() {
    ================================================================ */
 let allClubEvents = []; 
 let currentCalendarDate = new Date(); 
+let drivePostersMap = {};
 
-function loadDynamicEvents() {
+async function loadDrivePostersMapping() {
+    if (!CONFIG.DRIVE_API_KEY || CONFIG.DRIVE_API_KEY === 'VOTRE_CLE_API_GOOGLE') return;
+    try {
+        const query = `'${CONFIG.DRIVE_FOLDER_ID}' in parents and trashed = false`;
+        const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${CONFIG.DRIVE_API_KEY}&fields=files(id,name)`;
+        const response = await fetch(url);
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        if (data.files) {
+            data.files.forEach(file => {
+                drivePostersMap[file.name.trim()] = file.id;
+            });
+        }
+    } catch (error) {
+        console.warn("Impossible de charger le mapping des affiches Google Drive", error);
+    }
+}
+
+async function loadDynamicEvents() {
+    await loadDrivePostersMapping();
+
     const savedVersion = safeStorage.getItem('cache_evenements_version');
     const cacheEvents = safeStorage.getItem('cache_evenements');
     const cacheTimestamp = safeStorage.getItem('cache_evenements_timestamp');
@@ -520,12 +542,24 @@ function renderDynamicEventsGrid() {
         cardHTML += `</div>`; 
 
         if (event.lienAffiche) {
-            const cleanSrc = event.lienAffiche.startsWith('http') ? event.lienAffiche : 'assets/uploads/' + event.lienAffiche;
-            cardHTML += `
-                <div class="event-poster-side" style="flex: 1; text-align: right;">
-                    <img src="${cleanSrc}" alt="Affiche" loading="lazy" onclick="zoomImage(this.src)" style="max-width: 100px; cursor: pointer; border-radius: 4px; border: 1px solid #ddd;" onerror="this.parentElement.style.display='none'">
-                </div>
-            `;
+            let cleanSrc = '';
+            if (event.lienAffiche.startsWith('http')) {
+                cleanSrc = event.lienAffiche;
+            } else {
+                const fileName = event.lienAffiche.trim();
+                const fileId = drivePostersMap[fileName];
+                if (fileId) {
+                    cleanSrc = `https://lh3.googleusercontent.com/d/${fileId}`;
+                }
+            }
+
+            if (cleanSrc) {
+                cardHTML += `
+                    <div class="event-poster-side" style="flex: 1; text-align: right;">
+                        <img src="${cleanSrc}" alt="Affiche" loading="lazy" onclick="zoomImage(this.src)" style="max-width: 100px; cursor: pointer; border-radius: 4px; border: 1px solid #ddd;" onerror="this.parentElement.style.display='none'">
+                    </div>
+                `;
+            }
         }
         cardHTML += `</div>`; 
 
@@ -1325,4 +1359,27 @@ document.addEventListener('DOMContentLoaded', () => {
     chargerTactiqueDuJour(); 
     verifierStatutSeanceClub();
     chargerGaleriePhotos();
+    initFooterYear();
 });
+
+
+/* =================================================================
+   7. FOOTER & MODALE MENTIONS LÉGALES
+   ================================================================ */
+function initFooterYear() {
+    const yearEl = document.getElementById('currentYear');
+    if (yearEl) {
+        yearEl.textContent = new Date().getFullYear();
+    }
+}
+
+function openLegalModal(e) {
+    if (e) e.preventDefault();
+    const modal = document.getElementById('legalModal');
+    if (modal) modal.classList.add('active');
+}
+
+function closeLegalModal() {
+    const modal = document.getElementById('legalModal');
+    if (modal) modal.classList.remove('active');
+}

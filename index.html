@@ -8,16 +8,22 @@
 </head>
 <body>
 
-	<header class="site-header">
-		<div class="header-top">
-			<img src="assets/images/logo-club.png" alt="Logo Cercle d'Échecs de Fismes" class="site-logo">
-			<div class="header-text-block">
-				<h1 class="site-title">Cercle d'Échecs de Fismes</h1>
-				<p class="site-tagline">Passion, Stratégie et Convivialité</p>
-			</div>
-		</div>
-	</header>
+    <!-- =================================================================
+       1. EN-TÊTE DU SITE
+       ================================================================ -->
+    <header class="site-header">
+        <div class="header-top">
+            <img src="assets/images/logo-club.png" alt="Logo Cercle d'Échecs de Fismes" class="site-logo">
+            <div class="header-text-block">
+                <h1 class="site-title">Cercle d'Échecs de Fismes</h1>
+                <p class="site-tagline">Passion, Stratégie et Convivialité</p>
+            </div>
+        </div>
+    </header>
 
+    <!-- =================================================================
+       2. NAVIGATION PRINCIPALE
+       ================================================================ -->
     <nav>
         <button onclick="showSection('club')" id="btn-club" class="active">Le Club</button>
         <button onclick="showSection('decouvrir')" id="btn-decouvrir">Les Échecs ?</button>
@@ -28,6 +34,9 @@
         <button onclick="showSection('admin')" id="btn-admin" class="btn-admin">⚙️ Admin</button>
     </nav>
 
+    <!-- =================================================================
+       3. CONTENEUR DES SECTIONS PRINCIPALES
+       ================================================================ -->
     <div class="container">
         
         <!-- SECTION : LE CLUB -->
@@ -39,14 +48,14 @@
                     <p class="welcome-text">
                         Du débutant qui découvre le déplacement des pièces au compétiteur aguerri, le <strong>Cercle d'Échecs de Fismes</strong> vous accueille dans une ambiance à la fois studieuse et conviviale. 
                     </p>
-					<div class="welcome-actions" style="flex-wrap: nowrap; align-items: center;">
-						<a href="#contact" onclick="showSection('contact')" class="btn" style="white-space: nowrap; margin-top: 0;">Nous rejoindre</a>
-						<div id="countdownContainer" style="flex-shrink: 1; min-width: 0; background: rgba(0, 0, 0, 0.25); padding: 0.6rem 1rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.75rem; border: 1px solid rgba(245, 158, 11, 0.3); margin-top: 0; box-sizing: border-box;">
-							<span style="font-size: 0.85rem; font-weight: bold; color: var(--accent); white-space: nowrap;">⏳ À venir :</span>
-							<span id="countdownTimer" style="font-size: 0.9rem; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Recherche...</span>
-						</div>
-					</div>
-				</div>
+                    <div class="welcome-actions" style="flex-wrap: nowrap; align-items: center;">
+                        <a href="#contact" onclick="showSection('contact')" class="btn" style="white-space: nowrap; margin-top: 0;">Nous rejoindre</a>
+                        <div id="countdownContainer" style="flex-shrink: 1; min-width: 0; background: rgba(0, 0, 0, 0.25); padding: 0.6rem 1rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.75rem; border: 1px solid rgba(245, 158, 11, 0.3); margin-top: 0; box-sizing: border-box;">
+                            <span style="font-size: 0.85rem; font-weight: bold; color: var(--accent); white-space: nowrap;">⏳ À venir :</span>
+                            <span id="countdownTimer" style="font-size: 0.9rem; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Recherche...</span>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card puzzle-card">
                     <div class="puzzle-header">
@@ -67,19 +76,19 @@
             <div class="card" style="margin-bottom: 1.5rem;">
                 <h3 style="margin-top: 0;">📅 Planning des séances</h3>
                 <p>Retrouvez ci-dessous les jours, horaires et lieux de nos différents rendez-vous hebdomadaires :</p>
-				<div class="planning-wrapper">
-					<table class="planning-table planning-table-custom">
-						<thead>
-							<tr>
-								<th>Jour</th>
-								<th>Créneau Horaire</th>
-								<th>Commune</th>
-								<th>Lieu</th>
-							</tr>
-						</thead>
-						<tbody id="planningTableBody"></tbody>
-					</table>
-				</div>
+                <div class="planning-wrapper">
+                    <table class="planning-table planning-table-custom">
+                        <thead>
+                            <tr>
+                                <th>Jour</th>
+                                <th>Créneau Horaire</th>
+                                <th>Commune</th>
+                                <th>Lieu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="planningTableBody"></tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="card" style="margin-bottom: 1.5rem;">
@@ -105,7 +114,7 @@
                 </div>
             </div>
 
-			<div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card" style="margin-bottom: 1.5rem;">
                 <h3 style="margin-top: 0;">📊 Le club en chiffres</h3>
                 <p>Un aperçu en temps réel de notre communauté et de notre dynamique sportive :</p>
                 
@@ -135,7 +144,7 @@
                     </div>
                 </div>
             </div>
-		</div>
+        </div>
 
         <!-- SECTION : DÉCOUVRIR LES ÉCHECS -->
         <div id="decouvrir" class="section">
@@ -147,10 +156,10 @@
                         Souvent qualifié de "gymnastique de l'esprit", le jeu d'échecs est une discipline complète qui séduit de plus en plus de parents et d'éducateurs. Découvrez pourquoi les échecs sont extraordinaires pour le développement des enfants et des adolescents.
                     </p>
                 </div>
-				<div style="flex: 1.2; text-align: center; min-width: 260px;">
-					<img src="assets/images/jeunes-joueurs.jpg" alt="Jeunes joueurs d'échecs" loading="lazy" style="width: 100%; max-width: 380px; border-radius: 6px; border: 2px solid var(--accent); object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" onerror="this.style.display='none'">
-				</div>
-			</div>
+                <div style="flex: 1.2; text-align: center; min-width: 260px;">
+                    <img src="assets/images/jeunes-joueurs.jpg" alt="Jeunes joueurs d'échecs" loading="lazy" style="width: 100%; max-width: 380px; border-radius: 6px; border: 2px solid var(--accent); object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" onerror="this.style.display='none'">
+                </div>
+            </div>
             <div class="card" style="margin-bottom: 1.5rem;">
                 <h3 style="margin-top: 0;">🧠 Ce que la pratique des échecs apporte aux jeunes</h3>
                 <p>De nombreuses études scientifiques et les retours de la Fédération Française d'Échecs (FFE) démontrent les bienfaits de cette pratique sur le plan scolaire et personnel :</p>
@@ -197,7 +206,7 @@
                     </div>
                     <div style="background: var(--bg); padding: 1rem; border-radius: 6px; border-left: 4px solid #27ae60;">
                         <strong>3. La fin de partie ("Mat")</strong>
-                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Si le roi attaqué ne plus échapper à la menace, la partie est terminée : c'est l'échec et mat !</p>
+                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Si le roi attaqué ne peut plus échapper à la menace, la partie est terminée : c'est l'échec et mat !</p>
                     </div>
                 </div>
             </div>
@@ -265,13 +274,14 @@
             </div>
         </div>
 
-		<div id="lightbox" class="lightbox-overlay" onclick="closeZoom()">
-			<div class="lightbox-container" onclick="event.stopPropagation()">
-				<button class="lightbox-btn lightbox-prev" onclick="changeLightboxImage(-1)" title="Photo précédente">‹</button>
-				<img id="lightboxImg" src="" alt="Affiche Agrandie">
-				<button class="lightbox-btn lightbox-next" onclick="changeLightboxImage(1)" title="Photo suivante">›</button>
-			</div>
-		</div>
+        <!-- LIGHTBOX / ZOOM IMAGES -->
+        <div id="lightbox" class="lightbox-overlay" onclick="closeZoom()">
+            <div class="lightbox-container" onclick="event.stopPropagation()">
+                <button class="lightbox-btn lightbox-prev" onclick="changeLightboxImage(-1)" title="Photo précédente">‹</button>
+                <img id="lightboxImg" src="" alt="Affiche Agrandie">
+                <button class="lightbox-btn lightbox-next" onclick="changeLightboxImage(1)" title="Photo suivante">›</button>
+            </div>
+        </div>
 
         <!-- SECTION : RÉSULTATS & MEMBRES -->
         <div id="resultats" class="section">
@@ -416,6 +426,26 @@
 
     </div>
 
+    <!-- SCRIPT PRINCIPAL -->
     <script src="script.js"></script>
+
+    <!-- FOOTER & MENTIONS LÉGALES -->
+    <footer class="site-footer">
+        <p>© <span id="currentYear"></span> Cercle d'Échecs de Fismes - Tous droits réservés | <a href="#" onclick="openLegalModal(event)">Mentions Légales & RGPD</a></p>
+    </footer>
+
+    <!-- MODALE MENTIONS LÉGALES -->
+    <div id="legalModal" class="lightbox-overlay" onclick="closeLegalModal()">
+        <div class="card" style="max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
+            <h3 style="margin-top: 0; color: var(--primary);">Mentions Légales & RGPD</h3>
+            <p><strong>Éditeur du site :</strong> Cercle d'Échecs de Fismes (Association Loi 1901)</p>
+            <p><strong>Siège social :</strong> 26 rue Maurice Dézothez, 51170 Fismes</p>
+            <p><strong>Directeur de la publication :</strong> Didier FANTUZ</p>
+            <p><strong>Hébergeur :</strong> GitHub Pages</p>
+            <p><strong>Données personnelles (RGPD) :</strong> Les informations recueillies via les formulaires de contact sont destinées exclusivement à l'association pour répondre à vos demandes. Elles ne sont en aucun cas cédées ou vendues à des tiers.</p>
+            <button type="button" class="btn" onclick="closeLegalModal()" style="margin-top: 1rem;">Fermer</button>
+        </div>
+    </div>
+
 </body>
 </html>

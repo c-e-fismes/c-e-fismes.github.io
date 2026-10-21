@@ -52,7 +52,7 @@ header {
 .header-text-block {
     display: flex;
     flex-direction: column;
-	align-items: center;
+    align-items: center;
     text-align: center;
 }
 
@@ -400,9 +400,8 @@ th { background-color: var(--primary); color: white; }
 }
 
 /* =================================================================
-   8. RESPONSIVE DESIGN & MEDIA QUERIES (CORRECTIONS & AMÉLIORATIONS)
+   8. RESPONSIVE DESIGN & MEDIA QUERIES
    ================================================================ */
-
 @media (max-width: 850px) {
     .club-hero-grid { 
         grid-template-columns: 1fr; 
@@ -572,4 +571,26 @@ th { background-color: var(--primary); color: white; }
         font-size: 0.8rem;
         flex-shrink: 0;
     }
+}
+
+/* =================================================================
+   9. FOOTER
+   ================================================================ */
+.site-footer {
+    background-color: var(--primary);
+    color: #e5e7eb;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    margin-top: 3rem;
+    font-size: 0.9rem;
+    border-top: 3px solid var(--accent);
+}
+
+.site-footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    text-decoration: underline;
 }
