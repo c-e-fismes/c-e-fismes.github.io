@@ -9,7 +9,7 @@ const CONFIG = {
     PLANNING_SHEET_ID: '1-TRwpHJa93G5JyKkWjWAaIrj4-ip9QNwGx5RCG-HSuA',
     DRIVE_API_KEY: 'AIzaSyDAuWBtbVPUXwI8e27RRYREgGu64u3HK74',
     DRIVE_PHOTOS_FOLDER_ID: '1k9hHi9_s5hufPL1jxH9bxvmBbIZUsikb',
-	DRIVE_POSTERS_FOLDER_ID: '1iIfPZiGPyJokoDaqkc-oHsMz60c3cp9i',
+    DRIVE_POSTERS_FOLDER_ID: '1iIfPZiGPyJokoDaqkc-oHsMz60c3cp9i',
     DRIVE_GAZETTE_FOLDER_ID: '1xJNiT1oez2Ov3Ec3WHvTEnCQOG1F4oE-'
 };
 
@@ -36,11 +36,8 @@ const cacheManager = {
 
         if (savedVersion === CONFIG.CACHE_VERSION && cacheData && cacheTimestamp) {
             if (Date.now() - parseInt(cacheTimestamp, 10) < CONFIG.CACHE_DURATION) {
-                try {
-                    return JSON.parse(cacheData);
-                } catch (e) {
-                    return null;
-                }
+                try { return JSON.parse(cacheData); } 
+                catch (e) { return null; }
             }
         }
         return null;
@@ -70,6 +67,17 @@ function afficherEtatFichier(elementId, message, estErreur = false, colspan = 1)
         el.style.gridColumn = '1 / -1';
         el.style.cssText += style;
         el.textContent = message;
+    }
+}
+
+async function fetchWithErrorHandling(url, errorMessage = "Erreur de chargement.") {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(errorMessage);
+        return await response.json();
+    } catch (error) {
+        console.warn(errorMessage, error);
+        return null;
     }
 }
 
@@ -933,13 +941,19 @@ function trierTableau(propriete) {
     Object.entries(mappingIcones).forEach(([key, thId]) => {
         const th = document.getElementById(thId);
         const icon = th ? th.querySelector('.sort-icon') : null;
-        if (icon) {
+        if (th) {
             if (directionTri.colonne === key) {
-                icon.textContent = directionTri.ordre === 'desc' ? '▼' : '▲';
-                icon.style.color = '#ffffff';
+                if (icon) {
+                    icon.textContent = directionTri.ordre === 'desc' ? '▼' : '▲';
+                    icon.style.color = '#ffffff';
+                }
+                th.setAttribute('aria-sort', directionTri.ordre === 'desc' ? 'descending' : 'ascending');
             } else {
-                icon.textContent = '↕';
-                icon.style.color = 'var(--accent)';
+                if (icon) {
+                    icon.textContent = '↕';
+                    icon.style.color = 'var(--accent)';
+                }
+                th.removeAttribute('aria-sort');
             }
         }
     });
@@ -1271,7 +1285,7 @@ async function chargerGaleriePhotos() {
                 const imgData = await imgRes.json();
                 if (imgData.files && imgData.files.length > 0) {
                     const img = imgData.files[0];
-                    coverUrl = img.thumbnailLink ? img.thumbnailLink.replace('=s220', '=s400') : `https://lh3.googleusercontent.com/d/${img.id}`;
+                    coverUrl = img.thumbnailLink ? img.thumbnailLink.replace(/=s\d+/, '=w400-h400-c') : `https://lh3.googleusercontent.com/d/${img.id}`;
                 }
             } catch (e) {
                 console.warn("Impossible de charger la couverture de l'album", album.name);
@@ -1360,7 +1374,8 @@ function afficherPageGalerie() {
             item.className = 'gallery-item album-card';
             
             if (itemData.coverUrl) {
-                item.style.backgroundImage = `url('${itemData.coverUrl}')`;
+                const optimizedCoverUrl = itemData.coverUrl.replace(/=s\d+/, '=w400-h400-c');
+                item.style.backgroundImage = `url('${optimizedCoverUrl}')`;
             } else {
                 item.style.backgroundColor = 'var(--primary)';
             }
@@ -1374,7 +1389,11 @@ function afficherPageGalerie() {
         } else {
             const photo = itemData;
             const fullImageUrl = `https://lh3.googleusercontent.com/d/${photo.id}`;
-            const thumbUrl = photo.thumbnailLink ? photo.thumbnailLink.replace('=s220', '=s400') : fullImageUrl;
+            
+            let thumbUrl = fullImageUrl;
+            if (photo.thumbnailLink) {
+                thumbUrl = photo.thumbnailLink.replace(/=s\d+/, '=w400-h400-c');
+            }
 
             const img = document.createElement('img');
             img.src = thumbUrl;
@@ -1519,4 +1538,20 @@ function openLegalModal(e) {
 function closeLegalModal() {
     const modal = document.getElementById('legalModal');
     if (modal) modal.classList.remove('active');
+}
+
+
+/* =================================================================
+   8. ENREGISTREMENT DU SERVICE WORKER (MODE HORS-LIGNE)
+   ================================================================ */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => {
+                console.log('Service Worker enregistré avec succès :', reg.scope);
+            })
+            .catch(err => {
+                console.warn('Échec de l\'enregistrement du Service Worker :', err);
+            });
+    });
 }

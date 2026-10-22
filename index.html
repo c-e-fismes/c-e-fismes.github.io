@@ -301,12 +301,12 @@
                     <table id="membersTable">
                         <thead>
                             <tr style="user-select: none;">
-                                <th id="th-nomPrenom">
-                                    Nom Prénom <span style="font-size: 0.8rem; color: var(--accent); cursor: pointer;" onclick="toggleSearchInput(event)">🔍</span>
-                                    <div id="searchContainer" onclick="event.stopPropagation();" style="display: none; margin-top: 8px;">
-                                        <input type="text" id="nameSearchInput" onkeyup="filterByInputName()" placeholder="Rechercher un nom..." style="width: 100%; padding: 6px 10px; margin: 0; border-radius: 4px; border: 1px solid var(--accent); font-size: 0.85rem; font-weight: normal; color: var(--primary);">
-                                    </div>
-                                </th>
+								<th id="th-nomPrenom">
+									Nom Prénom <span role="button" aria-label="Ouvrir la recherche par nom" tabindex="0" style="font-size: 0.8rem; color: var(--accent); cursor: pointer;" onclick="toggleSearchInput(event)">🔍</span>
+									<div id="searchContainer" onclick="event.stopPropagation();" style="display: none; margin-top: 8px;">
+										<input type="text" id="nameSearchInput" onkeyup="filterByInputName()" placeholder="Rechercher un nom..." aria-label="Rechercher un membre par nom">
+									</div>
+								</th>
                                 <th id="th-classique" style="text-align: center;">♟️ Classique <span class="sort-icon" style="font-size: 0.75rem; color: var(--accent);">↕</span></th>
                                 <th id="th-rapide" style="text-align: center;">⚡ Rapide <span class="sort-icon" style="font-size: 0.75rem; color: var(--accent);">↕</span></th>
                                 <th id="th-blitz" style="text-align: center;">🔥 Blitz <span class="sort-icon" style="font-size: 0.75rem; color: var(--accent);">↕</span></th>
@@ -446,29 +446,26 @@
     </footer>
 
 	<!-- MODALE ARCHIVES DES GAZETTES -->
-    <div id="gazetteModal" class="lightbox-overlay" onclick="closeGazetteModal()">
-        <div class="card" style="max-width: 650px; width: 90%; max-height: 80vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 style="margin: 0; color: var(--primary);">📚 Archives de la Gazette du Cavalier Jaune</h3>
-                <button type="button" onclick="closeGazetteModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text);">×</button>
-            </div>
+	<div id="gazetteModal" class="lightbox-overlay" role="dialog" aria-modal="true" onclick="closeGazetteModal()">
+		<div class="card" style="max-width: 650px; width: 90%; max-height: 80vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+				<h3 style="margin: 0; color: var(--primary);">📚 Archives de la Gazette du Cavalier Jaune</h3>
+				<button type="button" onclick="closeGazetteModal()" aria-label="Fermer la fenêtre" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text);">×</button>
+			</div>
             <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 1rem;">Retrouvez ci-dessous l'intégralité des numéros parus. Utilisez la recherche pour filtrer rapidement :</p>
-            
             <input type="text" id="gazetteSearchInput" onkeyup="filterGazetteModal()" placeholder="Rechercher un numéro (ex: 120, Automne...)" style="width: 100%; padding: 8px 12px; margin-bottom: 1rem; border-radius: 4px; border: 1px solid var(--accent); font-size: 0.9rem;">
-            
             <div id="gazetteModalListContainer" style="max-height: 350px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 4px; padding: 0.5rem; background: var(--bg);">
                 <ul id="gazetteModalList" style="list-style: none; padding: 0; margin: 0;">
                 </ul>
             </div>
-            
             <button type="button" class="btn" onclick="closeGazetteModal()" style="margin-top: 1rem;">Fermer</button>
         </div>
     </div>
 
     <!-- MODALE MENTIONS LÉGALES -->
-    <div id="legalModal" class="lightbox-overlay" onclick="closeLegalModal()">
-        <div class="card" style="max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
-            <h3 style="margin-top: 0; color: var(--primary);">Mentions Légales & RGPD</h3>
+	<div id="legalModal" class="lightbox-overlay" role="dialog" aria-modal="true" onclick="openLegalModal()">
+		<div class="card" style="max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
+			<h3 style="margin-top: 0; color: var(--primary);">Mentions Légales & RGPD</h3>
             <p><strong>Éditeur du site :</strong> Cercle d'Échecs de Fismes (Association Loi 1901)</p>
             <p><strong>Siège social :</strong> 26 rue Maurice Dézothez, 51170 Fismes</p>
             <p><strong>Directeur de la publication :</strong> Didier FANTUZ</p>

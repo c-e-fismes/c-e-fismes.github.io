@@ -10,6 +10,7 @@
     --text: #1f2937;
 }
 
+
 /* =================================================================
    2. STYLES GÉNÉRAUX & STRUCTURE
    ================================================================ */
@@ -102,6 +103,7 @@ header {
     border-top: 3px solid var(--primary); 
 }
 
+
 /* =================================================================
    3. NAVIGATION
    ================================================================ */
@@ -129,6 +131,7 @@ nav button {
 nav button:hover { color: var(--accent); }
 nav button.active { background: var(--accent); color: var(--primary); font-weight: bold; }
 nav button.btn-admin { background: #27ae60; }
+
 
 /* =================================================================
    4. COMPOSANTS & INTERFACE
@@ -237,7 +240,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 .puzzle-card .puzzle-btn:hover { background: #1f2937; color: var(--accent); }
 #puzzleSolutionContainer.hidden { display: none !important; }
 
-/* Style épuré sans puces pour les derniers numéros de la Gazette */
 #gazetteList {
     list-style: none;
     padding: 0;
@@ -264,10 +266,10 @@ input:checked + .slider:before { transform: translateX(20px); }
     text-decoration: underline;
 }
 
-/* Correction du champ de recherche de la modale (évite le dépassement) */
 #gazetteSearchInput {
     box-sizing: border-box;
 }
+
 
 /* =================================================================
    5. TABLEAUX & PLANNING
@@ -278,7 +280,7 @@ th { background-color: var(--primary); color: white; }
 
 .planning-table tbody tr { transition: background-color 0.2s ease; }
 .planning-table tbody tr.seance-active-row { background-color: #fef08a !important; font-weight: bold; }
-.planning-table tbody tr.seance-active-row td:last-child { display: flex; justify-content: space-between; align-items: center; }
+.planning-table tbody tr.seance-active-row td:last-child { display: flex; justify-content: space-between; align-items: center; border-bottom: none !important; }
 
 .table-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-left: 15px; text-transform: uppercase; white-space: nowrap; }
 .table-badge.live { background-color: #ef4444; color: white; animation: pulseLive 1.5s infinite; }
@@ -290,14 +292,30 @@ th { background-color: var(--primary); color: white; }
     100% { opacity: 1; }
 }
 
-.planning-wrapper { overflow-x: auto; margin-top: 1rem; }
+.planning-wrapper, .table-scroll-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background: 
+        linear-gradient(90deg, white 30%, rgba(255, 255, 255, 0)), 
+        linear-gradient(270deg, white 30%, rgba(255, 255, 255, 0)), 
+        radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0)), 
+        radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0));
+    background-repeat: no-repeat;
+    background-color: white;
+    background-size: 20px 100%, 20px 100%, 10px 100%, 10px 100%;
+    background-position: 0 0, 100% 0, 0 0, 100% 0;
+    background-attachment: local, local, scroll, scroll;
+}
+
+.planning-wrapper { margin-top: 1rem; }
 .planning-table-custom { width: 100%; border-collapse: collapse; min-width: 500px; background: #fefce8; border-radius: 6px; overflow: hidden; }
 .planning-table-custom th { background-color: var(--primary); color: white; padding: 12px; text-align: left; }
 .planning-table-custom td { padding: 12px; border-bottom: 1px solid #e5e7eb; }
 
-.table-scroll-container { max-height: 70vh !important; overflow-y: auto !important; overflow-x: auto; margin-top: 1.5rem; border-bottom: 1px solid #e5e7eb; }
+.table-scroll-container { max-height: 70vh !important; overflow-y: auto !important; margin-top: 1.5rem; border-bottom: 1px solid #e5e7eb; }
 #membersTable { width: 100%; border-collapse: collapse; min-width: 800px; background: white; }
 #membersTable thead th { position: sticky !important; top: 0 !important; z-index: 20 !important; background-color: var(--primary) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important; padding: 14px 12px; color: white; }
+
 
 /* =================================================================
    6. ÉVÉNEMENTS, CALENDRIER & LIGHTBOX
@@ -358,6 +376,7 @@ th { background-color: var(--primary); color: white; }
 
 .lightbox-prev { left: 15px; }
 .lightbox-next { right: 15px; }
+
 
 /* =================================================================
    7. GALERIE PHOTOS
@@ -430,6 +449,7 @@ th { background-color: var(--primary); color: white; }
     position: relative;
     z-index: 1;
 }
+
 
 /* =================================================================
    8. RESPONSIVE DESIGN & MEDIA QUERIES
@@ -604,6 +624,7 @@ th { background-color: var(--primary); color: white; }
         flex-shrink: 0;
     }
 }
+
 
 /* =================================================================
    9. FOOTER
