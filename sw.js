@@ -1,4 +1,7 @@
-const CACHE_NAME = 'echecs-fismes-cache-v1';
+/* =================================================================
+   SERVICE WORKER (MODE HORS-LIGNE)
+   ================================================================ */
+const CACHE_NAME = 'echecs-fismes-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -34,8 +37,13 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
-            return cachedResponse || fetch(event.request).catch(() => {
-                // Optionnel : Gérer une page de secours hors-ligne si besoin
+            if (cachedResponse) {
+                return cachedResponse;
+            }
+            return fetch(event.request).then((response) => {
+                return response;
+            }).catch(() => {
+                return caches.match('./index.html');
             });
         })
     );

@@ -261,9 +261,9 @@ window.googlePlanningCallback = function(data) {
 
     const tbody = document.getElementById('planningTableBody');
     if (!tbody || !data || !data.table) return;
-    tbody.innerHTML = '';
 
     const rows = data.table.rows;
+    const planningData = [];
 
     rows.forEach(row => {
         const cellules = row.c;
@@ -280,38 +280,61 @@ window.googlePlanningCallback = function(data) {
         const commune = getVal(3);
         const lieu = getVal(4);
 
-        if (!jourNom || !heureDebut) return;
+        if (jourNom && heureDebut) {
+            planningData.push({ jourNom, heureDebut, heureFin, commune, lieu });
+        }
+    });
 
-        const numJour = convertirNomJourEnChiffre(jourNom);
-        const debutFormate = formaterHeure(heureDebut);
-        const finFormate = formaterHeure(heureFin);
+    if (planningData.length > 0) {
+        cacheManager.set('cache_planning', planningData);
+        afficherPlanningUI(planningData);
+    }
+};
+
+function afficherPlanningUI(planningData) {
+    const tbody = document.getElementById('planningTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    planningData.forEach(item => {
+        const numJour = convertirNomJourEnChiffre(item.jourNom);
+        const debutFormate = formaterHeure(item.heureDebut);
+        const finFormate = formaterHeure(item.heureFin);
         const affichageHoraire = `${debutFormate} - ${finFormate}`;
 
         const tr = document.createElement('tr');
         tr.setAttribute('data-jour', numJour);
-        tr.setAttribute('data-debut', heureDebut);
-        tr.setAttribute('data-fin', heureFin);
+        tr.setAttribute('data-debut', item.heureDebut);
+        tr.setAttribute('data-fin', item.heureFin);
 
         tr.innerHTML = `
-            <td style="font-weight: bold;">${jourNom}</td>
+            <td style="font-weight: bold;">${item.jourNom}</td>
             <td>${affichageHoraire}</td>
-            <td>${commune}</td>
-            <td>${lieu}</td>
+            <td>${item.commune}</td>
+            <td>${item.lieu}</td>
         `;
         tbody.appendChild(tr);
     });
 
     verifierStatutSeanceClub();
-};
+}
 
 function loadPlanningData() {
+    const cachedPlanning = cacheManager.get('cache_planning');
+
+    if (cachedPlanning) {
+        afficherPlanningUI(cachedPlanning);
+    }
+
     const url = `https://docs.google.com/spreadsheets/d/${CONFIG.PLANNING_SHEET_ID}/gviz/tq?tqx=responseHandler:googlePlanningCallback`;
     const script = document.createElement('script');
     script.id = 'jsonp-planning-script';
     script.src = url;
     script.onerror = function() {
         script.remove();
-        afficherEtatFichier('planningTableBody', 'Impossible de charger le planning.', true, 4);
+        if (!cachedPlanning) {
+            afficherEtatFichier('planningTableBody', 'Impossible de charger le planning.', true, 4);
+        }
     };
     document.head.appendChild(script);
 }
@@ -420,20 +443,20 @@ async function loadDynamicEvents() {
     if (cachedEvents) {
         allClubEvents = cachedEvents;
         allClubEvents.forEach(e => e.dateTime = new Date(e.dateTime));
-        renderDynamicEventsGrid(); 
-    } else {
-        cacheManager.clear('cache_evenements');
-
-        const eventsUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.EVENTS_SHEET_ID}/gviz/tq?tqx=responseHandler:handleEventsCallback`;
-        const script = document.createElement('script');
-        script.id = 'jsonp-events-script';
-        script.src = eventsUrl;
-        script.onerror = function() { 
-            script.remove(); 
-            afficherEtatFichier('eventsGrid', 'Impossible de charger le calendrier des événements pour le moment. Veuillez réessayer ultérieurement.', true);
-        };
-        document.body.appendChild(script);
+        renderDynamicEventsGrid();
     }
+
+    const eventsUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.EVENTS_SHEET_ID}/gviz/tq?tqx=responseHandler:handleEventsCallback`;
+    const script = document.createElement('script');
+    script.id = 'jsonp-events-script';
+    script.src = eventsUrl;
+    script.onerror = function() { 
+        script.remove(); 
+        if (!cachedEvents) {
+            afficherEtatFichier('eventsGrid', 'Impossible de charger le calendrier des événements pour le moment.', true);
+        }
+    };
+    document.body.appendChild(script);
 }
 
 function getCellValue(cells, index) {
@@ -848,7 +871,7 @@ function afficherMembres(membres) {
         
         let fideCellule = '';
         if (membre.fideId && membre.fideId !== '' && membre.fideId !== 'N/A') {
-            fideCellule = `<a href="https://ratings.fide.com/profile/${membre.fideId}" target="_blank" rel="noopener" class="table-fide-btn">🔗 Fiche FIDE</a>`;
+            fideCellule = `<a href="https://ratings.fide.com/profile/${membre.fideId}" target="_blank" rel="noopener noreferrer" class="table-fide-btn">🔗 Fiche FIDE</a>`;
         }
 
         tr.innerHTML = `
@@ -1152,8 +1175,8 @@ function renderGazettesUI() {
     const latestGazettes = allGazettesGlobal.slice(0, 5);
     latestGazettes.forEach(file => {
         const li = document.createElement('li');
-        const fileUrl = `https://drive.google.com/file/d/${file.id}/view?usp=sharing`;
-        li.innerHTML = `📄 <a href="${fileUrl}" target="_blank" rel="noopener">${file.name}</a>`;
+		const fileUrl = `https://drive.google.com/file/d/${file.id}/view?usp=sharing`;
+		li.innerHTML = `📄 <a href="${fileUrl}" target="_blank" rel="noopener noreferrer">${file.name}</a>`;
         gazetteListEl.appendChild(li);
     });
 
@@ -1495,7 +1518,51 @@ window.addEventListener('resize', () => {
 
 
 /* =================================================================
-   6. ADMINISTRATION & POINT D'ENTRÉE GLOBAL
+   6. ONGLET "CONTACT" (FORMULAIRE)
+   ================================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+    const contactForm = document.getElementById('contactForm');
+    if (!contactForm) return;
+
+    contactForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const statusEl = document.getElementById('formStatus');
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Envoi en cours...";
+        statusEl.style.display = 'none';
+
+        try {
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: new FormData(contactForm),
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (response.ok) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = '#27ae60';
+                statusEl.textContent = "✅ Votre message a bien été envoyé ! Merci, nous vous répondrons rapidement.";
+                contactForm.reset();
+            } else {
+                throw new Error("Erreur lors de l'envoi");
+            }
+        } catch (error) {
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#e74c3c';
+            statusEl.textContent = "❌ Une erreur est survenue. Vous pouvez nous écrire directement par e-mail.";
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Envoyer le message";
+        }
+    });
+});
+
+
+/* =================================================================
+   7. ADMINISTRATION & POINT D'ENTRÉE GLOBAL
    ================================================================ */
 if (window.netlifyIdentity) {
     window.netlifyIdentity.on("init", user => {
@@ -1520,7 +1587,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 /* =================================================================
-   7. FOOTER & MENTIONS LÉGALES
+   8. FOOTER & MENTIONS LÉGALES
    ================================================================ */
 function initFooterYear() {
     const yearEl = document.getElementById('currentYear');
@@ -1542,7 +1609,7 @@ function closeLegalModal() {
 
 
 /* =================================================================
-   8. ENREGISTREMENT DU SERVICE WORKER (MODE HORS-LIGNE)
+   9. ENREGISTREMENT DU SERVICE WORKER (MODE HORS-LIGNE)
    ================================================================ */
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
