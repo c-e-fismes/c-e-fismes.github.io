@@ -1520,45 +1520,45 @@ window.addEventListener('resize', () => {
 /* =================================================================
    6. ONGLET "CONTACT" (FORMULAIRE)
    ================================================================ */
-document.addEventListener('DOMContentLoaded', () => {
+async function envoyerFormulaireContact(e) {
+    e.preventDefault();
+    
     const contactForm = document.getElementById('contactForm');
-    if (!contactForm) return;
+    const statusEl = document.getElementById('formStatus');
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    
+    if (!contactForm || !statusEl || !submitBtn) return;
 
-    contactForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const statusEl = document.getElementById('formStatus');
-        const submitBtn = contactForm.querySelector('button[type="submit"]');
-        
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Envoi en cours...";
-        statusEl.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Envoi en cours...";
+    statusEl.style.display = 'none';
 
-        try {
-            const response = await fetch(contactForm.action, {
-                method: 'POST',
-                body: new FormData(contactForm),
-                headers: { 'Accept': 'application/json' }
-            });
+    try {
+        const response = await fetch(contactForm.action, {
+            method: 'POST',
+            body: new FormData(contactForm),
+            headers: { 'Accept': 'application/json' }
+        });
 
-            if (response.ok) {
-                statusEl.style.display = 'block';
-                statusEl.style.color = '#27ae60';
-                statusEl.textContent = "✅ Votre message a bien été envoyé ! Merci, nous vous répondrons rapidement.";
-                contactForm.reset();
-            } else {
-                throw new Error("Erreur lors de l'envoi");
-            }
-        } catch (error) {
+        if (response.ok) {
             statusEl.style.display = 'block';
-            statusEl.style.color = '#e74c3c';
-            statusEl.textContent = "❌ Une erreur est survenue. Vous pouvez nous écrire directement par e-mail.";
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Envoyer le message";
+            statusEl.style.color = '#27ae60';
+            statusEl.style.fontWeight = 'bold';
+            statusEl.textContent = "✅ Votre message a bien été envoyé ! Merci, nous vous répondrons rapidement.";
+            contactForm.reset();
+        } else {
+            throw new Error("Erreur lors de l'envoi");
         }
-    });
-});
+    } catch (error) {
+        statusEl.style.display = 'block';
+        statusEl.style.color = '#e74c3c';
+        statusEl.style.fontWeight = 'bold';
+        statusEl.textContent = "❌ Une erreur est survenue lors de l'envoi. Vous pouvez nous écrire directement par e-mail.";
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Envoyer le message";
+    }
+}
 
 
 /* =================================================================

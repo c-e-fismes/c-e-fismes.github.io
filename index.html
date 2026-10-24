@@ -211,7 +211,7 @@
                     </div>
                     <div style="background: var(--bg); padding: 1rem; border-radius: 6px; border-left: 4px solid #27ae60;">
                         <strong>3. La fin de partie ("Mat")</strong>
-                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Si le roi attaqué ne peut plus échapper à la menace, la partie est terminée : c'est l'échec et mat !</p>
+                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Si le roi attaqué ne plus échapper à la menace, la partie est terminée : c'est l'échec et mat !</p>
                     </div>
                 </div>
             </div>
@@ -432,7 +432,7 @@
                 
                 <div class="card">
                     <h2>Formulaire de Contact</h2>
-                    <form id="contactForm" action="https://formspree.io/f/mzeezpvr" method="POST">
+                    <form id="contactForm" action="https://formspree.io/f/mzeezpvr" method="POST" onsubmit="envoyerFormulaireContact(event)">
                         <label>Votre Nom</label>
                         <input type="text" name="name" required placeholder="Ex: Jean Dupont">
                         <label>Votre Adresse Email</label>
@@ -440,7 +440,7 @@
                         <label>Votre Message</label>
                         <textarea name="message" rows="5" required placeholder="Votre question ou demande d'inscription..."></textarea>
                         <button type="submit" class="btn">Envoyer le message</button>
-						<div id="formStatus" style="margin-top: 1rem; font-size: 0.95rem; display: none;"></div>
+                        <div id="formStatus" style="margin-top: 1rem; font-size: 0.95rem; display: none;"></div>
                     </form>
                 </div>
             </div>
