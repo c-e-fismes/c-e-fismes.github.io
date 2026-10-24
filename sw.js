@@ -1,13 +1,16 @@
 /* =================================================================
    SERVICE WORKER (MODE HORS-LIGNE)
    ================================================================ */
-const CACHE_NAME = 'echecs-fismes-v2';
+const CACHE_NAME = 'echecs-fismes-v1'; /* Faire évoluer la version à chaque changement significatif */
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './style.css',
     './script.js',
-    './images/logo-club.png'
+    './images/logo-club.png',
+    './images/favicon/favicon.svg',
+    './images/favicon/favicon.ico',
+    './images/favicon/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {

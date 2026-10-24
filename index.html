@@ -53,11 +53,11 @@
                     <p class="welcome-text">
                         Du débutant qui découvre le déplacement des pièces au compétiteur aguerri, le <strong>Cercle d'Échecs de Fismes</strong> vous accueille dans une ambiance à la fois studieuse et conviviale. 
                     </p>
-                    <div class="welcome-actions" style="flex-wrap: nowrap; align-items: center;">
-                        <a href="#contact" onclick="showSection('contact')" class="btn" style="white-space: nowrap; margin-top: 0;">Nous rejoindre</a>
-                        <div id="countdownContainer" style="flex-shrink: 1; min-width: 0; background: rgba(0, 0, 0, 0.25); padding: 0.6rem 1rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.75rem; border: 1px solid rgba(245, 158, 11, 0.3); margin-top: 0; box-sizing: border-box;">
-                            <span style="font-size: 0.85rem; font-weight: bold; color: var(--accent); white-space: nowrap;">⏳ À venir :</span>
-                            <span id="countdownTimer" style="font-size: 0.9rem; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Recherche...</span>
+                    <div class="welcome-actions welcome-actions-custom">
+                        <a href="#contact" onclick="showSection('contact')" class="btn welcome-join-btn">Nous rejoindre</a>
+                        <div id="countdownContainer" class="countdown-box">
+                            <span class="countdown-label">⏳ À venir :</span>
+                            <span id="countdownTimer" class="countdown-timer-text">Recherche...</span>
                         </div>
                     </div>
                 </div>
@@ -266,9 +266,9 @@
 
                 <div class="card calendar-card-sidebar" style="padding: 1rem; border-top: 3px solid var(--accent); position: sticky; top: 80px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <button onclick="changeMonth(-1)" style="background: none; border: none; font-weight: bold; font-size: 1.2rem; cursor: pointer; color: var(--text);">‹</button>
+                        <button onclick="changeMonth(-1)" aria-label="Mois précédent" style="background: none; border: none; font-weight: bold; font-size: 1.2rem; cursor: pointer; color: var(--text);">‹</button>
                         <h3 id="calendarMonthYear" style="margin: 0; font-size: 1.1rem; text-transform: capitalize; text-align: center; flex-grow: 1;">-</h3>
-                        <button onclick="changeMonth(1)" style="background: none; border: none; font-weight: bold; font-size: 1.2rem; cursor: pointer; color: var(--text);">›</button>
+                        <button onclick="changeMonth(1)" aria-label="Mois suivant" style="background: none; border: none; font-weight: bold; font-size: 1.2rem; cursor: pointer; color: var(--text);">›</button>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; font-size: 0.75rem; color: #7f8c8d; margin-bottom: 0.5rem;">
                         <div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div><div>D</div>

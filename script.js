@@ -2,7 +2,7 @@
    1. CONFIGURATION GLOBALE, NAVIGATION & UTILITAIRES
    ================================================================ */
 const CONFIG = {
-    CACHE_VERSION: 'v1',
+    CACHE_VERSION: 'v1', /* Faire évoluer la version à chaque changement significatif */
     CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
@@ -88,6 +88,12 @@ function showSection(sectionId) {
     document.getElementById(sectionId).classList.add('active');
     const targetBtn = document.getElementById('btn-' + sectionId);
     if (targetBtn) targetBtn.classList.add('active');
+	
+	const formStatus = document.getElementById('formStatus');
+    if (formStatus) {
+        formStatus.style.display = 'none';
+        formStatus.textContent = '';
+	}
 }
 
 let currentLightboxImages = [];
@@ -1544,7 +1550,7 @@ async function envoyerFormulaireContact(e) {
             statusEl.style.display = 'block';
             statusEl.style.color = '#27ae60';
             statusEl.style.fontWeight = 'bold';
-            statusEl.textContent = "✅ Votre message a bien été envoyé ! Merci, nous vous répondrons rapidement.";
+            statusEl.textContent = "✅ Merci. Votre message a bien été envoyé !";
             contactForm.reset();
         } else {
             throw new Error("Erreur lors de l'envoi");
