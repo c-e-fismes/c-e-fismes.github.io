@@ -210,8 +210,8 @@ async function chargerTactiqueDuJour() {
         
         chessGame = new Chess(fen);
         
-        if (boardEl) {
-            chessgroundBoard = Chessground(boardEl, {
+        if (boardEl && window.Chessground) {
+            chessgroundBoard = window.Chessground(boardEl, {
                 fen: chessGame.fen(),
                 orientation: chessGame.turn() === 'w' ? 'white' : 'black',
                 movable: {
@@ -242,8 +242,8 @@ async function chargerTactiqueDuJour() {
         const fallbackFen = "7Q/1pq2kp1/p2ppb2/8/4B1P1/3P4/PP3P2/K7 w - - 0 1";
         chessGame = new Chess(fallbackFen);
         
-        if (boardEl) {
-            chessgroundBoard = Chessground(boardEl, {
+        if (boardEl && window.Chessground) {
+            chessgroundBoard = window.Chessground(boardEl, {
                 fen: chessGame.fen(),
                 orientation: 'white',
                 movable: {
@@ -275,12 +275,17 @@ async function chargerTactiqueDuJour() {
 
 function computeLegalMoves(chessInstance) {
     const dests = new Map();
-    chessInstance.SQUARES.forEach(s => {
-        const ms = chessInstance.moves({ square: s, verbose: true });
-        if (ms.length) {
-            dests.set(s, ms.map(m => m.to));
+    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    const ranks = ['1', '2', '3', '4', '5', '6', '7', '8'];
+    for (let r of ranks) {
+        for (let f of files) {
+            const s = f + r;
+            const ms = chessInstance.moves({ square: s, verbose: true });
+            if (ms && ms.length) {
+                dests.set(s, ms.map(m => m.to));
+            }
         }
-    });
+    }
     return dests;
 }
 

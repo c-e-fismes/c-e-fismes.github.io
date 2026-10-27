@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cercle d'Échecs de Fismes - Site Officiel</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Chessground CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessground/9.1.0/chessground.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessground/9.1.0/theme/default/theme.min.css">
 	<link rel="icon" type="image/png" sizes="96x96" href="images/favicon/favicon-96x96.png">
@@ -520,11 +521,12 @@
 
     </div>
 
-    <!-- Bibliothèques Échecs : chess.js et Chessground -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessground/9.1.0/chessground.min.js"></script>
-
-    <!-- SCRIPT PRINCIPAL -->
+    <!-- SCRIPTS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script type="module">
+        import { Chessground } from 'https://unpkg.com/chessground@9.1.0/chessground.js';
+        window.Chessground = Chessground;
+    </script>
     <script src="script.js"></script>
 
     <!-- FOOTER & MENTIONS LÉGALES -->
