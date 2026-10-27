@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cercle d'Échecs de Fismes - Site Officiel</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessground/9.1.0/chessground.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessground/9.1.0/theme/default/theme.min.css">
 	<link rel="icon" type="image/png" sizes="96x96" href="images/favicon/favicon-96x96.png">
 	<link rel="icon" type="image/svg+xml" href="images/favicon/favicon.svg">
 	<link rel="shortcut icon" href="images/favicon/favicon.ico">
@@ -63,14 +65,14 @@
 
                 <div class="card puzzle-card">
                     <div class="puzzle-header">
-                        <span class="puzzle-tag">🧠 Défi du jour</span>
+                        <span class="puzzle-tag">🧠 Défi du jour (Interactif)</span>
                         <span id="puzzleDateNum" class="puzzle-week">Aujourd'hui</span>
                     </div>
-                    <div class="puzzle-board-container">
-                        <img id="puzzleImg" src="" alt="Position du problème d'échecs" class="puzzle-board-img" onclick="zoomImage(this.src)" title="Cliquez pour agrandir l'échiquier">
+                    <div class="puzzle-board-container" style="width: 100%; max-width: 220px; height: 220px; margin: 0.5rem auto 1rem auto;">
+                        <div id="chessgroundBoard" style="width: 100%; height: 100%;"></div>
                     </div>
-                    <p id="puzzleDesc" class="puzzle-text"></p>
-                    <a href="#" id="puzzleBtn" class="puzzle-btn">Tester la solution</a>
+                    <p id="puzzleDesc" class="puzzle-text" style="font-size: 0.85rem; text-align: center; margin-bottom: 0.5rem;"></p>
+                    <a href="#" id="puzzleBtn" class="puzzle-btn">Voir sur Chess.com</a>
                     <div id="puzzleSolutionContainer" class="hidden" style="margin-top: 0.75rem; padding: 0.6rem; background: #fefce8; border-left: 3px solid var(--accent); border-radius: 4px; font-size: 0.85rem;">
                         <span id="puzzleSolutionText"></span>
                     </div>
@@ -123,7 +125,6 @@
                 <p>Un aperçu en temps réel de notre communauté et de notre dynamique sportive :</p>
                 
                 <div class="grid" style="margin-top: 1rem;">
-                    <!-- Carte 1 : Les effectifs -->
                     <div class="card" style="margin-bottom: 0; background: var(--bg); border-top: 3px solid var(--primary);">
                         <h4 style="margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
                             👥 Les effectifs
@@ -135,7 +136,6 @@
                         </ul>
                     </div>
 
-                    <!-- Carte 2 : Performance -->
                     <div class="card" style="margin-bottom: 0; background: var(--bg); border-top: 3px solid var(--primary);">
                         <h4 style="margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
                             🏆 Performance
@@ -210,7 +210,7 @@
                     </div>
                     <div style="background: var(--bg); padding: 1rem; border-radius: 6px; border-left: 4px solid #27ae60;">
                         <strong>3. La fin de partie ("Mat")</strong>
-                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Si le roi attaqué ne plus échapper à la menace, la partie est terminée : c'est l'échec et mat !</p>
+                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Si le roi attaqué ne peut plus échapper à la menace, la partie est terminée : c'est l'échec et mat !</p>
                     </div>
                 </div>
             </div>
@@ -324,7 +324,6 @@
         <div id="vie" class="section">
             <h2>Vie du Club</h2>
             
-            <!-- Bloc 1 : Actualités et Documents -->
             <div class="grid" style="margin-bottom: 1.5rem;">
 				<div class="card" style="margin-bottom: 0;">
 					<h3>📰 Actualités</h3>
@@ -356,7 +355,6 @@
                 </div>
             </div>
 
-            <!-- Bloc 2 : Galerie Photos (Pleine largeur) -->
             <div class="card" style="margin-bottom: 1.5rem;">
                 <h3>📸 Galerie Photos</h3>
                 <div id="dynamicGalleryGrid" class="gallery-grid">
@@ -364,7 +362,6 @@
                 </div>
             </div>
 
-            <!-- Bloc 3 : Boutique et Partenaires -->
             <div class="grid" style="margin-top: 0;">
                 <div class="card" style="margin-bottom: 0;">
                     <h3>🛍️ La Boutique du Club</h3>
@@ -456,7 +453,6 @@
 
             <div class="admin-dashboard-grid">
                 
-                <!-- BLOC 1 : GOOGLE SHEETS -->
                 <div class="card admin-card">
                     <h3 class="admin-card-title">📊 Google Sheets</h3>
                     <p class="admin-card-desc">Gestion des données textuelles et tableaux synchronisés avec le site :</p>
@@ -476,7 +472,6 @@
                     </div>
                 </div>
 
-                <!-- BLOC 2 : GOOGLE DRIVE -->
                 <div class="card admin-card">
                     <h3 class="admin-card-title">📁 Google Drive</h3>
                     <p class="admin-card-desc">Stockage et dépôt de médias affichés automatiquement sur le site :</p>
@@ -496,7 +491,6 @@
                     </div>
                 </div>
 
-                <!-- BLOC 3 : SERVICES EXTERNES -->
                 <div class="card admin-card">
                     <h3 class="admin-card-title">✉️ Formulaire & Raccourcis</h3>
                     <p class="admin-card-desc">Gestion de la boîte de réception et outils d'administration externes :</p>
@@ -514,7 +508,6 @@
 
             </div>
 
-            <!-- RAPPEL MÉMO -->
             <div class="card" style="margin-top: 1.5rem; background: #fefce8; border-left: 4px solid var(--accent);">
                 <h4 style="margin-top: 0; color: var(--primary);">💡 Mémento pour l'administration :</h4>
                 <ul style="margin-bottom: 0; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.6;">
@@ -527,6 +520,10 @@
 
     </div>
 
+    <!-- Bibliothèques Échecs : chess.js et Chessground -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessground/9.1.0/chessground.min.js"></script>
+
     <!-- SCRIPT PRINCIPAL -->
     <script src="script.js"></script>
 
@@ -535,7 +532,6 @@
         <p>© <span id="currentYear"></span> Cercle d'Échecs de Fismes - Tous droits réservés | <a href="#" onclick="openLegalModal(event)">Mentions Légales & RGPD</a></p>
     </footer>
 
-	<!-- MODALE ARCHIVES DES GAZETTES -->
 	<div id="gazetteModal" class="lightbox-overlay" role="dialog" aria-modal="true" onclick="closeGazetteModal()">
 		<div class="card" style="max-width: 650px; width: 90%; max-height: 80vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
 			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -552,7 +548,6 @@
         </div>
     </div>
 
-    <!-- MODALE MENTIONS LÉGALES -->
 	<div id="legalModal" class="lightbox-overlay" role="dialog" aria-modal="true" onclick="openLegalModal()">
 		<div class="card" style="max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
 			<h3 style="margin-top: 0; color: var(--primary);">Mentions Légales & RGPD</h3>

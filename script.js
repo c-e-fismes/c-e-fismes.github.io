@@ -2,7 +2,7 @@
    1. CONFIGURATION GLOBALE, NAVIGATION & UTILITAIRES
    ================================================================ */
 const CONFIG = {
-    CACHE_VERSION: 'v1',
+    CACHE_VERSION: 'v2',
     CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
@@ -184,16 +184,19 @@ document.addEventListener('keydown', (e) => {
 
 
 /* =================================================================
-   2. ONGLET "LE CLUB" (TACTIQUE, PLANNING & STATUT DES SÉANCES)
+   2. ONGLET "LE CLUB" (TACTIQUE INTERACTIVE, PLANNING & STATUT)
    ================================================================ */
+
+let chessGame = null;
+let chessgroundBoard = null;
 
 async function chargerTactiqueDuJour() {
     const dateEl = document.getElementById('puzzleDateNum');
-    const imgEl = document.getElementById('puzzleImg');
     const btnEl = document.getElementById('puzzleBtn');
     const descEl = document.getElementById('puzzleDesc');
     const solutionContainer = document.getElementById('puzzleSolutionContainer');
     const solutionTextEl = document.getElementById('puzzleSolutionText');
+    const boardEl = document.getElementById('chessgroundBoard');
     
     const now = new Date();
     if (dateEl) dateEl.textContent = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -203,20 +206,61 @@ async function chargerTactiqueDuJour() {
         if (!response.ok) throw new Error("Erreur réseau API");
         
         const data = await response.json();
-        if (imgEl) imgEl.src = data.image;
-        if (descEl) descEl.style.display = 'none';
+        const fen = data.fen || "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3";
+        
+        chessGame = new Chess(fen);
+        
+        if (boardEl) {
+            chessgroundBoard = Chessground(boardEl, {
+                fen: chessGame.fen(),
+                orientation: chessGame.turn() === 'w' ? 'white' : 'black',
+                movable: {
+                    free: false,
+                    color: chessGame.turn() === 'w' ? 'white' : 'black',
+                    dests: computeLegalMoves(chessGame),
+                    events: {
+                        after: handleChessgroundMove
+                    }
+                }
+            });
+        }
+
+        if (descEl) {
+            descEl.textContent = "Trait aux " + (chessGame.turn() === 'w' ? "Blancs" : "Noirs") + ". À vous de jouer !";
+            descEl.style.display = 'block';
+        }
         if (solutionContainer) solutionContainer.classList.add('hidden');
 
         if (btnEl) {
             btnEl.href = data.url;
             btnEl.target = "_blank";
             btnEl.rel = "noopener noreferrer";
-            btnEl.textContent = "Tester la solution";
+            btnEl.textContent = "Voir sur Chess.com";
             btnEl.onclick = null; 
         }
     } catch (error) {
-        if (imgEl) imgEl.src = "https://fen2image.chessvision.ai/7Q/1pq2kp1/p2ppb2/8/4B1P1/3P4/PP3P2/K7";
-        if (descEl) { descEl.textContent = "Trait aux Blancs."; descEl.style.display = 'block'; }
+        const fallbackFen = "7Q/1pq2kp1/p2ppb2/8/4B1P1/3P4/PP3P2/K7 w - - 0 1";
+        chessGame = new Chess(fallbackFen);
+        
+        if (boardEl) {
+            chessgroundBoard = Chessground(boardEl, {
+                fen: chessGame.fen(),
+                orientation: 'white',
+                movable: {
+                    free: false,
+                    color: 'white',
+                    dests: computeLegalMoves(chessGame),
+                    events: {
+                        after: handleChessgroundMove
+                    }
+                }
+            });
+        }
+
+        if (descEl) { 
+            descEl.textContent = "Trait aux Blancs."; 
+            descEl.style.display = 'block'; 
+        }
         if (solutionTextEl) solutionTextEl.innerHTML = "<strong>Solution :</strong> 1. Fg6!!<br>Si 1… RxFg6 2. Dh5#<br>Si 1… Re7 2. De8#";
         if (solutionContainer) solutionContainer.classList.add('hidden');
         if (btnEl) {
@@ -226,6 +270,37 @@ async function chargerTactiqueDuJour() {
             btnEl.textContent = "Afficher la solution";
             btnEl.onclick = function(e) { e.preventDefault(); togglePuzzleSolution(); };
         }
+    }
+}
+
+function computeLegalMoves(chessInstance) {
+    const dests = new Map();
+    chessInstance.SQUARES.forEach(s => {
+        const ms = chessInstance.moves({ square: s, verbose: true });
+        if (ms.length) {
+            dests.set(s, ms.map(m => m.to));
+        }
+    });
+    return dests;
+}
+
+function handleChessgroundMove(orig, dest) {
+    const move = chessGame.move({ from: orig, to: dest, promotion: 'q' });
+    if (move) {
+        chessgroundBoard.set({
+            fen: chessGame.fen(),
+            movable: {
+                color: chessGame.turn() === 'w' ? 'white' : 'black',
+                dests: computeLegalMoves(chessGame)
+            }
+        });
+        
+        const descEl = document.getElementById('puzzleDesc');
+        if (descEl) {
+            descEl.textContent = "Coup joué : " + orig + "-" + dest + ". Bien joué !";
+        }
+    } else {
+        chessgroundBoard.set({ fen: chessGame.fen() });
     }
 }
 
@@ -1208,7 +1283,7 @@ function loadMembresData() {
 
 
 /* =================================================================
-   5. ONGLET "VIE DU CLUB" (GALERIE PHOTOS & GAZETTES GOOGLE DRIVE)
+   5. ONGLET "VIE DU CLUB" (GALERIE PHOTOS & GAZETTES)
    ================================================================ */
 let allGazettesGlobal = [];
 
