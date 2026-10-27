@@ -95,7 +95,9 @@ function showSection(sectionId) {
     document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
     
-    document.getElementById(sectionId).classList.add('active');
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) targetSection.classList.add('active');
+
     const targetBtn = document.getElementById('btn-' + sectionId);
     if (targetBtn) targetBtn.classList.add('active');
 	
@@ -1644,17 +1646,10 @@ async function envoyerFormulaireContact(e) {
 
 
 /* =================================================================
-   7. ADMINISTRATION & POINT D'ENTRÉE GLOBAL
+   7. INITIALISATION
    ================================================================ */
-if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", user => {
-        if (!user) {
-            window.netlifyIdentity.on("login", () => {
-                document.location.href = "/admin/";
-            });
-        }
-    });
-}
+let logoClickTracker = 0;
+let logoClickTimer = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     loadMembresData();           
@@ -1665,6 +1660,25 @@ document.addEventListener('DOMContentLoaded', () => {
     chargerGaleriePhotos();
     chargerGazettesDrive();
     initFooterYear();
+
+    const logoEl = document.getElementById('clubLogo');
+    if (logoEl) {
+        logoEl.addEventListener('click', () => {
+            logoClickTracker++;
+            
+            if (logoClickTimer) clearTimeout(logoClickTimer);
+            
+            logoClickTimer = setTimeout(() => {
+                logoClickTracker = 0;
+            }, 1500);
+
+            if (logoClickTracker >= 5) {
+                logoClickTracker = 0;
+                clearTimeout(logoClickTimer);
+                showSection('bureau');
+            }
+        });
+    }
 });
 
 

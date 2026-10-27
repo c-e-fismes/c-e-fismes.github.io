@@ -128,7 +128,6 @@ nav button {
 
 nav button:hover { color: var(--accent); }
 nav button.active { background: var(--accent); color: var(--primary); font-weight: bold; }
-nav button.btn-admin { background: #27ae60; }
 
 /* =================================================================
    4. COMPOSANTS & INTERFACE
@@ -723,8 +722,8 @@ th { background-color: var(--primary); color: #ffffff; }
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     border: 2px solid var(--accent);
     display: block;
-	background: #ffffff;
-	padding: 1rem;
+    background: #ffffff;
+    padding: 1rem;
 }
 
 .lightbox-btn {
@@ -824,7 +823,74 @@ th { background-color: var(--primary); color: #ffffff; }
 .gallery-item.album-card * { position: relative; z-index: 1; }
 
 /* =================================================================
-   8. RESPONSIVE DESIGN & MEDIA QUERIES
+   8. TABLEAU DE BORD ADMINISTRATION (ADMIN)
+   ================================================================ */
+.admin-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.admin-card {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--card-bg);
+}
+
+.admin-card-title {
+    margin-top: 0;
+    color: var(--primary);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.4rem;
+}
+
+.admin-card-desc {
+    font-size: 0.9rem;
+    color: #4b5563;
+    margin-bottom: 1rem;
+}
+
+.admin-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.admin-link-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg);
+    color: var(--primary);
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    border: 1px solid #d1d5db;
+    transition: all 0.2s ease;
+}
+
+.admin-link-btn:hover {
+    background: var(--primary);
+    color: var(--accent);
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+.admin-link-arrow {
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.admin-link-btn:hover .admin-link-arrow {
+    transform: translateX(4px);
+}
+
+/* =================================================================
+   9. RESPONSIVE DESIGN & MEDIA QUERIES
    ================================================================ */
 @media (max-width: 850px) {
     .club-hero-grid { grid-template-columns: 1fr; }
@@ -910,7 +976,7 @@ th { background-color: var(--primary); color: #ffffff; }
 }
 
 /* =================================================================
-   9. FOOTER
+   10. FOOTER
    ================================================================ */
 .site-footer {
     background-color: var(--primary);

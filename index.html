@@ -18,7 +18,7 @@
        ================================================================ -->
     <header class="site-header">
         <div class="header-top">
-            <img src="images/logo-club.png" alt="Logo Cercle d'Échecs de Fismes" class="site-logo">
+            <img src="images/logo-club.png" alt="Logo Cercle d'Échecs de Fismes" class="site-logo" id="clubLogo">
             <div class="header-text-block">
                 <h1 class="site-title">Cercle d'Échecs de Fismes</h1>
                 <p class="site-tagline">Passion, Stratégie et Convivialité</p>
@@ -36,7 +36,6 @@
         <button onclick="showSection('resultats')" id="btn-resultats">Résultats & Membres</button>
         <button onclick="showSection('vie')" id="btn-vie">Vie du Club</button>
         <button onclick="showSection('contact')" id="btn-contact">Contact</button>
-        <button onclick="showSection('admin')" id="btn-admin" class="btn-admin">⚙️ Admin</button>
     </nav>
 
     <!-- =================================================================
@@ -419,7 +418,7 @@
             <div class="grid">
                 <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
                     <h2>Coordonnées</h2>
-                    <p>📍 <strong>Adresse :</strong> 11 Allée des Missions (Camping), 51170 Fismes</p>
+                    <p>📍 <strong>Adresse :</strong> Route nationale (ancien camping), 51170 Fismes</p>
                     <p>✉️ <strong>Email :</strong> cercle.echecs.fismes@gmail.com</p>
                     <p>📞 <strong>Téléphone :</strong> 06 27 15 02 51 (Bureau du Club)</p>
                     <div class="map-box">
@@ -446,17 +445,83 @@
             </div>
         </div>
 
-        <!-- SECTION : INFORMATION ADMIN -->
-        <div id="admin" class="section">
-            <div class="card">
-                <h2>⚙️ Gestion et Actualisation du site</h2>
-                <p>Pour modifier ce site de manière 100 % visuelle, l'interface est accessible dans le sous-dossier dédié.</p>
-                <h3>Rappel de la configuration :</h3>
-                <ol>
-                    <li>Créez un dossier nommé <code>admin</code> au même endroit que ce fichier.</li>
-                    <li>Mettez-y le fichier <code>index.html</code> de l'administration et le fichier de configuration <code>config.yml</code>.</li>
-                    <li>Une fois en ligne, l'interface se connectera à Netlify / Decap CMS pour mettre à jour vos contenus automatiquement.</li>
-                </ol>
+        <!-- SECTION : ESPACE BUREAU -->
+        <div id="bureau" class="section">
+            <div class="card" style="border-top: 4px solid var(--accent); margin-bottom: 1.5rem;">
+                <h2 style="margin-top: 0; display: flex; align-items: center; gap: 0.5rem; color: var(--primary);">
+                    📋 Espace de Gestion du Bureau
+                </h2>
+                <p>Outils de pilotage et liens de mise à jour pour les membres du bureau.</p>
+            </div>
+
+            <div class="admin-dashboard-grid">
+                
+                <!-- BLOC 1 : GOOGLE SHEETS -->
+                <div class="card admin-card">
+                    <h3 class="admin-card-title">📊 Google Sheets</h3>
+                    <p class="admin-card-desc">Gestion des données textuelles et tableaux synchronisés avec le site :</p>
+                    <div class="admin-links-list">
+                        <a href="https://docs.google.com/spreadsheets/d/1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M/edit" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>👥 Membres & Classments</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                        <a href="https://docs.google.com/spreadsheets/d/1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww/edit" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>📅 Événements & Calendrier</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                        <a href="https://docs.google.com/spreadsheets/d/1-TRwpHJa93G5JyKkWjWAaIrj4-ip9QNwGx5RCG-HSuA/edit" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>🕒 Planning des Séances</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- BLOC 2 : GOOGLE DRIVE -->
+                <div class="card admin-card">
+                    <h3 class="admin-card-title">📁 Google Drive</h3>
+                    <p class="admin-card-desc">Stockage et dépôt de médias affichés automatiquement sur le site :</p>
+                    <div class="admin-links-list">
+                        <a href="https://drive.google.com/drive/u/0/folders/1k9hHi9_s5hufPL1jxH9bxvmBbIZUsikb" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>📸 Galerie Photos</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                        <a href="https://drive.google.com/drive/u/0/folders/1iIfPZiGPyJokoDaqkc-oHsMz60c3cp9i" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>🖼️ Affiches de Tournois</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                        <a href="https://drive.google.com/drive/u/0/folders/1xJNiT1oez2Ov3Ec3WHvTEnCQOG1F4oE-" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>🗞️ Gazettes (PDF)</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- BLOC 3 : SERVICES EXTERNES -->
+                <div class="card admin-card">
+                    <h3 class="admin-card-title">✉️ Formulaire & Raccourcis</h3>
+                    <p class="admin-card-desc">Gestion de la boîte de réception et outils d'administration externes :</p>
+                    <div class="admin-links-list">
+                        <a href="https://formspree.io/forms/mzeezpvr/submissions" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>📥 Formspree (Messages reçus)</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                        <a href="https://echecs.asso.fr/FicheClub.aspx?Ref=3111" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>♟️ Portail FFE</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RAPPEL MÉMO -->
+            <div class="card" style="margin-top: 1.5rem; background: #fefce8; border-left: 4px solid var(--accent);">
+                <h4 style="margin-top: 0; color: var(--primary);">💡 Mémento pour l'administration :</h4>
+                <ul style="margin-bottom: 0; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.6;">
+                    <li><strong>Membres :</strong> La modification d'un score Elo sur Google Sheets prend effet immédiatement sur le site après rafraîchissement de la page.</li>
+                    <li><strong>Affiches :</strong> Pour lier une affiche à un événement, nommez le fichier image exactement comme renseigné dans la colonne dédiée du fichier Google Sheets.</li>
+                    <li><strong>Gazettes :</strong> Déposez simplement le fichier au format PDF dans le dossier Drive dédié. Il apparaîtra automatiquement dans les archives.</li>
+                </ul>
             </div>
         </div>
 
