@@ -2,7 +2,7 @@
    1. CONFIGURATION GLOBALE, NAVIGATION & UTILITAIRES
    ================================================================ */
 const CONFIG = {
-    CACHE_VERSION: 'v1', /* Faire évoluer la version à chaque changement significatif */
+    CACHE_VERSION: 'v1',
     CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
@@ -54,6 +54,16 @@ const cacheManager = {
     }
 };
 
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 function afficherEtatFichier(elementId, message, estErreur = false, colspan = 1) {
     const el = document.getElementById(elementId);
     if (!el) return;
@@ -62,7 +72,7 @@ function afficherEtatFichier(elementId, message, estErreur = false, colspan = 1)
     const style = `text-align: center; color: ${couleur}; font-style: italic; padding: 2rem;`;
 
     if (el.tagName === 'TBODY') {
-        el.innerHTML = `<tr><td colspan="${colspan}" style="${style}">${message}</td></tr>`;
+        el.innerHTML = `<tr><td colspan="${colspan}" style="${style}">${escapeHTML(message)}</td></tr>`;
     } else {
         el.style.gridColumn = '1 / -1';
         el.style.cssText += style;
@@ -198,6 +208,7 @@ async function chargerTactiqueDuJour() {
         if (btnEl) {
             btnEl.href = data.url;
             btnEl.target = "_blank";
+            btnEl.rel = "noopener noreferrer";
             btnEl.textContent = "Tester la solution";
             btnEl.onclick = null; 
         }
@@ -208,6 +219,7 @@ async function chargerTactiqueDuJour() {
         if (solutionContainer) solutionContainer.classList.add('hidden');
         if (btnEl) {
             btnEl.removeAttribute('target');
+            btnEl.removeAttribute('rel');
             btnEl.href = "#";
             btnEl.textContent = "Afficher la solution";
             btnEl.onclick = function(e) { e.preventDefault(); togglePuzzleSolution(); };
@@ -314,10 +326,10 @@ function afficherPlanningUI(planningData) {
         tr.setAttribute('data-fin', item.heureFin);
 
         tr.innerHTML = `
-            <td style="font-weight: bold;">${item.jourNom}</td>
-            <td>${affichageHoraire}</td>
-            <td>${item.commune}</td>
-            <td>${item.lieu}</td>
+            <td style="font-weight: bold;">${escapeHTML(item.jourNom)}</td>
+            <td>${escapeHTML(affichageHoraire)}</td>
+            <td>${escapeHTML(item.commune)}</td>
+            <td>${escapeHTML(item.lieu)}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -448,7 +460,10 @@ async function loadDynamicEvents() {
 
     if (cachedEvents) {
         allClubEvents = cachedEvents;
-        allClubEvents.forEach(e => e.dateTime = new Date(e.dateTime));
+        allClubEvents.forEach(e => {
+            e.dateTime = new Date(e.dateTime);
+            if (e.endDateTime) e.endDateTime = new Date(e.endDateTime);
+        });
         renderDynamicEventsGrid();
     }
 
@@ -472,6 +487,24 @@ function getCellValue(cells, index) {
     return '';
 }
 
+function parseCellTime(cell) {
+    if (!cell) return { hour: 0, minute: 0 };
+    let hour = 0, minute = 0;
+    if (cell.f) {
+        const timeParts = cell.f.split(':');
+        hour = parseInt(timeParts[0], 10) || 0;   
+        minute = parseInt(timeParts[1], 10) || 0; 
+    } else if (cell.v && typeof cell.v === 'object') {
+        hour = cell.v.hours !== undefined ? cell.v.hours : 0;
+        minute = cell.v.minutes !== undefined ? cell.v.minutes : 0;
+    } else if (cell.v) {
+        const timeParts = String(cell.v).split(':');
+        hour = parseInt(timeParts[0], 10) || 0;   
+        minute = parseInt(timeParts[1], 10) || 0; 
+    }
+    return { hour, minute };
+}
+
 function handleEventsCallback(response) {
     const scriptEl = document.getElementById('jsonp-events-script');
     if (scriptEl) scriptEl.remove();
@@ -489,13 +522,37 @@ function handleEventsCallback(response) {
         
         let rawDate = getCellValue(cells, 0); 
         const rawTime = getCellValue(cells, 1); 
-        const type = getCellValue(cells, 2); 
-        const titre = getCellValue(cells, 3); 
-        const lieu = getCellValue(cells, 4); 
-        const cadence = getCellValue(cells, 5); 
-        const rondes = getCellValue(cells, 6); 
-        const commentaire = getCellValue(cells, 7); 
-        const lienAffiche = getCellValue(cells, 8); 
+
+        let cell2Val = getCellValue(cells, 2);
+        let hasExplicitEndTime = cell2Val.includes(':') || (cells[2] && cells[2].v && String(cells[2].v).includes('Time'));
+        
+        let endTimeCellIndex = 2;
+        let typeIndex = 3;
+        let titreIndex = 4;
+        let lieuIndex = 5;
+        let cadenceIndex = 6;
+        let rondesIndex = 7;
+        let commentaireIndex = 8;
+        let lienAfficheIndex = 9;
+
+        if (!hasExplicitEndTime && cells.length < 10) {
+            endTimeCellIndex = -1;
+            typeIndex = 2;
+            titreIndex = 3;
+            lieuIndex = 4;
+            cadenceIndex = 5;
+            rondesIndex = 6;
+            commentaireIndex = 7;
+            lienAfficheIndex = 8;
+        }
+
+        const type = getCellValue(cells, typeIndex); 
+        const titre = getCellValue(cells, titreIndex); 
+        const lieu = getCellValue(cells, lieuIndex); 
+        const cadence = getCellValue(cells, cadenceIndex); 
+        const rondes = getCellValue(cells, rondesIndex); 
+        const commentaire = getCellValue(cells, commentaireIndex); 
+        const lienAffiche = getCellValue(cells, lienAfficheIndex); 
 
         if (rawDate.toLowerCase() === 'date' || !rawDate || !rawTime) return;
 
@@ -517,29 +574,33 @@ function handleEventsCallback(response) {
             return; 
         }
 
-        let hour = 0, minute = 0;
-        if (cells[1]) {
-            if (cells[1].f) {
-                const timeParts = cells[1].f.split(':');
-                hour = parseInt(timeParts[0], 10) || 0;   
-                minute = parseInt(timeParts[1], 10) || 0; 
-            } else if (cells[1].v && typeof cells[1].v === 'object') {
-                hour = cells[1].v.hours !== undefined ? cells[1].v.hours : 0;
-                minute = cells[1].v.minutes !== undefined ? cells[1].v.minutes : 0;
-            } else if (cells[1].v) {
-                const timeParts = String(cells[1].v).split(':');
-                hour = parseInt(timeParts[0], 10) || 0;   
-                minute = parseInt(timeParts[1], 10) || 0; 
-            }
-        }
+        const startTimeObj = parseCellTime(cells[1]);
+        const hour = startTimeObj.hour;
+        const minute = startTimeObj.minute;
 
         const eventDateTime = new Date(year, month - 1, day, hour, minute);
         if (isNaN(eventDateTime.getTime())) return;
+
+        let eventEndDateTime = new Date(eventDateTime.getTime() + 3 * 60 * 60 * 1000);
+
+        if (endTimeCellIndex !== -1 && cells[endTimeCellIndex]) {
+            const endTimeObj = parseCellTime(cells[endTimeCellIndex]);
+            if (endTimeObj.hour !== 0 || endTimeObj.minute !== 0) {
+                eventEndDateTime = new Date(year, month - 1, day, endTimeObj.hour, endTimeObj.minute);
+                if (eventEndDateTime < eventDateTime) {
+                    eventEndDateTime.setDate(eventEndDateTime.getDate() + 1);
+                }
+            }
+        }
+
+        const isLive = (now >= eventDateTime && now <= eventEndDateTime);
+        const isPast = (now > eventEndDateTime);
 
         const formattedISO = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
         allClubEvents.push({
             dateTime: eventDateTime,
+            endDateTime: eventEndDateTime,
             isoDate: formattedISO,
             year: String(year),
             rawDate: rawDate,
@@ -551,7 +612,8 @@ function handleEventsCallback(response) {
             rondes: rondes,
             commentaire: commentaire,
             lienAffiche: lienAffiche,
-            isPast: eventDateTime < now
+            isLive: isLive,
+            isPast: isPast
         });
     });
 
@@ -578,6 +640,8 @@ function renderDynamicEventsGrid() {
         card.setAttribute('data-year', event.year);
         card.setAttribute('data-date', event.isoDate);
         card.setAttribute('data-type', event.type);
+        card.setAttribute('data-is-past', event.isPast);
+        card.setAttribute('data-is-live', event.isLive);
 
         if (event.isPast) card.style.opacity = "0.65"; 
 
@@ -591,9 +655,16 @@ function renderDynamicEventsGrid() {
             badgeColor = "#ffffff";
         }
 
-        let statusBadgeHTML = event.isPast 
-            ? `<span class="badge dynamic-badge" style="background-color: #7f8c8d; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">Terminé</span>`
-            : `<span class="badge dynamic-badge" style="background-color: #2ecc71; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">À venir</span>`;
+        let statusBadgeHTML = '';
+        if (event.isLive) {
+            statusBadgeHTML = `<span class="badge dynamic-badge live" style="background-color: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.80rem; animation: pulseLive 1.5s infinite;">🔴 En cours</span>`;
+        } else if (event.isPast) {
+            statusBadgeHTML = `<span class="badge dynamic-badge" style="background-color: #7f8c8d; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.80rem;">Terminé</span>`;
+        } else {
+            statusBadgeHTML = `<span class="badge dynamic-badge" style="background-color: #2ecc71; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.80rem;">À venir</span>`;
+        }
+
+        let timeDisplay = `Le ${escapeHTML(event.rawDate)} à ${escapeHTML(event.rawTime)}`;
 
         let cardHTML = `
             <div class="event-content-wrapper" style="display: flex; gap: 1.5rem; align-items: start;">
@@ -601,14 +672,14 @@ function renderDynamicEventsGrid() {
                     <h3 style="margin-top: 0; margin-bottom: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
                         ${statusBadgeHTML}
                         <span class="badge type-badge" style="background: ${badgeBg}; color: ${badgeColor}; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">${badgeText}</span>
-                        <span class="event-title-text" style="margin-left: 0.25rem; font-weight: bold; color: var(--primary);">${event.titre}</span>
+                        <span class="event-title-text" style="margin-left: 0.25rem; font-weight: bold; color: var(--primary);">${escapeHTML(event.titre)}</span>
                     </h3>
-                    <p style="margin: 0.3rem 0;">📅 <strong>Date :</strong> Le ${event.rawDate} à ${event.rawTime}</p>
-                    <p style="margin: 0.3rem 0;">📍 <strong>Lieu :</strong> ${event.lieu}</p>
+                    <p style="margin: 0.3rem 0;">📅 <strong>Date :</strong> ${timeDisplay}</p>
+                    <p style="margin: 0.3rem 0;">📍 <strong>Lieu :</strong> ${escapeHTML(event.lieu)}</p>
         `;
 
-        if (event.cadence) cardHTML += `<p style="margin: 0.3rem 0;" class="cadence-field">⏳ <strong>Cadence :</strong> ${event.cadence}</p>`;
-        if (event.rondes) cardHTML += `<p style="margin: 0.3rem 0;" class="rondes-field">🔄 <strong>Nombre de rondes :</strong> ${event.rondes}</p>`;
+        if (event.cadence) cardHTML += `<p style="margin: 0.3rem 0;" class="cadence-field">⏳ <strong>Cadence :</strong> ${escapeHTML(event.cadence)}</p>`;
+        if (event.rondes) cardHTML += `<p style="margin: 0.3rem 0;" class="rondes-field">🔄 <strong>Nombre de rondes :</strong> ${escapeHTML(event.rondes)}</p>`;
         cardHTML += `</div>`; 
 
         if (event.lienAffiche) {
@@ -634,7 +705,7 @@ function renderDynamicEventsGrid() {
         cardHTML += `</div>`; 
 
         if (event.commentaire) {
-            cardHTML += `<p style="margin: 0.75rem 0 0 0; color: #555; font-style: italic;">💬 ${event.commentaire}</p>`;
+            cardHTML += `<p style="margin: 0.75rem 0 0 0; color: #555; font-style: italic;">💬 ${escapeHTML(event.commentaire)}</p>`;
         }
 
         card.innerHTML = cardHTML;
@@ -671,10 +742,11 @@ function filterEvents() {
     
     document.querySelectorAll('.event-card').forEach(card => {
         const eventYear = card.getAttribute('data-year');
-        const isPastEvent = card.style.opacity === "0.65";
+        const isPastEvent = card.getAttribute('data-is-past') === 'true';
+        const isLiveEvent = card.getAttribute('data-is-live') === 'true';
         
         const matchYear = (selectedYear === 'all' || eventYear === selectedYear);
-        const matchPast = !(hidePast && isPastEvent);
+        const matchPast = !(hidePast && isPastEvent && !isLiveEvent);
         
         card.style.display = (matchYear && matchPast) ? 'block' : 'none';
     });
@@ -741,8 +813,8 @@ function generateCalendar() {
             let tooltipHTML = `<div style="text-align:left; font-size:0.8rem; line-height:1.4;">`;
             dayEvents.forEach(e => {
                 const badge = e.type === 'cours' ? '📚' : '🏆';
-                tooltipHTML += `<div style="margin-bottom:4px; font-weight:bold; color:#ecc94b;">${badge} ${e.titre}</div>`;
-                tooltipHTML += `<div style="color:#fff; font-size:0.75rem;">🕒 ${e.rawTime} - 📍 ${e.lieu}</div>`;
+                tooltipHTML += `<div style="margin-bottom:4px; font-weight:bold; color:#ecc94b;">${badge} ${escapeHTML(e.titre)}</div>`;
+                tooltipHTML += `<div style="color:#fff; font-size:0.75rem;">🕒 ${escapeHTML(e.rawTime)} - 📍 ${escapeHTML(e.lieu)}</div>`;
             });
             tooltipHTML += `</div>`;
 
@@ -853,7 +925,7 @@ function initCountdown() {
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-        timerEl.innerHTML = `<strong>${days}j ${hours}h ${minutes}m</strong> — <a href="#evenements" onclick="showSection('evenements')" style="color: var(--accent); text-decoration: underline;">${nextEvent.titre}</a>`;
+        timerEl.innerHTML = `<strong>${days}j ${hours}h ${minutes}m</strong> — <a href="#evenements" onclick="showSection('evenements')" style="color: var(--accent); text-decoration: underline;">${escapeHTML(nextEvent.titre)}</a>`;
     }
 
     calculateTime();
@@ -877,16 +949,16 @@ function afficherMembres(membres) {
         
         let fideCellule = '';
         if (membre.fideId && membre.fideId !== '' && membre.fideId !== 'N/A') {
-            fideCellule = `<a href="https://ratings.fide.com/profile/${membre.fideId}" target="_blank" rel="noopener noreferrer" class="table-fide-btn">🔗 Fiche FIDE</a>`;
+            fideCellule = `<a href="https://ratings.fide.com/profile/${escapeHTML(membre.fideId)}" target="_blank" rel="noopener noreferrer" class="table-fide-btn">🔗 Fiche FIDE</a>`;
         }
 
         tr.innerHTML = `
-            <td><strong>${membre.nomPrenom}</strong></td>
-            <td style="text-align:center;">${membre.classique}</td>
-            <td style="text-align:center;">${membre.rapide}</td>
-            <td style="text-align:center;">${membre.blitz}</td>
-            <td style="text-align:center;">${membre.categorie}</td>
-            <td style="text-align:center;">${membre.genre}</td>
+            <td><strong>${escapeHTML(membre.nomPrenom)}</strong></td>
+            <td style="text-align:center;">${escapeHTML(membre.classique)}</td>
+            <td style="text-align:center;">${escapeHTML(membre.rapide)}</td>
+            <td style="text-align:center;">${escapeHTML(membre.blitz)}</td>
+            <td style="text-align:center;">${escapeHTML(membre.categorie)}</td>
+            <td style="text-align:center;">${escapeHTML(membre.genre)}</td>
             <td style="text-align:center;">${fideCellule}</td>
         `;
         tbody.appendChild(tr);
@@ -1181,8 +1253,8 @@ function renderGazettesUI() {
     const latestGazettes = allGazettesGlobal.slice(0, 5);
     latestGazettes.forEach(file => {
         const li = document.createElement('li');
-		const fileUrl = `https://drive.google.com/file/d/${file.id}/view?usp=sharing`;
-		li.innerHTML = `📄 <a href="${fileUrl}" target="_blank" rel="noopener noreferrer">${file.name}</a>`;
+		const fileUrl = `https://drive.google.com/file/d/${escapeHTML(file.id)}/view?usp=sharing`;
+		li.innerHTML = `📄 <a href="${fileUrl}" target="_blank" rel="noopener noreferrer">${escapeHTML(file.name)}</a>`;
         gazetteListEl.appendChild(li);
     });
 
@@ -1213,8 +1285,8 @@ function populateModalList(gazettes) {
     gazettes.forEach(file => {
         const li = document.createElement('li');
         li.style.cssText = 'padding: 0.5rem; border-bottom: 1px solid #ddd;';
-        const fileUrl = `https://drive.google.com/file/d/${file.id}/view?usp=sharing`;
-        li.innerHTML = `<a href="${fileUrl}" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none; font-weight: 500; display: block;">📄 ${file.name}</a>`;
+        const fileUrl = `https://drive.google.com/file/d/${escapeHTML(file.id)}/view?usp=sharing`;
+        li.innerHTML = `<a href="${fileUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500; display: block;">📄 ${escapeHTML(file.name)}</a>`;
         modalListEl.appendChild(li);
     });
 }
@@ -1412,7 +1484,7 @@ function afficherPageGalerie() {
             item.onclick = () => chargerPhotosAlbum(itemData.id, itemData.name);
 
             item.innerHTML = `
-                <h4 style="color: var(--accent); margin: 0 0 4px 0; font-size: 1rem; word-break: break-word; padding: 0 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${itemData.name}</h4>
+                <h4 style="color: var(--accent); margin: 0 0 4px 0; font-size: 1rem; word-break: break-word; padding: 0 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${escapeHTML(itemData.name)}</h4>
                 <span style="font-size: 0.75rem; color: #ffffff; background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 4px;">Ouvrir l'album</span>
             `;
         } else {
@@ -1427,7 +1499,7 @@ function afficherPageGalerie() {
             const img = document.createElement('img');
             img.src = thumbUrl;
             img.loading = 'lazy';
-            img.alt = photo.name || "Photo du club d'échecs de Fismes";
+            img.alt = photo.name ? escapeHTML(photo.name) : "Photo du club d'échecs de Fismes";
             
             const indexActuel = listeUrlsPhotos.indexOf(fullImageUrl);
             img.onclick = () => zoomImage(fullImageUrl, listeUrlsPhotos, indexActuel);
@@ -1456,7 +1528,7 @@ function afficherBoutonRetour() {
 
     retourContainer.innerHTML = `
         <button id="backToAlbumsBtn" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: var(--primary); color: white;">← Retour aux albums</button>
-        <span style="font-weight: bold; color: var(--primary); font-size: 1.05rem;">📁 ${nomAlbumActuel}</span>
+        <span style="font-weight: bold; color: var(--primary); font-size: 1.05rem;">📁 ${escapeHTML(nomAlbumActuel)}</span>
     `;
 
     document.getElementById('backToAlbumsBtn').onclick = () => {
@@ -1515,11 +1587,15 @@ function mettreAJourControlesGalerie(elementsParPage) {
     }
 }
 
+let resizeTimer;
 window.addEventListener('resize', () => {
-    const listeActive = (albumActuelId === null) ? elementsRacineGlobales : photosAlbumGlobales;
-    if (listeActive.length > 0) {
-        afficherPageGalerie();
-    }
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        const listeActive = (albumActuelId === null) ? elementsRacineGlobales : photosAlbumGlobales;
+        if (listeActive.length > 0) {
+            afficherPageGalerie();
+        }
+    }, 250);
 });
 
 
