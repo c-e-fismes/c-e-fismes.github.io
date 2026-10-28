@@ -519,12 +519,34 @@
     </div>
 
 	<!-- SCRIPTS -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-	<script type="module">
-		import { Chessground } from 'https://cdn.jsdelivr.net/npm/chessground@9.1.0/+esm';
-		window.Chessground = Chessground;
-	</script>
-	<script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="script.js"></script>
+    <script type="module">
+        import { Chessground } from 'https://cdn.jsdelivr.net/npm/chessground@9.1.0/+esm';
+        window.Chessground = Chessground;
+
+        async function loadChessgroundCSS() {
+            try {
+                const [resCss, resTheme] = await Promise.all([
+                    fetch('https://cdn.jsdelivr.net/npm/chessground@9.1.0/assets/chessground.min.css'),
+                    fetch('https://cdn.jsdelivr.net/npm/chessground@9.1.0/assets/theme/default/theme.min.css')
+                ]);
+                if (resCss.ok && resTheme.ok) {
+                    const [cssText, themeText] = await Promise.all([resCss.text(), resTheme.text()]);
+                    const styleEl = document.createElement('style');
+                    styleEl.innerHTML = cssText + '\n' + themeText;
+                    document.head.appendChild(styleEl);
+                }
+            } catch (e) {
+                console.warn("Erreur chargement styles chessground", e);
+            }
+        }
+        await loadChessgroundCSS();
+
+        if (typeof chargerTactiqueDuJour === 'function') {
+            chargerTactiqueDuJour();
+        }
+    </script>
 
     <!-- FOOTER & MENTIONS LÉGALES -->
     <footer class="site-footer">
