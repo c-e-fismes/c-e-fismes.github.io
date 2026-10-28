@@ -2,7 +2,7 @@
    1. CONFIGURATION GLOBALE, NAVIGATION & UTILITAIRES
    ================================================================ */
 const CONFIG = {
-    CACHE_VERSION: 'v6',
+    CACHE_VERSION: 'v7',
     CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
@@ -181,6 +181,24 @@ document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeZoom();
     }
 });
+
+(async function() {
+    try {
+        const [resCss, resTheme] = await Promise.all([
+            fetch('https://cdn.jsdelivr.net/npm/chessground@9.1.0/assets/chessground.min.css'),
+            fetch('https://cdn.jsdelivr.net/npm/chessground@9.1.0/assets/theme/default/theme.min.css')
+        ]);
+        
+        if (resCss.ok && resTheme.ok) {
+            const [cssText, themeText] = await Promise.all([resCss.text(), resTheme.text()]);
+            const styleEl = document.createElement('style');
+            styleEl.innerHTML = cssText + '\n' + themeText;
+            document.head.appendChild(styleEl);
+        }
+    } catch (e) {
+        console.warn("Erreur chargement styles chessground", e);
+    }
+})();
 
 
 /* =================================================================
