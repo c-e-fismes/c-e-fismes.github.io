@@ -290,14 +290,24 @@ window.googlePlanningCallback = function(data) {
 
     const rows = data.table.rows;
     const planningData = [];
+    let modeVacancesGlobal = false;
 
-    rows.forEach(row => {
+    rows.forEach((row, index) => {
         const cellules = row.c;
-        if (!cellules || cellules.length < 5) return;
+        if (!cellules) return;
 
-        const getVal = (index) => {
-            if (!cellules[index] || cellules[index].v === null) return '';
-            return String(cellules[index].v).trim();
+        if (index === 0 && cellules[7]) { /*Correspond à la case H1 du tableau Excel des séances*/
+            const valCellule = String(cellules[7].v || '').trim().toUpperCase();
+            if (valCellule.includes('VACANCES:OUI') || valCellule === 'OUI') {
+                modeVacancesGlobal = true;
+            }
+        }
+
+        if (cellules.length < 5) return;
+
+        const getVal = (idx) => {
+            if (!cellules[idx] || cellules[idx].v === null) return '';
+            return String(cellules[idx].v).trim();
         };
 
         const jourNom = getVal(0);
@@ -315,6 +325,8 @@ window.googlePlanningCallback = function(data) {
         cacheManager.set('cache_planning', planningData);
         afficherPlanningUI(planningData);
     }
+
+    applyVacationMode(modeVacancesGlobal);
 };
 
 function afficherPlanningUI(planningData) {
@@ -352,7 +364,7 @@ function loadPlanningData() {
         afficherPlanningUI(cachedPlanning);
     }
 
-    const url = `https://docs.google.com/spreadsheets/d/${CONFIG.PLANNING_SHEET_ID}/gviz/tq?tqx=responseHandler:googlePlanningCallback`;
+	const url = `https://docs.google.com/spreadsheets/d/${CONFIG.PLANNING_SHEET_ID}/gviz/tq?tqx=responseHandler:googlePlanningCallback&headers=0`;
     const script = document.createElement('script');
     script.id = 'jsonp-planning-script';
     script.src = url;
@@ -1714,10 +1726,105 @@ async function envoyerFormulaireContact(e) {
 
 
 /* =================================================================
-   7. INITIALISATION
+   7. INITIALISATION & ESPACE BUREAU DYNAMIQUE
    ================================================================ */
 let logoClickTracker = 0;
 let logoClickTimer = null;
+
+function creerEtAfficherEspaceBureau() {
+    let bureauSection = document.getElementById('bureau');
+    if (!bureauSection) {
+        bureauSection = document.createElement('div');
+        bureauSection.id = 'bureau';
+        bureauSection.className = 'section';
+        
+        bureauSection.innerHTML = `
+            <div class="card bureau-header-card">
+                <h2 class="bureau-title">
+                    📋 Espace de Gestion du Bureau
+                </h2>
+                <p>Outils de pilotage et liens de mise à jour pour les membres du bureau.</p>
+            </div>
+
+            <div class="admin-dashboard-grid">
+                
+                <div class="card admin-card">
+                    <h3 class="admin-card-title">📊 Google Sheets</h3>
+                    <p class="admin-card-desc">Gestion des données textuelles et tableaux synchronisés avec le site :</p>
+                    <div class="admin-links-list">
+                        <a href="https://docs.google.com/spreadsheets/d/${CONFIG.MEMBRES_SHEET_ID}/edit" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>👥 Membres & Classments</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                        <a href="https://docs.google.com/spreadsheets/d/${CONFIG.EVENTS_SHEET_ID}/edit" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>📅 Événements & Calendrier</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                        <a href="https://docs.google.com/spreadsheets/d/${CONFIG.PLANNING_SHEET_ID}/edit" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>🕒 Planning des Séances & Vacances</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card admin-card">
+                    <h3 class="admin-card-title">📁 Google Drive</h3>
+                    <p class="admin-card-desc">Stockage et dépôt de médias affichés automatiquement sur le site :</p>
+                    <div class="admin-links-list">
+                        <a href="https://drive.google.com/drive/u/0/folders/${CONFIG.DRIVE_PHOTOS_FOLDER_ID}" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>📸 Galerie Photos</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                        <a href="https://drive.google.com/drive/u/0/folders/${CONFIG.DRIVE_POSTERS_FOLDER_ID}" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>🖼️ Affiches de Tournois</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                        <a href="https://drive.google.com/drive/u/0/folders/${CONFIG.DRIVE_GAZETTE_FOLDER_ID}" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>🗞️ Gazettes (PDF)</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card admin-card">
+                    <h3 class="admin-card-title">✉️ Formulaire & Raccourcis</h3>
+                    <p class="admin-card-desc">Gestion de la boîte de réception et outils d'administration externes :</p>
+                    <div class="admin-links-list">
+                        <a href="https://formspree.io/forms/mzeezpvr/submissions" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>📥 Formspree (Messages reçus)</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                        <a href="https://echecs.asso.fr/FicheClub.aspx?Ref=3111" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
+                            <span>♟️ Portail FFE</span>
+                            <span class="admin-link-arrow">➔</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card bureau-memento-card">
+                <h4 class="bureau-memento-title">💡 Mémento pour l'administration :</h4>
+                <ul class="bureau-memento-list">
+                    <li><strong>Membres :</strong> La modification d'un score Elo sur Google Sheets prend effet immédiatement sur le site après rafraîchissement de la page.</li>
+                    <li><strong>Affiches :</strong> Pour lier une affiche à un événement, nommez le fichier image exactement comme renseigné dans la colonne dédiée du fichier Google Sheets.</li>
+                    <li><strong>Gazettes :</strong> Déposez simplement le fichier au format PDF dans le dossier Drive dédié. Il apparaîtra automatiquement dans les archives.</li>
+                </ul>
+            </div>
+        `;
+
+        const container = document.querySelector('.container');
+        if (container) {
+            container.appendChild(bureauSection);
+        }
+    }
+
+    const savedState = localStorage.getItem('cce_vacation_mode') === 'true';
+    const toggle = document.getElementById('vacationModeToggle');
+    if (toggle) toggle.checked = savedState;
+
+    showSection('bureau');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     loadMembresData();           
@@ -1743,7 +1850,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (logoClickTracker >= 5) {
                 logoClickTracker = 0;
                 clearTimeout(logoClickTimer);
-                showSection('bureau');
+                creerEtAfficherEspaceBureau();
             }
         });
     }
