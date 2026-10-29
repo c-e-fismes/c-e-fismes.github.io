@@ -2,7 +2,7 @@
    1. CONFIGURATION GLOBALE, NAVIGATION & UTILITAIRES
    ================================================================ */
 const CONFIG = {
-    CACHE_VERSION: 'v4', /* Faire évoluer la version à chaque changement significatif */
+    CACHE_VERSION: 'v5', /* Faire évoluer la version à chaque changement significatif */
     CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
@@ -859,48 +859,30 @@ function generateCalendar() {
             });
             tooltipHTML += `</div>`;
 
-            dayCell.setAttribute('data-tooltip-content', tooltipHTML);
-            
             dayCell.onmouseenter = function() {
-                showCustomTooltip(this, this.getAttribute('data-tooltip-content'));
+                showCustomTooltip(this, tooltipHTML, currentISO);
                 this.style.backgroundColor = "var(--accent, #ecc94b)";
                 this.style.color = "white";
                 if(this.querySelector('div')) this.querySelector('div').style.backgroundColor = "white";
             };
             
             dayCell.onmouseleave = function() {
-                hideCustomTooltip();
+                if (!window.matchMedia('(pointer: coarse)').matches) {
+                    hideCustomTooltip();
+                }
                 this.style.backgroundColor = "var(--bg-light, #f7fafc)";
                 this.style.color = "var(--primary, #2d3748)";
                 if(this.querySelector('div')) this.querySelector('div').style.backgroundColor = "var(--accent, #ecc94b)";
             };
 
-            dayCell.onclick = () => {
-                const cardElements = document.querySelectorAll('.event-card');
-                const yearSelect = document.getElementById('yearSelect');
-                const hidePastCheckbox = document.getElementById('hidePastCheckbox');
-
-                const targetEventData = allClubEvents.find(e => e.isoDate === currentISO);
-                if (targetEventData && targetEventData.isPast && hidePastCheckbox && hidePastCheckbox.checked) {
-                    hidePastCheckbox.checked = false;
+            dayCell.onclick = (e) => {
+                e.stopPropagation();
+                if (activeTooltipElement) {
+                    hideCustomTooltip();
+                    scrollToEventCard(currentISO);
+                } else {
+                    showCustomTooltip(dayCell, tooltipHTML, currentISO);
                 }
-
-                if (yearSelect && yearSelect.value !== 'all' && yearSelect.value !== String(year)) {
-                    yearSelect.value = String(year);
-                }
-
-                if (typeof filterEvents === 'function') filterEvents();
-
-                setTimeout(() => {
-                    for (let card of cardElements) {
-                        if (card.getAttribute('data-date') === currentISO) {
-                            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            card.style.boxShadow = "0 0 15px var(--accent)";
-                            setTimeout(() => card.style.boxShadow = "", 1500);
-                            break;
-                        }
-                    }
-                }, 50);
             };
         }
 
@@ -915,13 +897,31 @@ function changeMonth(direction) {
 
 let activeTooltipElement = null;
 
-function showCustomTooltip(target, content) {
+document.addEventListener('click', (e) => {
+    if (activeTooltipElement && !e.target.closest('.calendar-days-grid > div') && !e.target.closest('.calendar-custom-tooltip')) {
+        hideCustomTooltip();
+    }
+});
+
+function showCustomTooltip(target, content, isoDate) {
     if (activeTooltipElement) hideCustomTooltip();
 
     const tooltip = document.createElement('div');
     tooltip.className = 'calendar-custom-tooltip';
     tooltip.innerHTML = content;
-    tooltip.style.cssText = "position: absolute; background-color: #2d3748; border: 2px solid #ecc94b; color: white; padding: 10px; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 5000; pointer-events: none; width: 220px;";
+
+    const actionDiv = document.createElement('div');
+    actionDiv.style.cssText = "margin-top: 8px; text-align: right; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 6px;";
+    actionDiv.innerHTML = `<button type="button" style="background: var(--accent); border: none; color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Voir l'événement ➔</button>`;
+    
+    actionDiv.querySelector('button').onclick = (evt) => {
+        evt.stopPropagation();
+        hideCustomTooltip();
+        scrollToEventCard(isoDate);
+    };
+    tooltip.appendChild(actionDiv);
+
+    tooltip.style.cssText = "position: absolute; background-color: #2d3748; border: 2px solid #ecc94b; color: white; padding: 10px; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 5000; width: 220px;";
 
     document.body.appendChild(tooltip);
     activeTooltipElement = tooltip;
@@ -939,6 +939,35 @@ function hideCustomTooltip() {
         activeTooltipElement.remove();
         activeTooltipElement = null;
     }
+}
+
+function scrollToEventCard(currentISO) {
+    const cardElements = document.querySelectorAll('.event-card');
+    const yearSelect = document.getElementById('yearSelect');
+    const hidePastCheckbox = document.getElementById('hidePastCheckbox');
+
+    const targetEventData = allClubEvents.find(e => e.isoDate === currentISO);
+    if (targetEventData && targetEventData.isPast && hidePastCheckbox && hidePastCheckbox.checked) {
+        hidePastCheckbox.checked = false;
+    }
+
+    const year = currentISO.split('-')[0];
+    if (yearSelect && yearSelect.value !== 'all' && yearSelect.value !== year) {
+        yearSelect.value = year;
+    }
+
+    if (typeof filterEvents === 'function') filterEvents();
+
+    setTimeout(() => {
+        for (let card of cardElements) {
+            if (card.getAttribute('data-date') === currentISO) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                card.style.boxShadow = "0 0 15px var(--accent)";
+                setTimeout(() => card.style.boxShadow = "", 1500);
+                break;
+            }
+        }
+    }, 50);
 }
 
 function initCountdown() {
@@ -1539,7 +1568,7 @@ function afficherPageGalerie() {
 
             const img = document.createElement('img');
             img.src = thumbUrl;
-            img.loading = 'lazy'; // Optimisation : chargement différé systématique
+            img.loading = 'lazy';
             img.alt = photo.name ? escapeHTML(photo.name) : "Photo du club d'échecs de Fismes";
             
             const indexActuel = listeUrlsPhotos.indexOf(fullImageUrl);
