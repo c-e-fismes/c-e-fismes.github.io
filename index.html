@@ -29,13 +29,13 @@
     <!-- =================================================================
        2. NAVIGATION PRINCIPALE
        ================================================================ -->
-    <nav>
-        <button onclick="showSection('club')" id="btn-club" class="active">Le Club</button>
-        <button onclick="showSection('decouvrir')" id="btn-decouvrir">Les Échecs ?</button>
-        <button onclick="showSection('evenements')" id="btn-evenements">Événements</button>
-        <button onclick="showSection('resultats')" id="btn-resultats">Résultats & Membres</button>
-        <button onclick="showSection('vie')" id="btn-vie">Vie du Club</button>
-        <button onclick="showSection('contact')" id="btn-contact">Contact</button>
+    <nav aria-label="Navigation principale">
+        <button onclick="showSection('club')" id="btn-club" class="active" aria-expanded="true" aria-controls="club">Le Club</button>
+        <button onclick="showSection('decouvrir')" id="btn-decouvrir" aria-expanded="false" aria-controls="decouvrir">Les Échecs ?</button>
+        <button onclick="showSection('evenements')" id="btn-evenements" aria-expanded="false" aria-controls="evenements">Événements</button>
+        <button onclick="showSection('resultats')" id="btn-resultats" aria-expanded="false" aria-controls="resultats">Résultats & Membres</button>
+        <button onclick="showSection('vie')" id="btn-vie" aria-expanded="false" aria-controls="vie">Vie du Club</button>
+        <button onclick="showSection('contact')" id="btn-contact" aria-expanded="false" aria-controls="contact">Contact</button>
     </nav>
 
     <!-- =================================================================
@@ -66,19 +66,19 @@
                         <span class="puzzle-tag">🧠 Défi du jour</span>
                         <span id="puzzleDateNum" class="puzzle-week">Aujourd'hui</span>
                     </div>
-                    <div class="puzzle-board-container" style="width: 100%; max-width: 220px; height: 220px; margin: 0.5rem auto 1rem auto;">
-                        <div id="chessgroundBoard" style="width: 100%; height: 100%;"></div>
+                    <div class="puzzle-board-container">
+                        <img id="puzzleImg" src="" alt="Position du problème d'échecs" class="puzzle-board-img" onclick="zoomImage(this.src)" title="Cliquez pour agrandir l'échiquier" loading="lazy">
                     </div>
-                    <p id="puzzleDesc" class="puzzle-text" style="font-size: 0.85rem; text-align: center; margin-bottom: 0.5rem;"></p>
-                    <a href="#" id="puzzleBtn" class="puzzle-btn">Voir sur Chess.com</a>
-                    <div id="puzzleSolutionContainer" class="hidden" style="margin-top: 0.75rem; padding: 0.6rem; background: #fefce8; border-left: 3px solid var(--accent); border-radius: 4px; font-size: 0.85rem;">
+                    <p id="puzzleDesc" class="puzzle-text"></p>
+                    <a href="#" id="puzzleBtn" class="puzzle-btn">Tester la solution</a>
+                    <div id="puzzleSolutionContainer" class="puzzle-solution-box hidden">
                         <span id="puzzleSolutionText"></span>
                     </div>
                 </div>
             </div>
 
-            <div class="card" style="margin-bottom: 1.5rem;">
-                <h3 style="margin-top: 0;">📅 Planning des séances</h3>
+            <div class="card card-spaced">
+                <h3 class="section-title-reset">📅 Planning des séances</h3>
                 <p>Retrouvez ci-dessous les jours, horaires et lieux de nos différents rendez-vous hebdomadaires :</p>
                 <div class="planning-wrapper">
                     <table class="planning-table planning-table-custom">
@@ -95,53 +95,53 @@
                 </div>
             </div>
 
-            <div class="card" style="margin-bottom: 1.5rem;">
-                <h3 style="margin-top: 0;">📜 Notre histoire</h3>
+            <div class="card card-spaced">
+                <h3 class="section-title-reset">📜 Notre histoire</h3>
                 <p>Depuis sa création, le club a formé des dizaines de jeunes talents et participe activement aux championnats régionaux. Nos locaux chaleureux offrent le cadre parfait pour s'entraîner, analyser ses parties ou simplement disputer une partie amicale autour d'un café.</p>
                 <div class="timeline">
                     <div class="timeline-item">
                         <div class="timeline-dot"></div>
-                        <p style="margin: 0;"><strong>2017 :</strong> Création du club le 1er février par Didier FANTUZ sous le nom du <i>Cercle d’Échecs Union Sportive Fismes Ardre Vesle</i>.</p>
+                        <p class="timeline-text-reset"><strong>2017 :</strong> Création du club le 1er février par Didier FANTUZ sous le nom du <i>Cercle d’Échecs Union Sportive Fismes Ardre Vesle</i>.</p>
                     </div>
                     <div class="timeline-item">
                         <div class="timeline-dot"></div>
-                        <p style="margin: 0;"><strong>2018 :</strong> En septembre, affiliation à la Fédération Française d'Échecs (n° H51078).</p>
+                        <p class="timeline-text-reset"><strong>2018 :</strong> En septembre, affiliation à la Fédération Française d'Échecs (n° H51078).</p>
                     </div>
                     <div class="timeline-item">
                         <div class="timeline-dot"></div>
-                        <p style="margin: 0;"><strong>2022 :</strong> Création du <strong>Cercle d'Échecs Fismes</strong> le 2 avril puis déclaration à la sous-préfecture de Reims le 12 avril (<a href="https://www.journal-officiel.gouv.fr/pages/associations-detail-annonce/?q.id=id:202200161068" target="_blank" rel="noopener noreferrer">Journal Officiel</a>).</p>
+                        <p class="timeline-text-reset"><strong>2022 :</strong> Création du <strong>Cercle d'Échecs Fismes</strong> le 2 avril puis déclaration à la sous-préfecture de Reims le 12 avril (<a href="https://www.journal-officiel.gouv.fr/pages/associations-detail-annonce/?q.id=id:202200161068" target="_blank" rel="noopener noreferrer">Journal Officiel</a>).</p>
                     </div>
                     <div class="timeline-item last">
                         <div class="timeline-dot"></div>
-                        <p style="margin: 0;"><strong>2027 :</strong> 10 ans du club !</p>
+                        <p class="timeline-text-reset"><strong>2027 :</strong> 10 ans du club !</p>
                     </div>
                 </div>
             </div>
 
-            <div class="card" style="margin-bottom: 1.5rem;">
-                <h3 style="margin-top: 0;">📊 Le club en chiffres</h3>
+            <div class="card card-spaced">
+                <h3 class="section-title-reset">📊 Le club en chiffres</h3>
                 <p>Un aperçu en temps réel de notre communauté et de notre dynamique sportive :</p>
                 
-                <div class="grid" style="margin-top: 1rem;">
-                    <div class="card" style="margin-bottom: 0; background: var(--bg); border-top: 3px solid var(--primary);">
-                        <h4 style="margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
+                <div class="grid grid-margin-top">
+                    <div class="card card-nested">
+                        <h4 class="nested-card-title">
                             👥 Les effectifs
                         </h4>
-                        <ul style="padding-left: 1.2rem; margin-bottom: 0; line-height: 1.8;">
-                            <li><strong>Adhérents depuis la création :</strong> <span style="font-weight: bold; color: var(--accent);">419</span></li>
-                            <li><strong>Membres actuellement :</strong> <span id="stat-total-membres" style="font-weight: bold; color: var(--accent);">-</span></li>
-                            <li><strong>Part des féminines :</strong> <span id="stat-feminines" style="font-weight: bold; color: var(--accent);">-</span></li>
+                        <ul class="nested-list">
+                            <li><strong>Adhérents depuis la création :</strong> <span class="accent-bold">419</span></li>
+                            <li><strong>Membres actuellement :</strong> <span id="stat-total-membres" class="accent-bold">-</span></li>
+                            <li><strong>Part des féminines :</strong> <span id="stat-feminines" class="accent-bold">-</span></li>
                         </ul>
                     </div>
 
-                    <div class="card" style="margin-bottom: 0; background: var(--bg); border-top: 3px solid var(--primary);">
-                        <h4 style="margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="card card-nested">
+                        <h4 class="nested-card-title">
                             🏆 Performance
                         </h4>
-                        <ul style="padding-left: 1.2rem; margin-bottom: 0; line-height: 1.8;">
-                            <li><strong>Joueurs classés FIDE :</strong> <span id="stat-joueurs-fide" style="font-weight: bold; color: var(--accent);">-</span></li>
-                            <li><strong>Top Elo actuel :</strong> <span id="stat-top-elo" style="font-weight: bold; color: var(--accent);">-</span></li>
-                            <li><strong>Moyenne Elo Rapide Top 5 :</strong> <span id="stat-niveau-moyen" style="font-weight: bold; color: var(--accent);">-</span></li>
+                        <ul class="nested-list">
+                            <li><strong>Joueurs classés FIDE :</strong> <span id="stat-joueurs-fide" class="accent-bold">-</span></li>
+                            <li><strong>Top Elo actuel :</strong> <span id="stat-top-elo" class="accent-bold">-</span></li>
+                            <li><strong>Moyenne Elo Rapide Top 5 :</strong> <span id="stat-niveau-moyen" class="accent-bold">-</span></li>
                         </ul>
                     </div>
                 </div>
@@ -150,72 +150,72 @@
 
         <!-- SECTION : DÉCOUVRIR LES ÉCHECS -->
         <div id="decouvrir" class="section">
-            <div class="card welcome-banner" style="margin-bottom: 1.5rem; display: flex; flex-direction: row; align-items: center; gap: 2rem; flex-wrap: wrap;">
-                <div style="flex: 1.5; min-width: 280px;">
+            <div class="card welcome-banner discover-banner">
+                <div class="discover-text-col">
                     <span class="welcome-badge">🎓 Pédagogie & Bienfaits</span>
                     <h2 class="welcome-title">Bien plus qu'un jeu : un véritable atout pour grandir !</h2>
-                    <p class="welcome-text" style="margin-bottom: 0;">
+                    <p class="welcome-text discover-text-reset">
                         Souvent qualifié de "gymnastique de l'esprit", le jeu d'échecs est une discipline complète qui séduit de plus en plus de parents et d'éducateurs. Découvrez pourquoi les échecs sont extraordinaires pour le développement des enfants et des adolescents.
                     </p>
                 </div>
-                <div style="flex: 1.2; text-align: center; min-width: 260px;">
-                    <img src="images/jeunes-joueurs.jpg" alt="Jeunes joueurs d'échecs" loading="lazy" style="width: 100%; max-width: 380px; border-radius: 6px; border: 2px solid var(--accent); object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" onerror="this.style.display='none'">
+                <div class="discover-img-col">
+                    <img src="images/jeunes-joueurs.jpg" alt="Jeunes joueurs d'échecs" loading="lazy" class="discover-img" onerror="this.style.display='none'">
                 </div>
             </div>
-            <div class="card" style="margin-bottom: 1.5rem;">
-                <h3 style="margin-top: 0;">🧠 Ce que la pratique des échecs apporte aux jeunes</h3>
+            <div class="card card-spaced">
+                <h3 class="section-title-reset">🧠 Ce que la pratique des échecs apporte aux jeunes</h3>
                 <p>De nombreuses études scientifiques et les retours de la Fédération Française d'Échecs (FFE) démontrent les bienfaits de cette pratique sur le plan scolaire et personnel :</p>
                 
-                <div class="grid" style="margin-top: 1rem;">
-                    <div class="stat-box" style="text-align: left; padding: 1.2rem;">
-                        <h4 style="margin-top: 0; color: var(--accent);">🎯 Concentration & Attention</h4>
-                        <p style="font-size: 0.9rem; margin-bottom: 0;">L'enfant apprend à fixer son attention sur un objectif précis et à faire abstraction des distractions environnantes, ce qui aide directement en classe.</p>
+                <div class="grid grid-margin-top">
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title">🎯 Concentration & Attention</h4>
+                        <p class="stat-box-desc">L'enfant apprend à fixer son attention sur un objectif précis et à faire abstraction des distractions environnantes, ce qui aide directement en classe.</p>
                     </div>
-                    <div class="stat-box" style="text-align: left; padding: 1.2rem;">
-                        <h4 style="margin-top: 0; color: var(--accent);">📈 Résultats Scolaires</h4>
-                        <p style="font-size: 0.9rem; margin-bottom: 0;">En développant la logique, la géométrie spatiale et la résolution de problèmes, les échecs ont un impact positif mesurable sur la réussite en mathématiques et en lecture.</p>
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title">📈 Résultats Scolaires</h4>
+                        <p class="stat-box-desc">En développant la logique, la géométrie spatiale et la résolution de problèmes, les échecs ont un impact positif mesurable sur la réussite en mathématiques et en lecture.</p>
                     </div>
-                    <div class="stat-box" style="text-align: left; padding: 1.2rem;">
-                        <h4 style="margin-top: 0; color: var(--accent);">🤔 Réflexion & Anticipation</h4>
-                        <p style="font-size: 0.9rem; margin-bottom: 0;">"Réfléchir avant d'agir" : le joueur anticipe les conséquences de ses actes, évalue plusieurs options et apprend à assumer ses choix.</p>
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title">🤔 Réflexion & Anticipation</h4>
+                        <p class="stat-box-desc">"Réfléchir avant d'agir" : le joueur anticipe les conséquences de ses actes, évalue plusieurs options et apprend à assumer ses choix.</p>
                     </div>
-                    <div class="stat-box" style="text-align: left; padding: 1.2rem;">
-                        <h4 style="margin-top: 0; color: var(--accent);">🤝 Rigueur & Fair-play</h4>
-                        <p style="font-size: 0.9rem; margin-bottom: 0;">Le respect strict des règles, la courtoisie envers l'adversaire et l'acceptation de la défaite forgent le caractère et le sens de l'honneur.</p>
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title">🤝 Rigueur & Fair-play</h4>
+                        <p class="stat-box-desc">Le respect strict des règles, la courtoisie envers l'adversaire et l'acceptation de la défaite forgent le caractère et le sens de l'honneur.</p>
                     </div>
-                    <div class="stat-box" style="text-align: left; padding: 1.2rem;">
-                        <h4 style="margin-top: 0; color: var(--accent);">👥 Socialisation</h4>
-                        <p style="font-size: 0.9rem; margin-bottom: 0;">Les échecs favorisent les échanges intergénérationnels et permettent de partager des moments conviviaux hors des écrans au sein du club.</p>
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title">👥 Socialisation</h4>
+                        <p class="stat-box-desc">Les échecs favorisent les échanges intergénérationnels et permettent de partager des moments conviviaux hors des écrans au sein du club.</p>
                     </div>
-                    <div class="stat-box" style="text-align: left; padding: 1.2rem;">
-                        <h4 style="margin-top: 0; color: var(--accent);">💪 Persévérance & Résilience</h4>
-                        <p style="font-size: 0.9rem; margin-bottom: 0;">Aux échecs, on commet des erreurs mais on apprend à analyser ses défaites pour rebondir, développer sa combativité et ne jamais baisser les bras.</p>
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title">💪 Persévérance & Résilience</h4>
+                        <p class="stat-box-desc">Aux échecs, on commet des erreurs mais on apprend à analyser ses défaites pour rebondir, développer sa combativité et ne jamais baisser les bras.</p>
                     </div>
                 </div>
             </div>
 
-            <div class="card" style="margin-bottom: 1.5rem;">
-                <h3 style="margin-top: 0;">♟️ Les règles du jeu en 3 étapes simples</h3>
+            <div class="card card-spaced">
+                <h3 class="section-title-reset">♟️ Les règles du jeu en 3 étapes simples</h3>
                 <p>Pas besoin de savoir jouer pour commencer ! Le but ultime est d'attraper le roi adverse (c'est le fameux <strong>Échec et mat</strong>).</p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
-                    <div style="background: var(--bg); padding: 1rem; border-radius: 6px; border-left: 4px solid var(--primary);">
+                <div class="rules-grid">
+                    <div class="rule-box rule-box-primary">
                         <strong>1. Les Blancs commencent toujours</strong>
-                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Chaque type de pièce se déplace d'une manière unique : le fou en diagonale, la tour en ligne droite, le cavalier en "L", etc.</p>
+                        <p class="rule-box-desc">Chaque type de pièce se déplace d'une manière unique : le fou en diagonale, la tour en ligne droite, le cavalier en "L", etc.</p>
                     </div>
-                    <div style="background: var(--bg); padding: 1rem; border-radius: 6px; border-left: 4px solid var(--accent);">
+                    <div class="rule-box rule-box-accent">
                         <strong>2. Le Roi est menacé ("Échec")</strong>
-                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Lorsqu'un roi est attaqué, il doit impérativement se protéger, fuir ou être défendu par une autre pièce.</p>
+                        <p class="rule-box-desc">Lorsqu'un roi est attaqué, il doit impérativement se protéger, fuir ou être défendu par une autre pièce.</p>
                     </div>
-                    <div style="background: var(--bg); padding: 1rem; border-radius: 6px; border-left: 4px solid #27ae60;">
+                    <div class="rule-box rule-box-green">
                         <strong>3. La fin de partie ("Mat")</strong>
-                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Si le roi attaqué ne peut plus échapper à la menace, la partie est terminée : c'est l'échec et mat !</p>
+                        <p class="rule-box-desc">Si le roi attaqué ne peut plus échapper à la menace, la partie est terminée : c'est l'échec et mat !</p>
                     </div>
                 </div>
             </div>
 
-            <div class="grid" style="margin-top: 0;">
-                <div class="card" style="margin-bottom: 0;">
-                    <h3 style="margin-top: 0;">⏳ Les différentes cadences de jeu</h3>
+            <div class="grid grid-zero-margin">
+                <div class="card card-margin-zero">
+                    <h3 class="section-title-reset">⏳ Les différentes cadences de jeu</h3>
                     <p>Aux échecs, le temps est mesuré par une pendule. On distingue trois grands types de parties :</p>
                     <ul>
                         <li><strong>Le Blitz :</strong> Parties très rapides (souvent 3 à 5 minutes par joueur). Idéal pour le fun et l'instinct !</li>
@@ -223,61 +223,61 @@
                         <li><strong>Le Classique (ou Lente) :</strong> Plus d'une heure de jeu par partie. C'est le format des championnats par équipes, où l'on plonge dans des analyses profondes.</li>
                     </ul>
                 </div>
-                <div class="card" style="margin-bottom: 0;">
-                    <h3 style="margin-top: 0;">📊 C'est quoi le système Elo ?</h3>
+                <div class="card card-margin-zero">
+                    <h3 class="section-title-reset">📊 C'est quoi le système Elo ?</h3>
                     <p>L'<strong>Elo</strong> est le système de notation international qui mesure le niveau d'un joueur d'échecs (du nom de son inventeur, Arpad Elo).</p>
-                    <ul style="padding-left: 1.2rem;">
+                    <ul class="list-padding-left">
                         <li>Un débutant complet commence généralement autour de <strong>1000-1200 points</strong>.</li>
                         <li>Un joueur club régulier se situe entre <strong>1400 et 1800 points</strong>.</li>
                         <li>Les experts et maîtres internationaux dépassent les <strong>2000 à 2500 points</strong>.</li>
                     </ul>
-                    <p style="font-style: italic; font-size: 0.85rem; margin-top: 1rem; color: #6b7280;">💡 Plus vous gagnez contre des joueurs forts, plus votre score Elo monte ! C'est un excellent moyen de voir sa progression au fil des mois.</p>
+                    <p class="elo-tip">💡 Plus vous gagnez contre des joueurs forts, plus votre score Elo monte ! C'est un excellent moyen de voir sa progression au fil des mois.</p>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION : ÉVÉNEMENTS & CALENDRIER -->
+		<!-- SECTION : ÉVÉNEMENTS & CALENDRIER -->
         <div id="evenements" class="section">
-            <div class="events-main-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start;">
+            <div class="events-main-grid">
                 <div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
-                        <h2 style="margin: 0;">Calendrier & Événements</h2>
-                        <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+                    <div class="events-header-flex">
+                        <h2 class="events-title-margin">Calendrier & Événements</h2>
+                        <div class="events-filter-flex">
                             <div>
-                                <label for="yearSelect" style="font-weight: bold; margin-right: 0.5rem;">Filtrer par année :</label>
-                                <select id="yearSelect" onchange="filterEvents()" style="padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; background: white; font-size: 1rem; cursor: pointer;"></select>
+                                <label for="yearSelect" class="year-label">Filtrer par année :</label>
+                                <select id="yearSelect" onchange="filterEvents()" class="year-select"></select>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div class="checkbox-flex">
                                 <label class="switch">
                                     <input type="checkbox" id="hidePastCheckbox" onchange="filterEvents()" checked>
                                     <span class="slider"></span>
                                 </label>
-                                <span style="font-weight: bold; font-size: 0.95rem; cursor: pointer;" onclick="document.getElementById('hidePastCheckbox').click()">Masquer les anciens événements</span>
+                                <span class="hide-past-text" onclick="document.getElementById('hidePastCheckbox').click()">Masquer les anciens événements</span>
                             </div>
                         </div>
                     </div>
-                    <div class="grid" id="eventsGrid" style="grid-template-columns: 1fr; gap: 1rem;">
-                        <p style="font-style: italic; color: #7f8c8d; text-align: center; padding: 2rem;">Chargement du calendrier en cours...</p>
+                    <div class="grid" id="eventsGrid">
+                        <p class="loading-text">Chargement du calendrier en cours...</p>
                     </div>
                 </div>
 
-                <div class="card calendar-card-sidebar" style="padding: 1rem; border-top: 3px solid var(--accent); position: sticky; top: 80px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <button onclick="changeMonth(-1)" aria-label="Mois précédent" style="background: none; border: none; font-weight: bold; font-size: 1.2rem; cursor: pointer; color: var(--text);">‹</button>
-                        <h3 id="calendarMonthYear" style="margin: 0; font-size: 1.1rem; text-transform: capitalize; text-align: center; flex-grow: 1;">-</h3>
-                        <button onclick="changeMonth(1)" aria-label="Mois suivant" style="background: none; border: none; font-weight: bold; font-size: 1.2rem; cursor: pointer; color: var(--text);">›</button>
+                <div class="card calendar-card-sidebar">
+                    <div class="calendar-header">
+                        <button onclick="changeMonth(-1)" aria-label="Mois précédent" class="calendar-nav-btn">‹</button>
+                        <h3 id="calendarMonthYear" class="calendar-month-title">-</h3>
+                        <button onclick="changeMonth(1)" aria-label="Mois suivant" class="calendar-nav-btn">›</button>
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; font-size: 0.75rem; color: #7f8c8d; margin-bottom: 0.5rem;">
+                    <div class="calendar-days-header">
                         <div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div><div>D</div>
                     </div>
-                    <div id="calendarDaysGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 0.4rem; text-align: center; font-size: 0.85rem;"></div>
-                    <p style="font-size: 0.75rem; color: #7f8c8d; margin: 1rem 0 0 0; text-align: center; font-style: italic;">Les jours colorés contiennent un événement.</p>
+                    <div id="calendarDaysGrid" class="calendar-days-grid"></div>
+                    <p class="calendar-footer-text">Les jours colorés contiennent un événement.</p>
                 </div>
             </div>
         </div>
 
         <!-- LIGHTBOX / ZOOM IMAGES -->
-        <div id="lightbox" class="lightbox-overlay" onclick="closeZoom()">
+        <div id="lightbox" class="lightbox-overlay" onclick="closeZoom()" role="dialog" aria-modal="true" aria-label="Agrandissement d'image">
             <div class="lightbox-container" onclick="event.stopPropagation()">
                 <button class="lightbox-btn lightbox-prev" onclick="changeLightboxImage(-1)" title="Photo précédente">‹</button>
                 <img id="lightboxImg" src="" alt="Affiche Agrandie">
@@ -290,26 +290,26 @@
             <div class="card">
                 <h2>Classement et Profils des Joueurs</h2>
                 <div class="members-tip">
-                    <p style="margin: 2px 0;">💡 <strong>Astuce de tri :</strong> Cliquez sur les en-têtes <em>Classique, Rapide ou Blitz</em> pour basculer alternativement entre le tri Décroissant ➔ Ordre alphabétique.</p>
-                    <p style="margin: 2px 0;">📊 Les classements de cette liste sont mis à jour périodiquement par le club.</p>
+                    <p class="members-tip-p">💡 <strong>Astuce de tri :</strong> Cliquez sur les en-têtes <em>Classique, Rapide ou Blitz</em> pour basculer alternativement entre le tri Décroissant ➔ Ordre alphabétique.</p>
+                    <p class="members-tip-p">📊 Les classements de cette liste sont mis à jour périodiquement par le club.</p>
                 </div>
                 
                 <div class="table-scroll-container">
                     <table id="membersTable">
                         <thead>
-                            <tr style="user-select: none;">
+                            <tr class="table-header-row">
 								<th id="th-nomPrenom">
-									Nom Prénom <span role="button" aria-label="Ouvrir la recherche par nom" tabindex="0" style="font-size: 0.8rem; color: var(--accent); cursor: pointer;" onclick="toggleSearchInput(event)">🔍</span>
-									<div id="searchContainer" onclick="event.stopPropagation();" style="display: none; margin-top: 8px;">
+									Nom Prénom <span role="button" aria-label="Ouvrir la recherche par nom" tabindex="0" class="search-toggle-icon" onclick="toggleSearchInput(event)">🔍</span>
+									<div id="searchContainer" onclick="event.stopPropagation();" class="search-container-box">
 										<input type="text" id="nameSearchInput" onkeyup="filterByInputName()" placeholder="Rechercher un nom..." aria-label="Rechercher un membre par nom">
 									</div>
 								</th>
-                                <th id="th-classique" style="text-align: center;">♟️ Classique <span class="sort-icon" style="font-size: 0.75rem; color: var(--accent);">↕</span></th>
-                                <th id="th-rapide" style="text-align: center;">⚡ Rapide <span class="sort-icon" style="font-size: 0.75rem; color: var(--accent);">↕</span></th>
-                                <th id="th-blitz" style="text-align: center;">🔥 Blitz <span class="sort-icon" style="font-size: 0.75rem; color: var(--accent);">↕</span></th>
-                                <th id="th-categorie" style="text-align: center;">Catégorie</th>
-                                <th id="th-genre" style="text-align: center;">F/M</th>
-                                <th id="th-fide" style="text-align: center;">Profil International</th>
+                                <th id="th-classique" class="th-center">♟️ Classique <span class="sort-icon">↕</span></th>
+                                <th id="th-rapide" class="th-center">⚡ Rapide <span class="sort-icon">↕</span></th>
+                                <th id="th-blitz" class="th-center">🔥 Blitz <span class="sort-icon">↕</span></th>
+                                <th id="th-categorie" class="th-center">Catégorie</th>
+                                <th id="th-genre" class="th-center">F/M</th>
+                                <th id="th-fide" class="th-center">Profil International</th>
                             </tr>
                         </thead>
                         <tbody id="membersTableBody"></tbody>
@@ -322,27 +322,27 @@
         <div id="vie" class="section">
             <h2>Vie du Club</h2>
             
-            <div class="grid" style="margin-bottom: 1.5rem;">
-				<div class="card" style="margin-bottom: 0;">
+            <div class="grid card-spaced">
+				<div class="card card-margin-zero">
 					<h3>📰 Actualités</h3>
 					<p>Suivez les aventures du club au quotidien sur nos réseaux officiels :</p>
 					<div class="social-container">
 						<a href="https://www.facebook.com/p/Cercle-dEchecs-de-Fismes-61559241561957/" target="_blank" rel="noopener noreferrer" class="link-social-only" title="Suivez-nous sur Facebook">
-							<img src="images/logo-facebook.png" alt="Facebook du Club" class="social-logo-img">
+							<img src="images/logo-facebook.png" alt="Facebook du Club" class="social-logo-img" loading="lazy">
 						</a>
 						<a href="https://www.instagram.com/grandestechecs/" target="_blank" rel="noopener noreferrer" class="link-social-only" title="Suivez-nous sur Instagram">
-							<img src="images/logo-instagram.png" alt="Instagram du Club" class="social-logo-img">
+							<img src="images/logo-instagram.png" alt="Instagram du Club" class="social-logo-img" loading="lazy">
 						</a>
 					</div>
-					<p style="margin-bottom: 0.25rem;"><strong>La Gazette du Cavalier Jaune (PDF) :</strong></p>
+					<p class="gazette-title-margin"><strong>La Gazette du Cavalier Jaune (PDF) :</strong></p>
 					<div class="gazette-scroll-container">
 						<ul id="gazetteList">
-							<li style="color: #7f8c8d; font-style: italic;">Chargement des gazettes...</li>
+							<li class="loading-gazette">Chargement des gazettes...</li>
 						</ul>
 					</div>
 				</div>
 
-                <div class="card" style="margin-bottom: 0;">
+                <div class="card card-margin-zero">
                     <h3>📁 Documents & Ressources</h3>
                     <p>Téléchargez les documents officiels du club :</p>
                     <ul>
@@ -353,15 +353,15 @@
                 </div>
             </div>
 
-            <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card card-spaced">
                 <h3>📸 Galerie Photos</h3>
                 <div id="dynamicGalleryGrid" class="gallery-grid">
-                    <p style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-style: italic;">Chargement des photos...</p>
+                    <p class="loading-gallery">Chargement des photos...</p>
                 </div>
             </div>
 
-            <div class="grid" style="margin-top: 0;">
-                <div class="card" style="margin-bottom: 0;">
+            <div class="grid grid-zero-margin">
+                <div class="card card-margin-zero">
                     <h3>🛍️ La Boutique du Club</h3>
                     <p>Produits dérivés disponibles à l'achat directement au club (pas de vente en ligne) :</p>
                     <ul>
@@ -370,12 +370,12 @@
                         <li><strong>Pendule électronique DGT :</strong> 40 €</li>
                     </ul>
                     <p><i>Pour réserver un article, adressez-vous directement au bureau lors des séances.</i></p>
-					<div style="text-align: center; margin-top: 1rem;">
-						<img src="images/polo.png" alt="Polo officiel du club d'échecs" loading="lazy" onclick="zoomImage(this.src)" title="Cliquez pour agrandir l'image" style="max-width: 150px; height: auto; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+					<div class="polo-img-container">
+						<img src="images/polo.png" alt="Polo officiel du club d'échecs" loading="lazy" onclick="zoomImage(this.src)" title="Cliquez pour agrandir l'image" class="polo-img" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
 					</div>
                 </div>
 
-				<div class="card" style="margin-bottom: 0;">
+				<div class="card card-margin-zero">
 					<h3>🤝 Nos Partenaires</h3>
 					<p>Un grand merci à nos partenaires institutionnels et privés qui soutiennent le développement de nos jeunes talents et la vie de notre association :</p>
 					<div class="partners-grid">
@@ -398,10 +398,10 @@
 							<span class="partner-name">Ville de Fismes</span>
 						</a>
 					</div>
-					<div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px dashed #d1d5db; text-align: center;">
-						<p style="margin: 0; font-size: 0.9rem; color: #4b5563;">
+					<div class="partner-footer-box">
+						<p class="partner-footer-text">
 							Vous souhaitez devenir partenaire ou sponsor du club ? 
-							<a href="#contact" onclick="showSection('contact')" style="color: var(--accent-hover); font-weight: bold; text-decoration: underline;">Contactez notre bureau !</a>
+							<a href="#contact" onclick="showSection('contact')" class="partner-contact-link">Contactez notre bureau !</a>
 						</p>
 					</div>
 				</div>
@@ -411,7 +411,7 @@
         <!-- SECTION : CONTACT -->
         <div id="contact" class="section">
             <div class="grid">
-                <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="card contact-info-card">
                     <h2>Coordonnées</h2>
                     <p>📍 <strong>Adresse :</strong> Route nationale (ancien camping), 51170 Fismes</p>
                     <p>✉️ <strong>Email :</strong> cercle.echecs.fismes@gmail.com</p>
@@ -434,7 +434,7 @@
                         <label>Votre Message</label>
                         <textarea name="message" rows="5" required placeholder="Votre question ou demande d'inscription..."></textarea>
                         <button type="submit" class="btn">Envoyer le message</button>
-                        <div id="formStatus" style="margin-top: 1rem; font-size: 0.95rem; display: none;"></div>
+                        <div id="formStatus" class="form-status-box"></div>
                     </form>
                 </div>
             </div>
@@ -442,8 +442,8 @@
 
         <!-- SECTION : ESPACE BUREAU -->
         <div id="bureau" class="section">
-            <div class="card" style="border-top: 4px solid var(--accent); margin-bottom: 1.5rem;">
-                <h2 style="margin-top: 0; display: flex; align-items: center; gap: 0.5rem; color: var(--primary);">
+            <div class="card bureau-header-card">
+                <h2 class="bureau-title">
                     📋 Espace de Gestion du Bureau
                 </h2>
                 <p>Outils de pilotage et liens de mise à jour pour les membres du bureau.</p>
@@ -506,9 +506,9 @@
 
             </div>
 
-            <div class="card" style="margin-top: 1.5rem; background: #fefce8; border-left: 4px solid var(--accent);">
-                <h4 style="margin-top: 0; color: var(--primary);">💡 Mémento pour l'administration :</h4>
-                <ul style="margin-bottom: 0; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.6;">
+            <div class="card bureau-memento-card">
+                <h4 class="bureau-memento-title">💡 Mémento pour l'administration :</h4>
+                <ul class="bureau-memento-list">
                     <li><strong>Membres :</strong> La modification d'un score Elo sur Google Sheets prend effet immédiatement sur le site après rafraîchissement de la page.</li>
                     <li><strong>Affiches :</strong> Pour lier une affiche à un événement, nommez le fichier image exactement comme renseigné dans la colonne dédiée du fichier Google Sheets.</li>
                     <li><strong>Gazettes :</strong> Déposez simplement le fichier au format PDF dans le dossier Drive dédié. Il apparaîtra automatiquement dans les archives.</li>
@@ -518,66 +518,41 @@
 
     </div>
 
-	<!-- SCRIPTS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <!-- SCRIPT PRINCIPAL -->
     <script src="script.js"></script>
-    <script type="module">
-        import { Chessground } from 'https://cdn.jsdelivr.net/npm/chessground@9.1.0/+esm';
-        window.Chessground = Chessground;
-
-        async function loadChessgroundCSS() {
-            try {
-                const [resCss, resTheme] = await Promise.all([
-                    fetch('https://cdn.jsdelivr.net/npm/chessground@9.1.0/assets/chessground.min.css'),
-                    fetch('https://cdn.jsdelivr.net/npm/chessground@9.1.0/assets/theme/default/theme.min.css')
-                ]);
-                if (resCss.ok && resTheme.ok) {
-                    const [cssText, themeText] = await Promise.all([resCss.text(), resTheme.text()]);
-                    const styleEl = document.createElement('style');
-                    styleEl.innerHTML = cssText + '\n' + themeText;
-                    document.head.appendChild(styleEl);
-                }
-            } catch (e) {
-                console.warn("Erreur chargement styles chessground", e);
-            }
-        }
-        await loadChessgroundCSS();
-
-        if (typeof chargerTactiqueDuJour === 'function') {
-            chargerTactiqueDuJour();
-        }
-    </script>
 
     <!-- FOOTER & MENTIONS LÉGALES -->
     <footer class="site-footer">
         <p>© <span id="currentYear"></span> Cercle d'Échecs de Fismes - Tous droits réservés | <a href="#" onclick="openLegalModal(event)">Mentions Légales & RGPD</a></p>
     </footer>
 
+	<!-- MODALE ARCHIVES DES GAZETTES -->
 	<div id="gazetteModal" class="lightbox-overlay" role="dialog" aria-modal="true" onclick="closeGazetteModal()">
-		<div class="card" style="max-width: 650px; width: 90%; max-height: 80vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
-			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-				<h3 style="margin: 0; color: var(--primary);">📚 Archives de la Gazette du Cavalier Jaune</h3>
-				<button type="button" onclick="closeGazetteModal()" aria-label="Fermer la fenêtre" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text);">×</button>
+		<div class="card modal-card-custom" onclick="event.stopPropagation()">
+			<div class="modal-header-flex">
+				<h3 class="modal-title">📚 Archives de la Gazette du Cavalier Jaune</h3>
+				<button type="button" onclick="closeGazetteModal()" aria-label="Fermer la fenêtre" class="modal-close-btn">×</button>
 			</div>
-            <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 1rem;">Retrouvez ci-dessous l'intégralité des numéros parus. Utilisez la recherche pour filtrer rapidement :</p>
-            <input type="text" id="gazetteSearchInput" onkeyup="filterGazetteModal()" placeholder="Rechercher un numéro (ex: 120, Automne...)" style="width: 100%; padding: 8px 12px; margin-bottom: 1rem; border-radius: 4px; border: 1px solid var(--accent); font-size: 0.9rem;">
-            <div id="gazetteModalListContainer" style="max-height: 350px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 4px; padding: 0.5rem; background: var(--bg);">
-                <ul id="gazetteModalList" style="list-style: none; padding: 0; margin: 0;">
+            <p class="modal-desc">Retrouvez ci-dessous l'intégralité des numéros parus. Utilisez la recherche pour filtrer rapidement :</p>
+            <input type="text" id="gazetteSearchInput" onkeyup="filterGazetteModal()" placeholder="Rechercher un numéro (ex: 120, Automne...)" class="modal-search-input">
+            <div id="gazetteModalListContainer" class="modal-list-container">
+                <ul id="gazetteModalList" class="modal-list-reset">
                 </ul>
             </div>
-            <button type="button" class="btn" onclick="closeGazetteModal()" style="margin-top: 1rem;">Fermer</button>
+            <button type="button" class="btn modal-close-action-btn" onclick="closeGazetteModal()">Fermer</button>
         </div>
     </div>
 
+    <!-- MODALE MENTIONS LÉGALES -->
 	<div id="legalModal" class="lightbox-overlay" role="dialog" aria-modal="true" onclick="openLegalModal()">
-		<div class="card" style="max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
-			<h3 style="margin-top: 0; color: var(--primary);">Mentions Légales & RGPD</h3>
+		<div class="card modal-card-custom" onclick="event.stopPropagation()">
+			<h3 class="modal-title-simple">Mentions Légales & RGPD</h3>
             <p><strong>Éditeur du site :</strong> Cercle d'Échecs de Fismes (Association Loi 1901)</p>
             <p><strong>Siège social :</strong> 26 rue Maurice Dézothez, 51170 Fismes</p>
             <p><strong>Directeur de la publication :</strong> Didier FANTUZ</p>
             <p><strong>Hébergeur :</strong> GitHub Pages</p>
             <p><strong>Données personnelles (RGPD) :</strong> Les informations recueillies via les formulaires de contact sont destinées exclusivement à l'association pour répondre à vos demandes. Elles ne sont en aucun cas cédées ou vendues à des tiers.</p>
-            <button type="button" class="btn" onclick="closeLegalModal()" style="margin-top: 1rem;">Fermer</button>
+            <button type="button" class="btn modal-close-action-btn" onclick="closeLegalModal()">Fermer</button>
         </div>
     </div>
 

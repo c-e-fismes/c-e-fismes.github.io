@@ -2,7 +2,7 @@
    1. CONFIGURATION GLOBALE, NAVIGATION & UTILITAIRES
    ================================================================ */
 const CONFIG = {
-    CACHE_VERSION: 'v2',
+    CACHE_VERSION: 'v2', /* Faire évoluer la version à chaque changement significatif */
     CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
@@ -93,13 +93,19 @@ async function fetchWithErrorHandling(url, errorMessage = "Erreur de chargement.
 
 function showSection(sectionId) {
     document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-    document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+    });
     
     const targetSection = document.getElementById(sectionId);
     if (targetSection) targetSection.classList.add('active');
 
     const targetBtn = document.getElementById('btn-' + sectionId);
-    if (targetBtn) targetBtn.classList.add('active');
+    if (targetBtn) {
+        targetBtn.classList.add('active');
+        targetBtn.setAttribute('aria-expanded', 'true');
+    }
 	
 	const formStatus = document.getElementById('formStatus');
     if (formStatus) {
@@ -182,39 +188,18 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-(async function() {
-    try {
-        const [resCss, resTheme] = await Promise.all([
-            fetch('https://cdn.jsdelivr.net/npm/chessground@9.1.0/assets/chessground.min.css'),
-            fetch('https://cdn.jsdelivr.net/npm/chessground@9.1.0/assets/theme/default/theme.min.css')
-        ]);
-        
-        if (resCss.ok && resTheme.ok) {
-            const [cssText, themeText] = await Promise.all([resCss.text(), resTheme.text()]);
-            const styleEl = document.createElement('style');
-            styleEl.innerHTML = cssText + '\n' + themeText;
-            document.head.appendChild(styleEl);
-        }
-    } catch (e) {
-        console.warn("Erreur chargement styles chessground", e);
-    }
-})();
-
 
 /* =================================================================
-   2. ONGLET "LE CLUB" (TACTIQUE INTERACTIVE, PLANNING & STATUT)
+   2. ONGLET "LE CLUB" (TACTIQUE, PLANNING & STATUT DES SÉANCES)
    ================================================================ */
-
-let chessGame = null;
-let chessgroundBoard = null;
 
 async function chargerTactiqueDuJour() {
     const dateEl = document.getElementById('puzzleDateNum');
+    const imgEl = document.getElementById('puzzleImg');
     const btnEl = document.getElementById('puzzleBtn');
     const descEl = document.getElementById('puzzleDesc');
     const solutionContainer = document.getElementById('puzzleSolutionContainer');
     const solutionTextEl = document.getElementById('puzzleSolutionText');
-    const boardEl = document.getElementById('chessgroundBoard');
     
     const now = new Date();
     if (dateEl) dateEl.textContent = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -224,61 +209,20 @@ async function chargerTactiqueDuJour() {
         if (!response.ok) throw new Error("Erreur réseau API");
         
         const data = await response.json();
-        const fen = data.fen || "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3";
-        
-        chessGame = new Chess(fen);
-        
-        if (boardEl && window.Chessground) {
-            chessgroundBoard = window.Chessground(boardEl, {
-                fen: chessGame.fen(),
-                orientation: chessGame.turn() === 'w' ? 'white' : 'black',
-                movable: {
-                    free: false,
-                    color: chessGame.turn() === 'w' ? 'white' : 'black',
-                    dests: computeLegalMoves(chessGame),
-                    events: {
-                        after: handleChessgroundMove
-                    }
-                }
-            });
-        }
-
-        if (descEl) {
-            descEl.textContent = "Trait aux " + (chessGame.turn() === 'w' ? "Blancs" : "Noirs") + ". À vous de jouer !";
-            descEl.style.display = 'block';
-        }
+        if (imgEl) imgEl.src = data.image;
+        if (descEl) descEl.style.display = 'none';
         if (solutionContainer) solutionContainer.classList.add('hidden');
 
         if (btnEl) {
             btnEl.href = data.url;
             btnEl.target = "_blank";
             btnEl.rel = "noopener noreferrer";
-            btnEl.textContent = "Voir sur Chess.com";
+            btnEl.textContent = "Tester la solution";
             btnEl.onclick = null; 
         }
     } catch (error) {
-        const fallbackFen = "7Q/1pq2kp1/p2ppb2/8/4B1P1/3P4/PP3P2/K7 w - - 0 1";
-        chessGame = new Chess(fallbackFen);
-        
-        if (boardEl && window.Chessground) {
-            chessgroundBoard = window.Chessground(boardEl, {
-                fen: chessGame.fen(),
-                orientation: 'white',
-                movable: {
-                    free: false,
-                    color: 'white',
-                    dests: computeLegalMoves(chessGame),
-                    events: {
-                        after: handleChessgroundMove
-                    }
-                }
-            });
-        }
-
-        if (descEl) { 
-            descEl.textContent = "Trait aux Blancs."; 
-            descEl.style.display = 'block'; 
-        }
+        if (imgEl) imgEl.src = "https://fen2image.chessvision.ai/7Q/1pq2kp1/p2ppb2/8/4B1P1/3P4/PP3P2/K7";
+        if (descEl) { descEl.textContent = "Trait aux Blancs."; descEl.style.display = 'block'; }
         if (solutionTextEl) solutionTextEl.innerHTML = "<strong>Solution :</strong> 1. Fg6!!<br>Si 1… RxFg6 2. Dh5#<br>Si 1… Re7 2. De8#";
         if (solutionContainer) solutionContainer.classList.add('hidden');
         if (btnEl) {
@@ -288,42 +232,6 @@ async function chargerTactiqueDuJour() {
             btnEl.textContent = "Afficher la solution";
             btnEl.onclick = function(e) { e.preventDefault(); togglePuzzleSolution(); };
         }
-    }
-}
-
-function computeLegalMoves(chessInstance) {
-    const dests = new Map();
-    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-    const ranks = ['1', '2', '3', '4', '5', '6', '7', '8'];
-    for (let r of ranks) {
-        for (let f of files) {
-            const s = f + r;
-            const ms = chessInstance.moves({ square: s, verbose: true });
-            if (ms && ms.length) {
-                dests.set(s, ms.map(m => m.to));
-            }
-        }
-    }
-    return dests;
-}
-
-function handleChessgroundMove(orig, dest) {
-    const move = chessGame.move({ from: orig, to: dest, promotion: 'q' });
-    if (move) {
-        chessgroundBoard.set({
-            fen: chessGame.fen(),
-            movable: {
-                color: chessGame.turn() === 'w' ? 'white' : 'black',
-                dests: computeLegalMoves(chessGame)
-            }
-        });
-        
-        const descEl = document.getElementById('puzzleDesc');
-        if (descEl) {
-            descEl.textContent = "Coup joué : " + orig + "-" + dest + ". Bien joué !";
-        }
-    } else {
-        chessgroundBoard.set({ fen: chessGame.fen() });
     }
 }
 
@@ -1598,7 +1506,7 @@ function afficherPageGalerie() {
 
             const img = document.createElement('img');
             img.src = thumbUrl;
-            img.loading = 'lazy';
+            img.loading = 'lazy'; // Optimisation : chargement différé systématique
             img.alt = photo.name ? escapeHTML(photo.name) : "Photo du club d'échecs de Fismes";
             
             const indexActuel = listeUrlsPhotos.indexOf(fullImageUrl);
@@ -1805,14 +1713,8 @@ function closeLegalModal() {
 /* =================================================================
    9. ENREGISTREMENT DU SERVICE WORKER (MODE HORS-LIGNE)
    ================================================================ */
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => {
-                console.log('Service Worker enregistré avec succès :', reg.scope);
-            })
-            .catch(err => {
-                console.warn('Échec de l\'enregistrement du Service Worker :', err);
-            });
-    });
+if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+    navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker enregistré avec succès :', reg.scope))
+        .catch(err => console.warn('Échec de l\'enregistrement du Service Worker :', err));
 }
