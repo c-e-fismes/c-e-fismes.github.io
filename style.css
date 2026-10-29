@@ -263,6 +263,33 @@ nav button.active { background: var(--accent); color: var(--primary); font-weigh
     text-overflow: ellipsis;
 }
 
+.vacation-banner-box {
+    background: #fef3c7;
+    border-left: 4px solid var(--accent);
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--primary);
+}
+
+.vacation-banner-box.hidden { display: none !important; }
+
+.vacation-alert-icon { font-size: 1.8rem; }
+
+.vacation-alert-desc {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.planning-table-disabled {
+    opacity: 0.5;
+    filter: grayscale(30%);
+}
+
 .table-fide-btn {
     display: inline-flex;
     align-items: center;
@@ -709,6 +736,13 @@ th { background-color: var(--primary); color: #ffffff; }
     background-color: #fef08a !important;
     font-weight: bold;
 }
+
+.planning-wrapper.planning-table-disabled .seance-active-row {
+    background-color: #fefce8 !important;
+    font-weight: normal !important;
+}
+
+.planning-wrapper.planning-table-disabled .table-badge { display: none !important; }
 
 .planning-table tbody tr.seance-active-row td:last-child {
     display: flex;

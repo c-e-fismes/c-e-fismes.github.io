@@ -1,7 +1,7 @@
 /* =================================================================
    SERVICE WORKER (MODE HORS-LIGNE)
    ================================================================ */
-const CACHE_NAME = 'echecs-fismes-v3'; /* Faire évoluer la version à chaque changement significatif */
+const CACHE_NAME = 'echecs-fismes-v4'; /* Faire évoluer la version à chaque changement significatif */
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

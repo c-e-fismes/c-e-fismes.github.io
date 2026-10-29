@@ -2,7 +2,7 @@
    1. CONFIGURATION GLOBALE, NAVIGATION & UTILITAIRES
    ================================================================ */
 const CONFIG = {
-    CACHE_VERSION: 'v3', /* Faire évoluer la version à chaque changement significatif */
+    CACHE_VERSION: 'v4', /* Faire évoluer la version à chaque changement significatif */
     CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
@@ -433,6 +433,39 @@ function verifierStatutSeanceClub() {
         if (lastCell) lastCell.appendChild(badge);
     }
 }
+
+function toggleVacationMode() {
+    const isVacation = document.getElementById('vacationModeToggle').checked;
+    localStorage.setItem('cce_vacation_mode', isVacation);
+    applyVacationMode(isVacation);
+}
+
+function applyVacationMode(isVacation) {
+    const banner = document.getElementById('vacationAlertBanner');
+    const wrapper = document.getElementById('planningWrapperContainer');
+    const countdownBox = document.getElementById('countdownContainer');
+
+    if (isVacation) {
+        if (banner) banner.classList.remove('hidden');
+        if (wrapper) wrapper.classList.add('planning-table-disabled');
+        if (countdownBox) countdownBox.style.display = 'none';
+        
+        document.querySelectorAll('.table-badge').forEach(badge => badge.style.display = 'none');
+    } else {
+        if (banner) banner.classList.add('hidden');
+        if (wrapper) wrapper.classList.remove('planning-table-disabled');
+        if (countdownBox) countdownBox.style.display = 'inline-flex';
+        
+        document.querySelectorAll('.table-badge').forEach(badge => badge.style.display = 'inline-block');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const savedState = localStorage.getItem('cce_vacation_mode') === 'true';
+    const toggle = document.getElementById('vacationModeToggle');
+    if (toggle) toggle.checked = savedState;
+    applyVacationMode(savedState);
+});
 
 
 /* =================================================================

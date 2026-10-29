@@ -77,23 +77,33 @@
                 </div>
             </div>
 
-            <div class="card card-spaced">
-                <h3 class="section-title-reset">📅 Planning des séances</h3>
-                <p>Retrouvez ci-dessous les jours, horaires et lieux de nos différents rendez-vous hebdomadaires :</p>
-                <div class="planning-wrapper">
-                    <table class="planning-table planning-table-custom">
-                        <thead>
-                            <tr>
-                                <th>Jour</th>
-                                <th>Créneau Horaire</th>
-                                <th>Commune</th>
-                                <th>Lieu</th>
-                            </tr>
-                        </thead>
-                        <tbody id="planningTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
+			<div class="card card-spaced">
+				<h3 class="section-title-reset">📅 Planning des séances</h3>
+				<p>Retrouvez ci-dessous les jours, horaires et lieux de nos différents rendez-vous hebdomadaires :</p>
+				
+				<!-- BANNIÈRE VACANCES (Cachée par défaut) -->
+				<div id="vacationAlertBanner" class="vacation-banner-box hidden">
+					<span class="vacation-alert-icon">🏖️</span>
+					<div>
+						<strong>Séances suspendues pendant les vacances scolaires</strong>
+						<p class="vacation-alert-desc">Profitez bien de cette pause ! Reprise des séances habituelles dès la rentrée.</p>
+					</div>
+				</div>
+
+				<div class="planning-wrapper" id="planningWrapperContainer">
+					<table class="planning-table planning-table-custom">
+						<thead>
+							<tr>
+								<th>Jour</th>
+								<th>Créneau Horaire</th>
+								<th>Commune</th>
+								<th>Lieu</th>
+							</tr>
+						</thead>
+						<tbody id="planningTableBody"></tbody>
+					</table>
+				</div>
+			</div>
 
             <div class="card card-spaced">
                 <h3 class="section-title-reset">📜 Notre histoire</h3>
@@ -503,6 +513,20 @@
                         </a>
                     </div>
                 </div>
+
+				<div class="card admin-card">
+					<h3 class="admin-card-title">🏖️ Mode Vacances</h3>
+					<p class="admin-card-desc">Activez cette option pendant les vacances scolaires pour suspendre les séances et afficher un message d'information :</p>
+					<div class="admin-links-list">
+						<div class="admin-link-btn" style="background: var(--bg); cursor: default;">
+							<span>Vacances scolaires en cours</span>
+							<label class="switch">
+								<input type="checkbox" id="vacationModeToggle" onchange="toggleVacationMode()">
+								<span class="slider"></span>
+							</label>
+						</div>
+					</div>
+				</div>
 
             </div>
 
