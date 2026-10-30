@@ -2,7 +2,7 @@
    1. CONFIGURATION GLOBALE, NAVIGATION & UTILITAIRES
    ================================================================ */
 const CONFIG = {
-    CACHE_VERSION: 'v7', /* Faire évoluer la version à chaque changement significatif */
+    CACHE_VERSION: 'v8', /* Faire évoluer la version à chaque changement significatif */
     CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
@@ -1274,7 +1274,7 @@ function loadMembresData() {
     } else {
         cacheManager.clear('cache_membres');
 
-        const url = `https://docs.google.com/spreadsheets/d/${CONFIG.MEMBRES_SHEET_ID}/gviz/tq?tqx=responseHandler:googleDocCallback`;
+        const url = `https://docs.google.com/spreadsheets/d/${CONFIG.MEMBRES_SHEET_ID}/gviz/tq?tqx=responseHandler:googleDocCallback&sheet=Membres`;
         const script = document.createElement('script');
         script.id = 'jsonp-membres-script';
         script.src = url;
@@ -1753,7 +1753,7 @@ function creerEtAfficherEspaceBureau() {
                     <p class="admin-card-desc">Gestion des données textuelles et tableaux synchronisés avec le site :</p>
                     <div class="admin-links-list">
                         <a href="https://docs.google.com/spreadsheets/d/${CONFIG.MEMBRES_SHEET_ID}/edit" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
-                            <span>👥 Membres & Classments</span>
+                            <span>👥 Membres & Classements</span>
                             <span class="admin-link-arrow">➔</span>
                         </a>
                         <a href="https://docs.google.com/spreadsheets/d/${CONFIG.EVENTS_SHEET_ID}/edit" target="_blank" rel="noopener noreferrer" class="admin-link-btn">
