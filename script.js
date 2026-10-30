@@ -2,7 +2,7 @@
    1. CONFIGURATION GLOBALE, NAVIGATION & UTILITAIRES
    ================================================================ */
 const CONFIG = {
-    CACHE_VERSION: 'v8', /* Faire évoluer la version à chaque changement significatif */
+    CACHE_VERSION: 'v9', /* Faire évoluer la version à chaque changement significatif */
     CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
@@ -54,6 +54,27 @@ const cacheManager = {
     }
 };
 
+function cleanObsoleteLocalStorage() {
+    const STORAGE_VERSION_KEY = 'cce_app_version';
+    const savedVersion = safeStorage.getItem(STORAGE_VERSION_KEY);
+
+    if (savedVersion !== CONFIG.CACHE_VERSION) {
+        const vacationState = safeStorage.getItem('cce_vacation_mode');
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith('cache_') || key.includes('_timestamp') || key.includes('_version'))) {
+                keysToRemove.push(key);
+            }
+        }
+        keysToRemove.forEach(key => safeStorage.removeItem(key));
+        if (vacationState !== null) {
+            safeStorage.setItem('cce_vacation_mode', vacationState);
+        }
+        safeStorage.setItem(STORAGE_VERSION_KEY, CONFIG.CACHE_VERSION);
+    }
+}
+
 function escapeHTML(str) {
     if (!str) return '';
     return String(str)
@@ -64,20 +85,33 @@ function escapeHTML(str) {
         .replace(/'/g, '&#039;');
 }
 
-function afficherEtatFichier(elementId, message, estErreur = false, colspan = 1) {
+function afficherEtatFichier(elementId, message, estErreur = false, colspan = 1, retryFunctionName = null) {
     const el = document.getElementById(elementId);
     if (!el) return;
 
     const couleur = estErreur ? '#e74c3c' : 'var(--text)';
     const style = `text-align: center; color: ${couleur}; font-style: italic; padding: 2rem;`;
 
+    let htmlContent = escapeHTML(message);
+    if (estErreur && retryFunctionName) {
+        htmlContent += `<br><button type="button" class="btn" style="margin-top: 1rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="${retryFunctionName}()">Réessayer</button>`;
+    }
+
     if (el.tagName === 'TBODY') {
-        el.innerHTML = `<tr><td colspan="${colspan}" style="${style}">${escapeHTML(message)}</td></tr>`;
+        el.innerHTML = `<tr><td colspan="${colspan}" style="${style}">${htmlContent}</td></tr>`;
     } else {
         el.style.gridColumn = '1 / -1';
         el.style.cssText += style;
-        el.textContent = message;
+        el.innerHTML = htmlContent;
     }
+}
+
+function getOptimizedDriveThumbnail(fileId, originalThumbnailLink) {
+    if (originalThumbnailLink && originalThumbnailLink.includes('googleusercontent.com')) {
+        const targetSize = window.innerWidth <= 768 ? 200 : 400;
+        return originalThumbnailLink.replace(/=s\d+/, `=w${targetSize}-h${targetSize}-c`);
+    }
+    return `https://lh3.googleusercontent.com/d/${fileId}=w400-h400-c`;
 }
 
 async function fetchWithErrorHandling(url, errorMessage = "Erreur de chargement.") {
@@ -190,7 +224,7 @@ document.addEventListener('keydown', (e) => {
 
 
 /* =================================================================
-   2. ONGLET "LE CLUB" (TACTIQUE, PLANNING & STATUT DES SÉANCES)
+   2. ONGLET "LE CLUB" (DEFI, SÉANCES & STATISTIQUES)
    ================================================================ */
 
 async function chargerTactiqueDuJour() {
@@ -296,7 +330,7 @@ window.googlePlanningCallback = function(data) {
         const cellules = row.c;
         if (!cellules) return;
 
-        if (index === 0 && cellules[7]) { /*Correspond à la case H1 du tableau Excel des séances*/
+        if (index === 0 && cellules[7]) {
             const valCellule = String(cellules[7].v || '').trim().toUpperCase();
             if (valCellule.includes('VACANCES:OUI') || valCellule === 'OUI') {
                 modeVacancesGlobal = true;
@@ -371,7 +405,7 @@ function loadPlanningData() {
     script.onerror = function() {
         script.remove();
         if (!cachedPlanning) {
-            afficherEtatFichier('planningTableBody', 'Impossible de charger le planning.', true, 4);
+            afficherEtatFichier('planningTableBody', 'Impossible de charger le planning.', true, 4, 'loadPlanningData');
         }
     };
     document.head.appendChild(script);
@@ -446,12 +480,6 @@ function verifierStatutSeanceClub() {
     }
 }
 
-function toggleVacationMode() {
-    const isVacation = document.getElementById('vacationModeToggle').checked;
-    localStorage.setItem('cce_vacation_mode', isVacation);
-    applyVacationMode(isVacation);
-}
-
 function applyVacationMode(isVacation) {
     const banner = document.getElementById('vacationAlertBanner');
     const wrapper = document.getElementById('planningWrapperContainer');
@@ -471,13 +499,6 @@ function applyVacationMode(isVacation) {
         document.querySelectorAll('.table-badge').forEach(badge => badge.style.display = 'inline-block');
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    const savedState = localStorage.getItem('cce_vacation_mode') === 'true';
-    const toggle = document.getElementById('vacationModeToggle');
-    if (toggle) toggle.checked = savedState;
-    applyVacationMode(savedState);
-});
 
 
 /* =================================================================
@@ -527,7 +548,7 @@ async function loadDynamicEvents() {
     script.onerror = function() { 
         script.remove(); 
         if (!cachedEvents) {
-            afficherEtatFichier('eventsGrid', 'Impossible de charger le calendrier des événements pour le moment.', true);
+            afficherEtatFichier('eventsGrid', 'Impossible de charger le calendrier des événements pour le moment.', true, 1, 'loadDynamicEvents');
         }
     };
     document.body.appendChild(script);
@@ -1280,7 +1301,7 @@ function loadMembresData() {
         script.src = url;
         script.onerror = function() { 
             script.remove(); 
-            afficherEtatFichier('membersTableBody', 'Impossible de charger la liste des membres pour le moment. Veuillez réessayer ultérieurement.', true, 7);
+            afficherEtatFichier('membersTableBody', 'Impossible de charger la liste des membres pour le moment. Veuillez réessayer ultérieurement.', true, 7, 'loadMembresData');
         };
         document.head.appendChild(script);
     }
@@ -1332,7 +1353,7 @@ function renderGazettesUI() {
         return;
     }
 
-    const latestGazettes = allGazettesGlobal.slice(0, 5);
+    const latestGazettes = allGazettesGlobal.slice(0, 4);
     latestGazettes.forEach(file => {
         const li = document.createElement('li');
 		const fileUrl = `https://drive.google.com/file/d/${escapeHTML(file.id)}/view?usp=sharing`;
@@ -1343,7 +1364,7 @@ function renderGazettesUI() {
     const existingBtnContainer = document.getElementById('gazetteBtnContainer');
     if (existingBtnContainer) existingBtnContainer.remove();
 
-    if (allGazettesGlobal.length > 5) {
+    if (allGazettesGlobal.length > 4) {
         const cardContainer = gazetteListEl.closest('.card');
         if (cardContainer) {
             const btnContainer = document.createElement('div');
@@ -1371,22 +1392,6 @@ function populateModalList(gazettes) {
         li.innerHTML = `<a href="${fileUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500; display: block;">📄 ${escapeHTML(file.name)}</a>`;
         modalListEl.appendChild(li);
     });
-}
-
-function openGazetteModal() {
-    const modal = document.getElementById('gazetteModal');
-    const input = document.getElementById('gazetteSearchInput');
-    if (input) input.value = '';
-    populateModalList(allGazettesGlobal);
-    if (modal) modal.classList.add('active');
-}
-
-function closeGazetteModal() {
-    const modal = document.getElementById('gazetteModal');
-    const input = document.getElementById('gazetteSearchInput');
-    if (input) input.value = '';
-    populateModalList(allGazettesGlobal);
-    if (modal) modal.classList.remove('active');
 }
 
 function filterGazetteModal() {
@@ -1468,7 +1473,7 @@ async function chargerGaleriePhotos() {
                 const imgData = await imgRes.json();
                 if (imgData.files && imgData.files.length > 0) {
                     const img = imgData.files[0];
-                    coverUrl = img.thumbnailLink ? img.thumbnailLink.replace(/=s\d+/, '=w400-h400-c') : `https://lh3.googleusercontent.com/d/${img.id}`;
+                    coverUrl = img.thumbnailLink ? getOptimizedDriveThumbnail(img.id, img.thumbnailLink) : `https://lh3.googleusercontent.com/d/${img.id}=w400-h400-c`;
                 }
             } catch (e) {
                 console.warn("Impossible de charger la couverture de l'album", album.name);
@@ -1492,7 +1497,7 @@ async function chargerGaleriePhotos() {
 
     } catch (error) {
         console.error("Erreur galerie Google Drive :", error);
-        afficherEtatFichier('dynamicGalleryGrid', 'Erreur lors du chargement de la galerie.', true);
+        afficherEtatFichier('dynamicGalleryGrid', 'Erreur lors du chargement de la galerie.', true, 1, 'chargerGaleriePhotos');
     }
 }
 
@@ -1527,7 +1532,7 @@ async function chargerPhotosAlbum(folderId, folderName) {
 
     } catch (error) {
         console.error("Erreur photos Google Drive :", error);
-        afficherEtatFichier('dynamicGalleryGrid', 'Erreur lors du chargement des photos.', true);
+        afficherEtatFichier('dynamicGalleryGrid', 'Erreur lors du chargement des photos.', true, 1, 'chargerGaleriePhotos');
     }
 }
 
@@ -1557,8 +1562,7 @@ function afficherPageGalerie() {
             item.className = 'gallery-item album-card';
             
             if (itemData.coverUrl) {
-                const optimizedCoverUrl = itemData.coverUrl.replace(/=s\d+/, '=w400-h400-c');
-                item.style.backgroundImage = `url('${optimizedCoverUrl}')`;
+                item.style.backgroundImage = `url('${itemData.coverUrl}')`;
             } else {
                 item.style.backgroundColor = 'var(--primary)';
             }
@@ -1575,7 +1579,7 @@ function afficherPageGalerie() {
             
             let thumbUrl = fullImageUrl;
             if (photo.thumbnailLink) {
-                thumbUrl = photo.thumbnailLink.replace(/=s\d+/, '=w400-h400-c');
+                thumbUrl = getOptimizedDriveThumbnail(photo.id, photo.thumbnailLink);
             }
 
             const img = document.createElement('img');
@@ -1827,6 +1831,7 @@ function creerEtAfficherEspaceBureau() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    cleanObsoleteLocalStorage();
     loadMembresData();           
     loadDynamicEvents();          
     loadPlanningData();
@@ -1858,8 +1863,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 /* =================================================================
-   8. FOOTER & MENTIONS LÉGALES
+   8. FOOTER, MENTIONS LÉGALES & GESTION DU FOCUS DES MODALES
    ================================================================ */
+let lastFocusedElement = null;
+
+function openModalWithFocus(modalId) {
+    lastFocusedElement = document.activeElement;
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('active');
+        const closeBtn = modal.querySelector('button, [tabindex="0"]');
+        if (closeBtn) closeBtn.focus();
+    }
+}
+
+function closeModalWithFocus(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+        if (lastFocusedElement) {
+            lastFocusedElement.focus();
+        }
+    }
+}
+
 function initFooterYear() {
     const yearEl = document.getElementById('currentYear');
     if (yearEl) {
@@ -1869,13 +1896,25 @@ function initFooterYear() {
 
 function openLegalModal(e) {
     if (e) e.preventDefault();
-    const modal = document.getElementById('legalModal');
-    if (modal) modal.classList.add('active');
+    openModalWithFocus('legalModal');
 }
 
 function closeLegalModal() {
-    const modal = document.getElementById('legalModal');
-    if (modal) modal.classList.remove('active');
+    closeModalWithFocus('legalModal');
+}
+
+function openGazetteModal() {
+    const input = document.getElementById('gazetteSearchInput');
+    if (input) input.value = '';
+    populateModalList(allGazettesGlobal);
+    openModalWithFocus('gazetteModal');
+}
+
+function closeGazetteModal() {
+    const input = document.getElementById('gazetteSearchInput');
+    if (input) input.value = '';
+    populateModalList(allGazettesGlobal);
+    closeModalWithFocus('gazetteModal');
 }
 
 

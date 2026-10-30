@@ -468,7 +468,7 @@
 				<button type="button" onclick="closeGazetteModal()" aria-label="Fermer la fenêtre" class="modal-close-btn">×</button>
 			</div>
             <p class="modal-desc">Retrouvez ci-dessous l'intégralité des numéros parus. Utilisez la recherche pour filtrer rapidement :</p>
-            <input type="text" id="gazetteSearchInput" onkeyup="filterGazetteModal()" placeholder="Rechercher un numéro (ex: 120, Automne...)" class="modal-search-input">
+            <input type="text" id="gazetteSearchInput" onkeyup="filterGazetteModal()" placeholder="Rechercher un numéro ou une date" class="modal-search-input">
             <div id="gazetteModalListContainer" class="modal-list-container">
                 <ul id="gazetteModalList" class="modal-list-reset">
                 </ul>
@@ -478,7 +478,7 @@
     </div>
 
     <!-- MODALE MENTIONS LÉGALES -->
-	<div id="legalModal" class="lightbox-overlay" role="dialog" aria-modal="true" onclick="openLegalModal()">
+	<div id="legalModal" class="lightbox-overlay" role="dialog" aria-modal="true" onclick="closeLegalModal()">
 		<div class="card modal-card-custom" onclick="event.stopPropagation()">
 			<h3 class="modal-title-simple">Mentions Légales & RGPD</h3>
             <p><strong>Éditeur du site :</strong> Cercle d'Échecs de Fismes (Association Loi 1901)</p>

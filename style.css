@@ -606,11 +606,6 @@ input:checked + .slider:before { transform: translateX(20px); }
     margin-bottom: 0.5rem;
 }
 
-.gazette-scroll-container {
-    max-height: 180px;
-    overflow-y: auto;
-}
-
 .partners-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
