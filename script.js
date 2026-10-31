@@ -98,7 +98,7 @@ function afficherEtatFichier(elementId, message, estErreur = false, colspan = 1,
     if (el.tagName === 'TBODY') {
         el.innerHTML = `<tr><td colspan="${colspan}" class="state-message ${classeErreur}">${htmlContent}</td></tr>`;
     } else {
-        el.className = `state-message ${classeErreur}`;
+        el.classList.add('state-message', classeErreur);
         el.innerHTML = htmlContent;
     }
 }
@@ -696,8 +696,9 @@ function handleEventsCallback(response) {
 function renderDynamicEventsGrid() {
     const gridContainer = document.getElementById('eventsGrid');
     if (!gridContainer) return;
+    gridContainer.className = 'grid';
     gridContainer.innerHTML = '';
-
+    
     if (allClubEvents.length === 0) {
         afficherEtatFichier('eventsGrid', 'Aucun événement enregistré.');
         updateYearSelect();
@@ -1539,8 +1540,9 @@ function afficherPageGalerie() {
     const galleryContainer = document.getElementById('dynamicGalleryGrid');
     if (!galleryContainer) return;
 
+    galleryContainer.className = 'gallery-grid';
     galleryContainer.innerHTML = '';
-
+    
     const listeActive = (albumActuelId === null) ? elementsRacineGlobales : photosAlbumGlobales;
     const cols = getColonnesParLigne();
     const elementsParPage = cols * 2;
