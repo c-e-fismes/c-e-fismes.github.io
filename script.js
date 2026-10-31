@@ -89,19 +89,16 @@ function afficherEtatFichier(elementId, message, estErreur = false, colspan = 1,
     const el = document.getElementById(elementId);
     if (!el) return;
 
-    const couleur = estErreur ? '#e74c3c' : 'var(--text)';
-    const style = `text-align: center; color: ${couleur}; font-style: italic; padding: 2rem;`;
-
+    const classeErreur = estErreur ? 'state-message-error' : 'state-message-normal';
     let htmlContent = escapeHTML(message);
     if (estErreur && retryFunctionName) {
         htmlContent += `<br><button type="button" class="btn" style="margin-top: 1rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="${retryFunctionName}()">Réessayer</button>`;
     }
 
     if (el.tagName === 'TBODY') {
-        el.innerHTML = `<tr><td colspan="${colspan}" style="${style}">${htmlContent}</td></tr>`;
+        el.innerHTML = `<tr><td colspan="${colspan}" class="state-message ${classeErreur}">${htmlContent}</td></tr>`;
     } else {
-        el.style.gridColumn = '1 / -1';
-        el.style.cssText += style;
+        el.className = `state-message ${classeErreur}`;
         el.innerHTML = htmlContent;
     }
 }
@@ -740,9 +737,9 @@ function renderDynamicEventsGrid() {
 
         let timeDisplay = `Le ${escapeHTML(event.rawDate)} à ${escapeHTML(event.rawTime)}`;
 
-        let cardHTML = `
-            <div class="event-content-wrapper" style="display: flex; gap: 1.5rem; align-items: start;">
-                <div class="event-info-side" style="flex: 2;">
+		let cardHTML = `
+            <div class="event-content-flex">
+                <div class="event-info-col">
                     <h3 style="margin-top: 0; margin-bottom: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
                         ${statusBadgeHTML}
                         <span class="badge type-badge" style="background: ${badgeBg}; color: ${badgeColor}; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">${badgeText}</span>
@@ -770,8 +767,8 @@ function renderDynamicEventsGrid() {
 
             if (cleanSrc) {
                 cardHTML += `
-                    <div class="event-poster-side" style="flex: 1; text-align: right;">
-                        <img src="${cleanSrc}" alt="Affiche" loading="lazy" onclick="zoomImage(this.src)" style="max-width: 100px; cursor: pointer; border-radius: 4px; border: 1px solid #ddd;" onerror="this.parentElement.style.display='none'">
+                    <div class="event-poster-col">
+                        <img src="${cleanSrc}" alt="Affiche" loading="lazy" onclick="zoomImage(this.src)" class="event-poster-thumb" onerror="this.parentElement.style.display='none'">
                     </div>
                 `;
             }
@@ -779,7 +776,7 @@ function renderDynamicEventsGrid() {
         cardHTML += `</div>`; 
 
         if (event.commentaire) {
-            cardHTML += `<p style="margin: 0.75rem 0 0 0; color: #555; font-style: italic;">💬 ${escapeHTML(event.commentaire)}</p>`;
+            cardHTML += `<p class="event-comment-text">💬 ${escapeHTML(event.commentaire)}</p>`;
         }
 
         card.innerHTML = cardHTML;
@@ -941,14 +938,14 @@ function showCustomTooltip(target, content, isoDate) {
 
     const tooltip = document.createElement('div');
     tooltip.className = 'calendar-custom-tooltip';
-    tooltip.innerHTML = content;
+    tooltip.innerHTML = `<div class="calendar-tooltip-content">${content}</div>`;
 
     const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 
     if (isTouchDevice) {
         const actionDiv = document.createElement('div');
-        actionDiv.style.cssText = "margin-top: 8px; text-align: right; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 6px;";
-        actionDiv.innerHTML = `<button type="button" style="background: var(--accent); border: none; color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Voir l'événement ➔</button>`;
+        actionDiv.className = 'calendar-tooltip-action';
+        actionDiv.innerHTML = `<button type="button" class="calendar-tooltip-btn">Voir l'événement ➔</button>`;
         
         actionDiv.querySelector('button').onclick = (evt) => {
             evt.stopPropagation();
@@ -957,8 +954,6 @@ function showCustomTooltip(target, content, isoDate) {
         };
         tooltip.appendChild(actionDiv);
     }
-
-    tooltip.style.cssText = "position: absolute; background-color: #2d3748; border: 2px solid #ecc94b; color: white; padding: 10px; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 5000; width: 220px;";
 
     document.body.appendChild(tooltip);
     activeTooltipElement = tooltip;
@@ -1610,7 +1605,7 @@ function afficherBoutonRetour() {
     if (!retourContainer) {
         retourContainer = document.createElement('div');
         retourContainer.id = 'galleryBackContainer';
-        retourContainer.style.cssText = 'margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;';
+        retourContainer.className = 'gallery-back-container';
         
         const galleryCard = document.getElementById('dynamicGalleryGrid').parentElement;
         galleryCard.insertBefore(retourContainer, document.getElementById('dynamicGalleryGrid'));
@@ -1618,7 +1613,7 @@ function afficherBoutonRetour() {
 
     retourContainer.innerHTML = `
         <button id="backToAlbumsBtn" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: var(--primary); color: white;">← Retour aux albums</button>
-        <span style="font-weight: bold; color: var(--primary); font-size: 1.05rem;">📁 ${escapeHTML(nomAlbumActuel)}</span>
+        <span class="gallery-back-title">📁 ${escapeHTML(nomAlbumActuel)}</span>
     `;
 
     document.getElementById('backToAlbumsBtn').onclick = () => {
@@ -1642,7 +1637,7 @@ function mettreAJourControlesGalerie(elementsParPage) {
     if (!paginationContainer) {
         paginationContainer = document.createElement('div');
         paginationContainer.id = 'galleryPagination';
-        paginationContainer.style.cssText = 'grid-column: 1 / -1; display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1rem;';
+        paginationContainer.className = 'gallery-pagination-container';
         
         const galleryCard = document.getElementById('dynamicGalleryGrid').parentElement;
         galleryCard.appendChild(paginationContainer);
@@ -1655,7 +1650,7 @@ function mettreAJourControlesGalerie(elementsParPage) {
 
     paginationContainer.innerHTML = `
         <button id="prevGalleryBtn" class="btn" style="margin-top: 0; padding: 0.4rem 0.8rem; font-size: 0.85rem; ${pageGalerieActuelle === 1 ? 'opacity: 0.4; cursor: not-allowed;' : ''}">← Précédent</button>
-        <span style="font-weight: 500; font-size: 0.9rem; color: var(--text); line-height: 1;">Page ${pageGalerieActuelle} / ${totalPages}</span>
+        <span class="gallery-page-info">Page ${pageGalerieActuelle} / ${totalPages}</span>
         <button id="nextGalleryBtn" class="btn" style="margin-top: 0; padding: 0.4rem 0.8rem; font-size: 0.85rem; ${pageGalerieActuelle === totalPages ? 'opacity: 0.4; cursor: not-allowed;' : ''}">Suivant →</button>
     `;
 

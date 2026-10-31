@@ -738,7 +738,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 
 .polo-img {
-	max-width: 150px;
+    max-width: 150px;
     height: auto;
     cursor: zoom-in;
     transition: transform 0.2s ease;
@@ -1444,7 +1444,121 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* =================================================================
-   10. FOOTER
+   10. CLASSES UTILITAIRES & ÉTATS DYNAMIQUES
+   ================================================================ */
+.state-message {
+    text-align: center;
+    font-style: italic;
+    padding: 2rem;
+}
+
+.state-message-error { color: #e74c3c; }
+
+.state-message-normal { color: var(--text); }
+
+.event-content-flex {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.event-info-col { flex: 2; }
+
+.event-poster-col {
+    flex: 1;
+    text-align: right;
+}
+
+.event-poster-thumb {
+    max-width: 100px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.event-comment-text {
+    margin: 0.75rem 0 0 0;
+    color: #555;
+    font-style: italic;
+}
+
+.calendar-custom-tooltip {
+    position: absolute;
+    background-color: #2d3748;
+    border: 2px solid var(--accent);
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    z-index: 5000;
+    width: 220px;
+}
+
+.calendar-tooltip-content {
+    text-align: left;
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.calendar-tooltip-title {
+    margin-bottom: 4px;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.calendar-tooltip-details { color: #fff; font-size: 0.75rem; }
+
+.calendar-tooltip-action {
+    margin-top: 8px;
+    text-align: right;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 6px;
+}
+
+.calendar-tooltip-btn {
+    background: var(--accent);
+    border: none;
+    color: var(--primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.gallery-back-container {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.gallery-back-title {
+    font-weight: bold;
+    color: var(--primary);
+    font-size: 1.05rem;
+}
+
+.gallery-pagination-container {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.gallery-page-info {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1;
+}
+
+/* =================================================================
+   11. FOOTER
    ================================================================ */
 .site-footer {
     background-color: var(--primary);
