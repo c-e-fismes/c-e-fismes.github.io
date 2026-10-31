@@ -2,7 +2,7 @@
    1. CONFIGURATION GLOBALE, NAVIGATION & UTILITAIRES
    ================================================================ */
 const CONFIG = {
-    CACHE_VERSION: 'v9', /* Faire évoluer la version à chaque changement significatif */
+    CACHE_VERSION: 'v1', /* Modifier la version à chaque changement significatif */
     CACHE_DURATION: 15 * 60 * 1000,
     MEMBRES_SHEET_ID: '1wAC4LrcpOTTlObYt3kSricIqNRCVGWC3fgJQ0LiDe7M',
     EVENTS_SHEET_ID: '1-vEelbB9DDbJRFmJ0HYW-wCAwZau6DWirqaq6U-Zuww',
@@ -943,16 +943,20 @@ function showCustomTooltip(target, content, isoDate) {
     tooltip.className = 'calendar-custom-tooltip';
     tooltip.innerHTML = content;
 
-    const actionDiv = document.createElement('div');
-    actionDiv.style.cssText = "margin-top: 8px; text-align: right; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 6px;";
-    actionDiv.innerHTML = `<button type="button" style="background: var(--accent); border: none; color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Voir l'événement ➔</button>`;
-    
-    actionDiv.querySelector('button').onclick = (evt) => {
-        evt.stopPropagation();
-        hideCustomTooltip();
-        scrollToEventCard(isoDate);
-    };
-    tooltip.appendChild(actionDiv);
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+
+    if (isTouchDevice) {
+        const actionDiv = document.createElement('div');
+        actionDiv.style.cssText = "margin-top: 8px; text-align: right; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 6px;";
+        actionDiv.innerHTML = `<button type="button" style="background: var(--accent); border: none; color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Voir l'événement ➔</button>`;
+        
+        actionDiv.querySelector('button').onclick = (evt) => {
+            evt.stopPropagation();
+            hideCustomTooltip();
+            scrollToEventCard(isoDate);
+        };
+        tooltip.appendChild(actionDiv);
+    }
 
     tooltip.style.cssText = "position: absolute; background-color: #2d3748; border: 2px solid #ecc94b; color: white; padding: 10px; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 5000; width: 220px;";
 

@@ -84,8 +84,27 @@ header {
     padding: 0 1rem;
 }
 
-.section { display: none; }
-.section.active { display: block; }
+.section {
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.section.active {
+    display: block;
+    animation: fadeInSection 0.35s ease forwards;
+}
+
+@keyframes fadeInSection {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 .grid {
     display: grid;
@@ -197,7 +216,7 @@ nav button {
     padding: 1rem 1.5rem;
     font-size: 1rem;
     cursor: pointer;
-    transition: 0.3s;
+    transition: color 0.3s ease, background 0.3s ease;
     font-weight: 500;
 }
 
@@ -218,10 +237,16 @@ nav button.active { background: var(--accent); color: var(--primary); font-weigh
     margin-top: 1rem;
     border: none;
     cursor: pointer;
-    transition: 0.2s;
+    transition: background 0.2s ease, transform 0.1s ease;
 }
 
-.btn:hover { background: var(--accent-hover); }
+.btn:hover {
+    background: var(--accent-hover);
+}
+
+.btn:active {
+    transform: scale(0.96);
+}
 
 .welcome-actions-custom {
     flex-wrap: nowrap;
@@ -301,12 +326,18 @@ nav button.active { background: var(--accent); color: var(--primary); font-weigh
     font-weight: bold;
     text-decoration: none;
     border-radius: 4px;
-    transition: background 0.2s;
+    transition: background 0.2s ease, transform 0.1s ease;
     line-height: 1.2;
     vertical-align: middle;
 }
 
-.table-fide-btn:hover { background: var(--accent-hover); }
+.table-fide-btn:hover {
+    background: var(--accent-hover);
+}
+
+.table-fide-btn:active {
+    transform: scale(0.96);
+}
 
 form input,
 form textarea {
@@ -316,6 +347,13 @@ form textarea {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+form input:focus,
+form textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
 }
 
 .badge {
@@ -546,7 +584,7 @@ input:checked + .slider:before { transform: translateX(20px); }
     height: auto;
     display: block;
     cursor: zoom-in;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .puzzle-board-img:hover {
@@ -564,7 +602,7 @@ input:checked + .slider:before { transform: translateX(20px); }
     border-radius: 4px;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.2s;
+    transition: background 0.2s ease, transform 0.1s ease;
     font-size: 0.85rem;
     width: auto;
     max-width: 220px;
@@ -574,7 +612,14 @@ input:checked + .slider:before { transform: translateX(20px); }
     display: block;
 }
 
-.puzzle-card .puzzle-btn:hover { background: #1f2937; color: var(--accent); }
+.puzzle-card .puzzle-btn:hover {
+    background: #1f2937;
+    color: var(--accent);
+}
+
+.puzzle-card .puzzle-btn:active {
+    transform: scale(0.96);
+}
 
 #puzzleSolutionContainer.hidden { display: none !important; }
 
@@ -595,6 +640,7 @@ input:checked + .slider:before { transform: translateX(20px); }
     color: var(--primary);
     text-decoration: none;
     font-weight: 500;
+    transition: color 0.2s ease;
 }
 
 #gazetteList a:hover { color: var(--accent); text-decoration: underline; }
@@ -604,6 +650,11 @@ input:checked + .slider:before { transform: translateX(20px); }
 .gazette-title-margin {
     margin-top: 1rem;
     margin-bottom: 0.5rem;
+}
+
+.gazette-scroll-container {
+    max-height: 180px;
+    overflow-y: auto;
 }
 
 .partners-grid {
@@ -623,12 +674,10 @@ input:checked + .slider:before { transform: translateX(20px); }
     border-radius: 8px;
     padding: 1rem;
     text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .partner-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
     border-color: var(--accent);
     background: #ffffff;
 }
@@ -835,7 +884,7 @@ th { background-color: var(--primary); color: #ffffff; }
     cursor: pointer;
     margin-left: 5px;
     font-size: 0.9rem;
-    transition: transform 0.2s;
+    transition: transform 0.2s ease;
 }
 
 .search-toggle-icon:hover { transform: scale(1.2); }
@@ -930,7 +979,7 @@ th { background-color: var(--primary); color: #ffffff; }
     border-radius: 4px;
     border: 1px solid #ddd;
     cursor: zoom-in;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .event-poster-side img:hover {
@@ -1008,7 +1057,7 @@ th { background-color: var(--primary); color: #ffffff; }
     z-index: 2000;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
     cursor: zoom-out;
 }
 
@@ -1050,7 +1099,7 @@ th { background-color: var(--primary); color: #ffffff; }
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.2s, transform 0.2s, color 0.2s;
+    transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
     z-index: 2010;
     line-height: 1;
     padding-bottom: 3px;
@@ -1112,7 +1161,7 @@ th { background-color: var(--primary); color: #ffffff; }
     cursor: pointer;
     overflow: hidden;
     border: 2px solid transparent;
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    transition: border-color 0.2s ease;
 }
 
 .gallery-item.album-card::before {
@@ -1124,7 +1173,6 @@ th { background-color: var(--primary); color: #ffffff; }
 }
 
 .gallery-item.album-card:hover {
-    transform: translateY(-3px);
     border-color: var(--accent);
 }
 
@@ -1303,6 +1351,11 @@ th { background-color: var(--primary); color: #ffffff; }
 }
 
 .modal-close-action-btn { margin-top: 1rem; }
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
 
 /* =================================================================
    9. RESPONSIVE DESIGN & MEDIA QUERIES
