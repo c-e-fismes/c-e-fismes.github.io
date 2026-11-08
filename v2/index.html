@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="fr" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#111827">
+    <title>Cercle d'Échecs de Fismes - Site Officiel</title>
+    <meta name="description" content="Cercle d'Échecs de Fismes, club affilié à la FFE : planning des séances, calendrier des événements, classement des joueurs, galerie photos et contact.">
+
+    <!-- Réseaux sociaux : remplacer VOTRE-DOMAINE par l'adresse définitive du site -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:title" content="Cercle d'Échecs de Fismes - Site Officiel">
+    <meta property="og:description" content="Passion, Stratégie et Convivialité : retrouvez le planning, les événements et les résultats du club.">
+    <meta property="og:image" content="https://VOTRE-DOMAINE/assets/logo-or.png">
+
+    <!-- Marque la page comme "JavaScript actif" avant l'affichage (évite de voir toutes les sections un instant) -->
+    <script src="js/init.js"></script>
+
+    <link rel="preconnect" href="https://docs.google.com" crossorigin>
+    <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" href="images/favicon/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="manifest" href="images/favicon/site.webmanifest">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SportsClub",
+        "name": "Cercle d'Échecs de Fismes",
+        "sport": "Échecs",
+        "email": "cercle.echecs.fismes@gmail.com",
+        "telephone": "+33627150251",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Route nationale (ancien camping)",
+            "postalCode": "51170",
+            "addressLocality": "Fismes",
+            "addressCountry": "FR"
+        }
+    }
+    </script>
+
+    <script type="module" src="js/main.js"></script>
+</head>
+<body>
+    <!-- Icônes en traits fins (jeu d'icônes Feather, licence MIT) -->
+    <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+        <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+        <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+        <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+        <symbol id="i-mail" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+        <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+        <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></symbol>
+        <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+        <symbol id="i-file" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+        <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+        <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+        <symbol id="i-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+        <symbol id="i-external" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
+        <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+        <symbol id="i-menu" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+        <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+        <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+        <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+        <symbol id="i-bar" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></symbol>
+        <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+        <symbol id="i-trend" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></symbol>
+        <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+        <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+        <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></symbol>
+        <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+        <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></symbol>
+    </svg>
+
+    <a href="#main" class="skip-link">Aller au contenu</a>
+    <noscript><p class="noscript-msg">Ce site utilise JavaScript pour afficher le planning, le calendrier et le classement des joueurs. Veuillez l'activer pour profiter de toutes les fonctions.</p></noscript>
+    <div id="netStatus" class="net-status" role="status" hidden>Mode hors-ligne : les informations affichées peuvent ne pas être à jour.</div>
+
+    <!-- =================================================================
+       1. BARRE DU HAUT : logo, navigation, bouton "Nous rejoindre"
+       ================================================================ -->
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="#accueil" data-goto="accueil" aria-label="Cercle d'Échecs de Fismes - Accueil">
+                <img id="clubLogo" class="brand-logo" src="assets/logo-or.svg" alt="" width="40" height="47">
+                <span class="brand-name">Cercle d'Échecs <span>de Fismes</span></span>
+            </a>
+            <button type="button" id="menuToggle" class="menu-toggle" aria-expanded="false" aria-controls="mainNav" aria-label="Ouvrir le menu">
+                <svg class="icon icon-menu" aria-hidden="true"><use href="#i-menu"/></svg><svg class="icon icon-close" aria-hidden="true"><use href="#i-x"/></svg>
+            </button>
+            <nav id="mainNav" class="mainnav" aria-label="Navigation principale">
+                <button type="button" data-section="accueil" id="btn-accueil" class="active" aria-current="page" aria-controls="accueil">Accueil</button>
+                <button type="button" data-section="agenda" id="btn-agenda" aria-controls="agenda">Agenda</button>
+                <button type="button" data-section="leclub" id="btn-leclub" aria-controls="leclub">Le club</button>
+                <button type="button" data-section="adherents" id="btn-adherents" aria-controls="adherents">Adhérents</button>
+                <button type="button" data-section="contact" id="btn-contact" aria-controls="contact">Contact</button>
+                <button type="button" data-section="rejoindre" id="btn-rejoindre" class="nav-cta" aria-controls="rejoindre">Nous rejoindre</button>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main" class="container">
+
+        <!-- =============================== ACCUEIL =============================== -->
+        <section id="accueil" class="section active" tabindex="-1">
+            <div class="hero">
+                <div class="hero-text">
+                    <span class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg> Club Affilié FFE</span>
+                    <h1 class="hero-title">Jouez, progressez et partagez la passion du cavalier !</h1>
+                    <p class="hero-lead">
+                        Du débutant qui découvre le déplacement des pièces au compétiteur aguerri, le <strong>Cercle d'Échecs de Fismes</strong> vous accueille dans une ambiance à la fois studieuse et conviviale.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#rejoindre" data-goto="rejoindre" class="btn btn-gold">Nous rejoindre</a>
+                        <a href="#agenda" data-goto="agenda" class="btn btn-ghost">Voir l'agenda <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                    </div>
+                    <div id="countdownContainer" class="countdown-box">
+                        <span class="countdown-label"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg> À venir :</span>
+                        <span id="countdownTimer" class="countdown-timer-text">Recherche...</span>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <img class="hero-logo" src="assets/logo-or.svg" alt="Logo du Cercle d'Échecs de Fismes" width="260" height="305">
+                    <p class="hero-tagline">Passion, Stratégie et Convivialité</p>
+                </div>
+            </div>
+
+            <!-- Infos pratiques : la réponse en 5 secondes -->
+            <div class="info-grid">
+                <div class="info-tile">
+                    <span class="info-icon"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg></span>
+                    <h2 class="info-title">Où</h2>
+                    <p>Route nationale (ancien camping), 51170 Fismes</p>
+                </div>
+                <div class="info-tile">
+                    <span class="info-icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg></span>
+                    <h2 class="info-title">Quand</h2>
+                    <p id="homeNextSession">Séances chaque semaine</p>
+                    <a href="#rejoindre" data-goto="rejoindre#planning" class="info-link">Voir le planning <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                </div>
+                <div class="info-tile">
+                    <span class="info-icon"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></span>
+                    <h2 class="info-title">Pour qui</h2>
+                    <p>Tout niveau, tout public</p>
+                </div>
+                <div class="info-tile">
+                    <span class="info-icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
+                    <h2 class="info-title">Nous joindre</h2>
+                    <p><a href="tel:+33627150251">06 27 15 02 51</a><br><a href="mailto:cercle.echecs.fismes@gmail.com">cercle.echecs.fismes@gmail.com</a></p>
+                </div>
+            </div>
+
+            <!-- Prochains événements -->
+            <div class="block">
+                <div class="block-head">
+                    <h2 class="block-title">Prochains événements</h2>
+                    <a href="#agenda" data-goto="agenda" class="block-link">Tout l'agenda <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                </div>
+                <div id="homeEvents" class="home-events"><p class="state-message">Chargement des événements...</p></div>
+            </div>
+
+            <!-- Le club en chiffres + défi du jour -->
+            <div class="home-duo">
+                <div class="card">
+                    <h2 class="block-title">Le club en chiffres</h2>
+                    <p class="muted">Un aperçu en temps réel de notre communauté et de notre dynamique sportive :</p>
+                    <div class="stats-grid">
+                    <div class="stat-tile"><span class="stat-num accent-bold">419</span><span class="stat-label">Adhérents depuis la création</span></div>
+                    <div class="stat-tile"><span id="stat-total-membres" class="stat-num accent-bold">-</span><span class="stat-label">Membres actuellement</span></div>
+                    <div class="stat-tile"><span id="stat-feminines" class="stat-num accent-bold">-</span><span class="stat-label">Part des féminines</span></div>
+                    <div class="stat-tile"><span id="stat-joueurs-fide" class="stat-num accent-bold">-</span><span class="stat-label">Joueurs classés FIDE</span></div>
+                    <div class="stat-tile"><span id="stat-top-elo" class="stat-num accent-bold">-</span><span class="stat-label">Top Elo actuel</span></div>
+                    <div class="stat-tile"><span id="stat-niveau-moyen" class="stat-num accent-bold">-</span><span class="stat-label">Moyenne Elo Rapide Top 5</span></div>
+                </div>
+                </div>
+                <div class="card puzzle-card">
+                    <div class="puzzle-header">
+                        <span class="puzzle-tag"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg> Défi du jour</span>
+                        <span id="puzzleDateNum" class="puzzle-week">Aujourd'hui</span>
+                    </div>
+                    <div class="puzzle-board-container">
+                        <button type="button" id="puzzleBoardBtn" class="puzzle-board-btn" title="Cliquez pour jouer" aria-label="Jouer le défi du jour : ouvrir l'échiquier">
+                            <img id="puzzleImg" alt="Position du problème d'échecs" class="puzzle-board-img" width="200" height="200">
+                        </button>
+                    </div>
+                    <p id="puzzleDesc" class="puzzle-text" hidden></p>
+                    <p class="puzzle-hint">Cliquez sur l'échiquier pour jouer</p>
+                </div>
+            </div>
+
+            <!-- À la une (exemples : seront alimentés par un tableau Google Sheets) -->
+            <div class="block">
+                <div class="block-head">
+                    <h2 class="block-title">À la une</h2>
+                    <a href="#leclub" data-goto="leclub" class="block-link">Toute l'actualité du club <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                </div>
+                <div class="news-grid">
+                    <article class="news-card"><span class="news-date">Exemple · 12 nov.</span><h3>Titre de l'actualité</h3><p>Un court résumé de la nouvelle : deux lignes maximum.</p></article>
+                    <article class="news-card"><span class="news-date">Exemple · 05 nov.</span><h3>Titre de l'actualité</h3><p>Un court résumé de la nouvelle : deux lignes maximum.</p></article>
+                    <article class="news-card"><span class="news-date">Exemple · 28 oct.</span><h3>Titre de l'actualité</h3><p>Un court résumé de la nouvelle : deux lignes maximum.</p></article>
+                </div>
+            </div>
+
+            <!-- Extrait de la galerie -->
+            <div class="block" id="homePhotosBlock" hidden>
+                <div class="block-head">
+                    <h2 class="block-title">Dans l'ambiance du club</h2>
+                    <a href="#leclub" data-goto="leclub#galerie" class="block-link">Voir la galerie <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                </div>
+                <div id="homePhotos" class="home-photos"></div>
+            </div>
+
+            <!-- Partenaires -->
+            <div class="block partners-strip">
+                <h2 class="strip-title">Ils nous soutiennent</h2>
+                <div class="strip-logos">
+                    <a href="https://ca-nordest.com/" target="_blank" rel="noopener noreferrer" title="Crédit Agricole Nord Est"><img src="images/partenaires/credit-agricole.png" alt="Logo Crédit Agricole Nord Est" loading="lazy"></a>
+                    <a href="https://aisne-batiment.fr/" target="_blank" rel="noopener noreferrer" title="Aisne Bâtiment"><img src="images/partenaires/aisne-batiment.png" alt="Logo Aisne Bâtiment" loading="lazy"></a>
+                    <a href="https://www.fismes.fr/" target="_blank" rel="noopener noreferrer" title="Ville de Fismes"><img src="images/partenaires/ville-fismes.png" alt="Logo Ville de Fismes" loading="lazy"></a>
+                </div>
+            </div>
+
+            <!-- Appel à l'action final -->
+            <div class="cta-band">
+                <div><h2>Une question ?</h2><p>Venez nous rencontrer lors d'une séance ou écrivez-nous.</p></div>
+                <a href="#contact" data-goto="contact" class="btn btn-gold">Nous contacter</a>
+            </div>
+        </section>
+
+        <!-- ============================== REJOINDRE ============================== -->
+        <section id="rejoindre" class="section" tabindex="-1">
+            <div class="page-head">
+                <span class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg> Rejoindre le club</span>
+                <h2 class="page-title">Venez jouer avec nous</h2>
+                <p class="page-lead">Tout niveau, tout public : du débutant au compétiteur aguerri, chacun trouve sa place au Cercle d'Échecs de Fismes.</p>
+            </div>
+
+            <div class="join-grid">
+                <div class="card join-card">
+                    <span class="info-icon"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></span>
+                    <h3>Pour qui ?</h3>
+                    <p>Tout niveau, tout public.</p>
+                </div>
+                <div class="card join-card join-card-price">
+                    <span class="info-icon"><svg class="icon" aria-hidden="true"><use href="#i-tag"/></svg></span>
+                    <h3>La licence</h3>
+                    <ul class="price-list">
+                        <li><span>Habitants de Fismes</span><strong>50 €</strong></li>
+                        <li><span>Habitants extérieurs</span><strong>100 €</strong></li>
+                    </ul>
+                    <p class="todo">À compléter par le bureau : ce que comprend la licence (cotisation, assurance...).</p>
+                </div>
+                <div class="card join-card">
+                    <span class="info-icon"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></span>
+                    <h3>Comment s'inscrire ?</h3>
+                    <p class="todo">À compléter par le bureau : démarches, pièces à fournir, possibilité de venir essayer une séance.</p>
+                    <a href="#contact" data-goto="contact" class="btn btn-small">Nous contacter</a>
+                </div>
+            </div>
+
+            <div id="planning" class="anchor"></div>
+                        <div class="card card-spaced planning-card">
+                <h3 class="section-title-reset"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> Planning des séances</h3>
+                <p>Retrouvez ci-dessous les jours, horaires et lieux de nos différents rendez-vous hebdomadaires :</p>
+
+                <!-- BANNIÈRE VACANCES (cachée par défaut) -->
+                <div id="vacationAlertBanner" class="vacation-banner-box hidden">
+                    <span class="vacation-alert-icon"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg> </span>
+                    <div>
+                        <strong>Séances suspendues pendant les vacances scolaires</strong>
+                        <p class="vacation-alert-desc">Profitez bien de cette pause ! Reprise des séances habituelles dès la rentrée.</p>
+                    </div>
+                </div>
+
+                <div class="planning-wrapper" id="planningWrapperContainer">
+                    <table class="planning-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Jour</th>
+                                <th scope="col">Créneau Horaire</th>
+                                <th scope="col">Commune</th>
+                                <th scope="col">Lieu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="planningTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div class="block">
+                <div class="block-head"><h2 class="block-title">Bien plus qu'un jeu : un véritable atout pour grandir !</h2></div>
+                <div class="why-grid">
+                    <div class="why-intro">
+                        <span class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg> Pédagogie &amp; Bienfaits</span>
+                        <p class="page-lead">Souvent qualifié de "gymnastique de l'esprit", le jeu d'échecs est une discipline complète qui séduit de plus en plus de parents et d'éducateurs. Découvrez pourquoi les échecs sont extraordinaires pour le développement des enfants et des adolescents.</p>
+                    </div>
+                    <img src="images/jeunes-joueurs.jpg" alt="Jeunes joueurs d'échecs" loading="lazy" class="why-img" data-hide-on-error>
+                </div>
+                <div class="card card-spaced">
+                    <h3 class="section-title-reset"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg> Ce que la pratique des échecs apporte aux jeunes</h3>
+                <p>De nombreuses études scientifiques et les retours de la Fédération Française d'Échecs (FFE) démontrent les bienfaits de cette pratique sur le plan scolaire et personnel :</p>
+
+                <div class="grid grid-margin-top">
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg> Concentration &amp; Attention</h4>
+                        <p class="stat-box-desc">L'enfant apprend à fixer son attention sur un objectif précis et à faire abstraction des distractions environnantes, ce qui aide directement en classe.</p>
+                    </div>
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title"><svg class="icon" aria-hidden="true"><use href="#i-trend"/></svg> Résultats Scolaires</h4>
+                        <p class="stat-box-desc">En développant la logique, la géométrie spatiale et la résolution de problèmes, les échecs ont un impact positif mesurable sur la réussite en mathématiques et en lecture.</p>
+                    </div>
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg> Réflexion &amp; Anticipation</h4>
+                        <p class="stat-box-desc">"Réfléchir avant d'agir" : le joueur anticipe les conséquences de ses actes, évalue plusieurs options et apprend à assumer ses choix.</p>
+                    </div>
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg> Rigueur &amp; Fair-play</h4>
+                        <p class="stat-box-desc">Le respect strict des règles, la courtoisie envers l'adversaire et l'acceptation de la défaite forgent le caractère et le sens de l'honneur.</p>
+                    </div>
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg> Socialisation</h4>
+                        <p class="stat-box-desc">Les échecs favorisent les échanges intergénérationnels et permettent de partager des moments conviviaux hors des écrans au sein du club.</p>
+                    </div>
+                    <div class="stat-box stat-box-left">
+                        <h4 class="stat-box-title"><svg class="icon" aria-hidden="true"><use href="#i-zap"/></svg> Persévérance &amp; Résilience</h4>
+                        <p class="stat-box-desc">Aux échecs, on commet des erreurs mais on apprend à analyser ses défaites pour rebondir, développer sa combativité et ne jamais baisser les bras.</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="block">
+                <div class="block-head"><h2 class="block-title">Comprendre le jeu</h2></div>
+                <div class="acc-list">
+                    <details class="acc">
+                <summary><span class="acc-title"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg> Les règles du jeu en 3 étapes simples</span><svg class="icon acc-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+                <div class="acc-body">
+                <p>Pas besoin de savoir jouer pour commencer ! Le but ultime est d'attraper le roi adverse (c'est le fameux <strong>Échec et mat</strong>).</p>
+                <div class="rules-grid">
+                    <div class="rule-box rule-box-primary">
+                        <strong>1. Les Blancs commencent toujours</strong>
+                        <p class="rule-box-desc">Chaque type de pièce se déplace d'une manière unique : le fou en diagonale, la tour en ligne droite, le cavalier en "L", etc.</p>
+                    </div>
+                    <div class="rule-box rule-box-accent">
+                        <strong>2. Le Roi est menacé ("Échec")</strong>
+                        <p class="rule-box-desc">Lorsqu'un roi est attaqué, il doit impérativement se protéger, fuir ou être défendu par une autre pièce.</p>
+                    </div>
+                    <div class="rule-box rule-box-green">
+                        <strong>3. La fin de partie ("Mat")</strong>
+                        <p class="rule-box-desc">Si le roi attaqué ne peut plus échapper à la menace, la partie est terminée : c'est l'échec et mat !</p>
+                    </div>
+                </div>
+                </div>
+            </details>
+                    <details class="acc">
+                <summary><span class="acc-title"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg> Les différentes cadences de jeu</span><svg class="icon acc-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+                <div class="acc-body">
+                    <p>Aux échecs, le temps est mesuré par une pendule. On distingue trois grands types de parties :</p>
+                    <ul>
+                        <li><strong>Le Blitz :</strong> Parties très rapides (souvent 3 à 5 minutes par joueur). Idéal pour le fun et l'instinct !</li>
+                        <li><strong>Le Rapide :</strong> Entre 10 et 15 minutes par joueur. Le compromis parfait entre réflexion et rapidité, très joué en tournoi scolaire.</li>
+                        <li><strong>Le Classique (ou Lente) :</strong> Plus d'une heure de jeu par partie. C'est le format des championnats par équipes, où l'on plonge dans des analyses profondes.</li>
+                    </ul>
+                </div>
+            </details>
+                    <details class="acc">
+                <summary><span class="acc-title"><svg class="icon" aria-hidden="true"><use href="#i-bar"/></svg> C'est quoi le système Elo ?</span><svg class="icon acc-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+                <div class="acc-body">
+                    <p>L'<strong>Elo</strong> est le système de notation international qui mesure le niveau d'un joueur d'échecs (du nom de son inventeur, Arpad Elo).</p>
+                    <ul class="list-padding-left">
+                        <li>Un débutant complet commence généralement autour de <strong>1000-1200 points</strong>.</li>
+                        <li>Un joueur club régulier se situe entre <strong>1400 et 1800 points</strong>.</li>
+                        <li>Les experts et maîtres internationaux dépassent les <strong>2000 à 2500 points</strong>.</li>
+                    </ul>
+                    <p class="elo-tip"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg> Plus vous gagnez contre des joueurs forts, plus votre score Elo monte ! C'est un excellent moyen de voir sa progression au fil des mois.</p>
+                </div>
+            </details>
+                </div>
+            </div>
+
+            <div class="block">
+                <div class="block-head"><h2 class="block-title">Questions fréquentes</h2></div>
+                <div class="acc-list">
+                    <details class="acc"><summary><span class="acc-title">Faut-il savoir jouer pour venir ?</span><svg class="icon acc-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary><div class="acc-body"><p>Non : le club accueille tous les niveaux, du débutant qui découvre le déplacement des pièces au compétiteur aguerri.</p></div></details>
+                    <details class="acc"><summary><span class="acc-title">Combien coûte la licence ?</span><svg class="icon acc-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary><div class="acc-body"><p>La licence est à 50 € pour les habitants de Fismes et à 100 € pour les habitants extérieurs.</p></div></details>
+                    <details class="acc"><summary><span class="acc-title">Où et quand ont lieu les séances ?</span><svg class="icon acc-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary><div class="acc-body"><p>Les jours, horaires et lieux sont indiqués dans le planning des séances ci-dessus. Le club se situe route nationale (ancien camping), 51170 Fismes.</p></div></details>
+                    <details class="acc"><summary><span class="acc-title">Comment vous contacter ?</span><svg class="icon acc-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary><div class="acc-body"><p>Par téléphone au <a href="tel:+33627150251">06 27 15 02 51</a>, par e-mail à <a href="mailto:cercle.echecs.fismes@gmail.com">cercle.echecs.fismes@gmail.com</a> ou avec le <a href="#contact" data-goto="contact">formulaire de contact</a>.</p></div></details>
+                </div>
+            </div>
+        </section>
+
+        <!-- =============================== AGENDA =============================== -->
+        <section id="agenda" class="section" tabindex="-1">
+            <div class="events-main-grid">
+                <div>
+                    <div class="panel events-header-flex">
+                        <h2 class="events-title-margin">Calendrier &amp; Événements</h2>
+                        <div class="events-filter-flex">
+                            <div>
+                                <label for="yearSelect" class="year-label">Filtrer par année :</label>
+                                <select id="yearSelect" class="year-select"></select>
+                            </div>
+                            <label class="checkbox-flex" for="hidePastCheckbox">
+                                <span class="switch">
+                                    <input type="checkbox" id="hidePastCheckbox" checked>
+                                    <span class="slider"></span>
+                                </span>
+                                <span class="hide-past-text">Masquer les anciens événements</span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" id="calendarToggle" class="btn btn-small calendar-toggle" aria-expanded="false" aria-controls="calendarCard"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> Afficher le calendrier</button>
+                    <div class="grid" id="eventsGrid">
+                        <p class="loading-text">Chargement du calendrier en cours...</p>
+                    </div>
+                    <p id="eventsEmpty" class="state-message" hidden>Aucun événement à afficher avec ces filtres.</p>
+                </div>
+
+                <aside class="card calendar-card-sidebar" id="calendarCard" aria-label="Calendrier des événements">
+                    <div class="calendar-header">
+                        <button type="button" id="calendarPrev" aria-label="Mois précédent" class="calendar-nav-btn">‹</button>
+                        <h3 id="calendarMonthYear" class="calendar-month-title" aria-live="polite">-</h3>
+                        <button type="button" id="calendarNext" aria-label="Mois suivant" class="calendar-nav-btn">›</button>
+                    </div>
+                    <div class="calendar-days-header" aria-hidden="true">
+                        <div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div><div>D</div>
+                    </div>
+                    <div id="calendarDaysGrid" class="calendar-days-grid"></div>
+                    <p class="calendar-footer-text">Les jours colorés contiennent un événement.</p>
+                </aside>
+            </div>
+        </section>
+
+        <!-- =============================== LE CLUB =============================== -->
+        <section id="leclub" class="section" tabindex="-1">
+            <div class="page-head">
+                <span class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg> Le club</span>
+                <h2 class="page-title">Notre histoire et notre vie</h2>
+            </div>
+                        <div class="card card-spaced">
+                <h3 class="section-title-reset"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg> Notre histoire</h3>
+                <p>Depuis sa création, le club a formé des dizaines de jeunes talents et participe activement aux championnats régionaux. Nos locaux chaleureux offrent le cadre parfait pour s'entraîner, analyser ses parties ou simplement disputer une partie amicale autour d'un café.</p>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <p class="timeline-text-reset"><strong>2017 :</strong> Création du club le 1er février par Didier FANTUZ sous le nom du <i>Cercle d’Échecs Union Sportive Fismes Ardre Vesle</i>.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <p class="timeline-text-reset"><strong>2018 :</strong> En septembre, affiliation à la Fédération Française d'Échecs (n° H51078).</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <p class="timeline-text-reset"><strong>2022 :</strong> Création du <strong>Cercle d'Échecs Fismes</strong> le 2 avril puis déclaration à la sous-préfecture de Reims le 12 avril (<a href="https://www.journal-officiel.gouv.fr/pages/associations-detail-annonce/?q.id=id:202200161068" target="_blank" rel="noopener noreferrer">Journal Officiel</a>).</p>
+                    </div>
+                    <div class="timeline-item last">
+                        <div class="timeline-dot"></div>
+                        <p class="timeline-text-reset"><strong>2027 :</strong> 10 ans du club !</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-col">
+                                <div class="card">
+                    <h3><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg> Actualités</h3>
+                    <p>Suivez les aventures du club au quotidien sur nos réseaux officiels :</p>
+                    <div class="social-container">
+                        <a href="https://www.facebook.com/p/Cercle-dEchecs-de-Fismes-61559241561957/" target="_blank" rel="noopener noreferrer" class="link-social-only" title="Suivez-nous sur Facebook">
+                            <img src="images/logo-facebook.png" alt="Facebook du Club" class="social-logo-img" loading="lazy">
+                        </a>
+                        <a href="https://www.instagram.com/grandestechecs/" target="_blank" rel="noopener noreferrer" class="link-social-only" title="Suivez-nous sur Instagram">
+                            <img src="images/logo-instagram.png" alt="Instagram du Club" class="social-logo-img" loading="lazy">
+                        </a>
+                    </div>
+                    <p class="gazette-title-margin"><strong>La Gazette du Cavalier Jaune (PDF) :</strong></p>
+                    <div class="gazette-scroll-container">
+                        <ul id="gazetteList">
+                            <li class="loading-gazette">Chargement des gazettes...</li>
+                        </ul>
+                    </div>
+                    <div id="gazetteMore" class="gazette-more" hidden>
+                        <button type="button" id="gazetteMoreBtn" class="btn btn-small"></button>
+                    </div>
+                </div>
+
+                                <div class="card">
+                    <h3><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg> Nos Partenaires</h3>
+                    <p>Un grand merci à nos partenaires institutionnels et privés qui soutiennent le développement de nos jeunes talents et la vie de notre association :</p>
+                    <div class="partners-grid">
+                        <a href="https://ca-nordest.com/" target="_blank" rel="noopener noreferrer" class="partner-card" title="Visiter le site du Crédit Agricole Nord Est">
+                            <div class="partner-logo-container">
+                                <img src="images/partenaires/credit-agricole.png" alt="Logo Crédit Agricole Nord Est" loading="lazy" data-fallback="images/logo-club.png">
+                            </div>
+                            <span class="partner-name">Crédit Agricole Nord Est</span>
+                        </a>
+                        <a href="https://aisne-batiment.fr/" target="_blank" rel="noopener noreferrer" class="partner-card" title="Visiter le site d'Aisne Bâtiment">
+                            <div class="partner-logo-container">
+                                <img src="images/partenaires/aisne-batiment.png" alt="Logo Aisne Bâtiment" loading="lazy" data-fallback="images/logo-club.png">
+                            </div>
+                            <span class="partner-name">Aisne Bâtiment</span>
+                        </a>
+                        <a href="https://www.fismes.fr/" target="_blank" rel="noopener noreferrer" class="partner-card" title="Visiter le site officiel de la Ville de Fismes">
+                            <div class="partner-logo-container">
+                                <img src="images/partenaires/ville-fismes.png" alt="Logo Ville de Fismes" loading="lazy" data-fallback="images/logo-club.png">
+                            </div>
+                            <span class="partner-name">Ville de Fismes</span>
+                        </a>
+                    </div>
+                    <div class="partner-footer-box">
+                        <p class="partner-footer-text">
+                            Vous souhaitez devenir partenaire ou sponsor du club ?
+                            <a href="#contact" data-goto="contact" class="partner-contact-link">Contactez notre bureau !</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div id="galerie" class="anchor"></div>
+                        <div class="card card-spaced">
+                <h3><svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg> Galerie Photos</h3>
+                <div id="galleryBack" class="gallery-back-container" hidden>
+                    <button type="button" id="backToAlbumsBtn" class="btn btn-small btn-dark">← Retour aux albums</button>
+                    <span id="galleryAlbumTitle" class="gallery-back-title"></span>
+                </div>
+                <div id="dynamicGalleryGrid" class="gallery-grid">
+                    <p class="loading-gallery">Chargement des photos...</p>
+                </div>
+                <div id="galleryPagination" class="gallery-pagination-container" hidden></div>
+            </div>
+
+        </section>
+
+        <!-- ============================== ADHÉRENTS ============================== -->
+        <section id="adherents" class="section" tabindex="-1">
+            <div class="page-head">
+                <span class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-award"/></svg> Adhérents</span>
+                <h2 class="page-title">Classement, documents et boutique</h2>
+            </div>
+            <div class="card">
+                <h2>Classement et Profils des Joueurs</h2>
+                <div class="members-tip">
+                    <p class="members-tip-p"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg> <strong>Astuce de tri :</strong> Cliquez sur les en-têtes <em>Classique, Rapide ou Blitz</em> pour basculer alternativement entre le tri Décroissant ➔ Ordre alphabétique.</p>
+                    <p class="members-tip-p"><svg class="icon" aria-hidden="true"><use href="#i-bar"/></svg> Les classements de cette liste sont mis à jour périodiquement par le club.</p>
+                    <p id="membersResultsTip" class="members-tip-p" hidden><svg class="icon" aria-hidden="true"><use href="#i-trend"/></svg> Cliquez sur le nom d'un joueur classé FIDE pour consulter ses derniers résultats (site de la FIDE).</p>
+                </div>
+
+                <div class="table-scroll-container">
+                    <table id="membersTable">
+                        <thead>
+                            <tr>
+                                <th id="th-nomPrenom" scope="col">
+                                    <button type="button" class="th-btn" data-sort="nomPrenom" title="Cliquez pour trier">Nom Prénom</button>
+                                    <button type="button" id="searchToggle" class="search-toggle-icon" aria-label="Ouvrir la recherche par nom" aria-expanded="false" aria-controls="searchContainer"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></button>
+                                    <div id="searchContainer" class="search-container-box" hidden>
+                                        <input type="search" id="nameSearchInput" placeholder="Rechercher un nom..." aria-label="Rechercher un membre par nom" autocomplete="off">
+                                    </div>
+                                </th>
+                                <th id="th-classique" class="th-center" scope="col"><button type="button" class="th-btn" data-sort="classique" title="Cliquez pour trier">Classique <span class="sort-icon" aria-hidden="true"></span></button></th>
+                                <th id="th-rapide" class="th-center" scope="col"><button type="button" class="th-btn" data-sort="rapide" title="Cliquez pour trier">Rapide <span class="sort-icon" aria-hidden="true"></span></button></th>
+                                <th id="th-blitz" class="th-center" scope="col"><button type="button" class="th-btn" data-sort="blitz" title="Cliquez pour trier">Blitz <span class="sort-icon" aria-hidden="true"></span></button></th>
+                                <th id="th-categorie" class="th-center" scope="col"><button type="button" class="th-btn" data-sort="categorie" title="Cliquez pour trier">Catégorie</button></th>
+                                <th id="th-genre" class="th-center" scope="col"><button type="button" class="th-btn" data-sort="genre" title="Cliquez pour trier">F/M</button></th>
+                                <th id="th-fide" class="th-center" scope="col"><button type="button" class="th-btn" data-sort="fideId" title="Cliquez pour trier">Profil International</button></th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="two-col">
+                                <div class="card" id="documentsCard">
+                    <h3><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg> Documents &amp; Ressources</h3>
+                    <p>Téléchargez les documents officiels du club :</p>
+                    <ul id="documentsStatic">
+                        <li><a href="#" target="_blank" rel="noopener noreferrer">Compte-rendu de l'AG 2025.pdf</a></li>
+                        <li><a href="#" target="_blank" rel="noopener noreferrer">Fiche d'inscription 2026-2027.pdf</a></li>
+                        <li><a href="#" target="_blank" rel="noopener noreferrer">Règlement intérieur du club.pdf</a></li>
+                    </ul>
+
+                    <!-- Explorateur de documents (affiché si DRIVE.DOCUMENTS_FOLDER est renseigné dans js/config.js) -->
+                    <div id="documentsApp" class="documents-app" hidden>
+                        <div class="doc-toolbar">
+                            <label class="sr-only" for="docSearch">Rechercher un document</label>
+                            <input type="search" id="docSearch" placeholder="Rechercher un document..." autocomplete="off">
+                            <label class="sr-only" for="docSeason">Filtrer par saison</label>
+                            <select id="docSeason" class="year-select" hidden></select>
+                        </div>
+                        <div id="docChips" class="doc-chips" role="group" aria-label="Catégories de documents"></div>
+                        <p id="docCount" class="doc-count" role="status"></p>
+                        <ul id="docList" class="doc-list"></ul>
+                        <div class="doc-more">
+                            <button type="button" id="docMore" class="btn btn-small" hidden>Afficher plus de documents</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><svg class="icon" aria-hidden="true"><use href="#i-tag"/></svg> La Boutique du Club</h3>
+                    <p>Produits dérivés disponibles à l'achat directement au club (pas de vente en ligne) :</p>
+                    <ul>
+                        <li><strong>Polo brodé du club :</strong> 25 €</li>
+                        <li><strong>Jeu d'échecs complet (homologué FIDE) :</strong> 15 €</li>
+                        <li><strong>Pendule électronique DGT :</strong> 40 €</li>
+                    </ul>
+                    <p><i>Pour réserver un article, adressez-vous directement au bureau lors des séances.</i></p>
+                    <div class="polo-img-container">
+                        <button type="button" class="polo-btn" data-zoom="images/polo.png" data-zoom-alt="Polo officiel du club d'échecs" title="Cliquez pour agrandir l'image" aria-label="Agrandir l'image du polo">
+                            <img src="images/polo.png" alt="Polo officiel du club d'échecs" loading="lazy" class="polo-img">
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =============================== CONTACT =============================== -->
+        <section id="contact" class="section" tabindex="-1">
+            <div class="grid">
+                <div class="card contact-info-card">
+                    <h2>Coordonnées</h2>
+                    <p><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg> <strong>Adresse :</strong> Route nationale (ancien camping), 51170 Fismes</p>
+                    <p><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg> <strong>Email :</strong> <a href="mailto:cercle.echecs.fismes@gmail.com">cercle.echecs.fismes@gmail.com</a></p>
+                    <p><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg> <strong>Téléphone :</strong> <a href="tel:+33627150251">06 27 15 02 51</a> (Bureau du Club)</p>
+                    <p><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg> <strong>Fiche officielle du club :</strong> <a href="https://echecs.asso.fr/FicheClub.aspx?Ref=3111" target="_blank" rel="noopener noreferrer">page du club sur le site de la FFE</a></p>
+                    <div class="map-box">
+                        <iframe id="mapFrame" class="map-frame" title="Carte : emplacement du Cercle d'Échecs de Fismes"
+                                data-src="https://maps.google.com/maps?q=route%20nationale%2C%2051170%20Fismes&amp;output=embed"
+                                loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Formulaire de Contact</h2>
+                    <form id="contactForm" action="https://formspree.io/f/mzeezpvr" method="POST">
+                        <label for="contactName">Votre Nom</label>
+                        <input type="text" id="contactName" name="name" required autocomplete="name" placeholder="Ex: Jean Dupont">
+                        <label for="contactEmail">Votre Adresse Email</label>
+                        <input type="email" id="contactEmail" name="email" required autocomplete="email" placeholder="Ex: jean@email.com">
+                        <label for="contactMessage">Votre Message</label>
+                        <textarea id="contactMessage" name="message" rows="5" required placeholder="Votre question ou demande d'inscription..."></textarea>
+                        <input type="text" name="_gotcha" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+                        <button type="submit" class="btn">Envoyer le message</button>
+                        <div id="formStatus" class="form-status-box" role="status" aria-live="polite"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =================================================================
+       4. PIED DE PAGE
+       ================================================================ -->
+    <footer class="site-footer">
+        <img class="footer-logo" src="assets/logo-or.svg" alt="" width="34" height="40">
+        <p>© <span id="currentYear"></span> Cercle d'Échecs de Fismes - Tous droits réservés | <button type="button" class="link-btn" data-open-modal="legalModal">Mentions Légales &amp; RGPD</button></p>
+    </footer>
+
+    <!-- =================================================================
+       5. FENÊTRES MODALES
+       ================================================================ -->
+
+    <!-- LIGHTBOX / ZOOM IMAGES -->
+    <div id="lightbox" class="overlay" role="dialog" aria-modal="true" aria-label="Agrandissement d'image" aria-hidden="true">
+        <div class="lightbox-container">
+            <button type="button" class="lightbox-btn lightbox-prev" id="lightboxPrev" title="Photo précédente" aria-label="Photo précédente">‹</button>
+            <img id="lightboxImg" alt="">
+            <button type="button" class="lightbox-btn lightbox-next" id="lightboxNext" title="Photo suivante" aria-label="Photo suivante">›</button>
+            <button type="button" class="lightbox-close" data-close-modal aria-label="Fermer l'agrandissement">×</button>
+        </div>
+    </div>
+
+    <!-- MODALE DÉFI DU JOUR (JOUABLE) -->
+    <div id="puzzleModal" class="overlay" role="dialog" aria-modal="true" aria-labelledby="puzzleModalTitle" aria-hidden="true">
+        <div class="card modal-card puzzle-modal-card">
+            <div class="modal-header-flex">
+                <h3 id="puzzleModalTitle" class="modal-title"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg> Défi du jour</h3>
+                <button type="button" class="modal-close-btn" data-close-modal aria-label="Fermer la fenêtre">×</button>
+            </div>
+            <p id="puzzleStatus" class="puzzle-status" role="status" aria-live="polite"></p>
+            <div id="puzzleStage" class="puzzle-stage">
+                <div id="puzzleBoard" class="puzzle-board"></div>
+                <div id="puzzlePromo" class="puzzle-promo" hidden>
+                    <button type="button" data-promo="q">Dame</button>
+                    <button type="button" data-promo="r">Tour</button>
+                    <button type="button" data-promo="b">Fou</button>
+                    <button type="button" data-promo="n">Cavalier</button>
+                </div>
+            </div>
+            <form id="puzzleMoveForm" class="puzzle-move-form" autocomplete="off">
+                <label class="sr-only" for="puzzleMoveInput">Saisir un coup au clavier</label>
+                <input type="text" id="puzzleMoveInput" placeholder="Coup au clavier (ex. Cf3, e4, O-O)" autocapitalize="off" autocorrect="off" spellcheck="false">
+                <button type="submit" class="btn btn-small">Jouer</button>
+            </form>
+            <div id="puzzleControls" class="puzzle-controls">
+                <button type="button" class="btn btn-small btn-dark" data-puzzle="hint"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg> Indice</button>
+                <button type="button" class="btn btn-small btn-dark" data-puzzle="solution">Solution</button>
+                <button type="button" class="btn btn-small btn-dark" data-puzzle="restart">↺ Recommencer</button>
+                <button type="button" class="btn btn-small btn-dark" data-puzzle="flip">⇅ Retourner</button>
+            </div>
+            <p id="puzzleSolutionModal" class="puzzle-solution-box" hidden></p>
+            <p class="puzzle-source"><a id="puzzleChessLink" href="https://www.chess.com/daily-chess-puzzle" target="_blank" rel="noopener noreferrer">Voir ce défi sur Chess.com</a></p>
+        </div>
+    </div>
+
+    <!-- MODALE ARCHIVES DES GAZETTES -->
+    <div id="gazetteModal" class="overlay" role="dialog" aria-modal="true" aria-labelledby="gazetteModalTitle" aria-hidden="true">
+        <div class="card modal-card">
+            <div class="modal-header-flex">
+                <h3 id="gazetteModalTitle" class="modal-title"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg> Archives de la Gazette du Cavalier Jaune</h3>
+                <button type="button" data-close-modal aria-label="Fermer la fenêtre" class="modal-close-btn">×</button>
+            </div>
+            <p class="modal-desc">Retrouvez ci-dessous l'intégralité des numéros parus. Utilisez la recherche pour filtrer rapidement :</p>
+            <input type="search" id="gazetteSearchInput" placeholder="Rechercher un numéro (ex: 120, Automne...)" class="modal-search-input" aria-label="Rechercher un numéro de la gazette" autocomplete="off">
+            <div id="gazetteModalListContainer" class="modal-list-container">
+                <ul id="gazetteModalList" class="modal-list-reset"></ul>
+            </div>
+            <button type="button" class="btn modal-close-action-btn" data-close-modal>Fermer</button>
+        </div>
+    </div>
+
+    <!-- MODALE MENTIONS LÉGALES -->
+    <div id="legalModal" class="overlay" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle" aria-hidden="true">
+        <div class="card modal-card">
+            <h3 id="legalModalTitle" class="modal-title-simple">Mentions Légales &amp; RGPD</h3>
+            <p><strong>Éditeur du site :</strong> Cercle d'Échecs de Fismes (Association Loi 1901)</p>
+            <p><strong>Siège social :</strong> 26 rue Maurice Dézothez, 51170 Fismes</p>
+            <p><strong>Directeur de la publication :</strong> Didier FANTUZ</p>
+            <p><strong>Hébergeur :</strong> GitHub Pages</p>
+            <p><strong>Données personnelles (RGPD) :</strong> les données recueillies ne sont ni cédées ni vendues. Elles servent uniquement aux usages suivants :</p>
+            <ul class="legal-list">
+                <li><strong>Formulaire de contact :</strong> votre nom, votre e-mail et votre message sont transmis via le service Formspree (qui peut traiter les données hors de l'Union européenne) pour répondre à votre demande.</li>
+                <li><strong>Classement des joueurs :</strong> l'onglet « Résultats &amp; Membres » affiche publiquement les noms, catégories et classements des adhérents.</li>
+                <li><strong>Carte Google Maps :</strong> la carte de l'onglet Contact est fournie par Google, qui peut déposer des cookies et collecter des données de navigation (dont l'adresse IP).</li>
+                <li><strong>Autres services :</strong> le défi du jour (Chess.com) ainsi que les photos, documents et tableaux (Google) sont chargés depuis ces services, qui reçoivent alors l'adresse IP du visiteur. Le site n'utilise ni outil de suivi ni publicité.</li>
+            </ul>
+            <p>Pour exercer vos droits (accès, correction, suppression, y compris pour votre enfant), écrivez-nous à <a href="mailto:cercle.echecs.fismes@gmail.com">cercle.echecs.fismes@gmail.com</a>.</p>
+            <p class="legal-license">Le code source de ce site est publié sous licence <a href="LICENSE.txt" target="_blank" rel="noopener noreferrer">GPL-3.0</a>.</p>
+            <button type="button" class="btn modal-close-action-btn" data-close-modal>Fermer</button>
+        </div>
+    </div>
+
+</body>
+</html>
