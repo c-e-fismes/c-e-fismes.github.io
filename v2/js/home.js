@@ -4,10 +4,10 @@
 import { CONFIG } from './config.js';
 import { $, $$, h, icon, on, emit, prefersReducedMotion } from './utils.js';
 import { loadWithCache } from './cache.js';
-import { getEvents, getEventsStatus, eventStatus } from './events.js';
-import { getNextSession } from './planning.js';
+import { getEvents, getEventsStatus, eventStatus, getPosterThumb } from './events.js';
+import { getNextSession, isVacationMode } from './planning.js';
 import { showSection } from './nav.js';
-import { isDriveConfigured, listFiles, childrenQuery, imageUrl, thumbUrl } from './drive.js';
+import { isDriveConfigured, listFiles, childrenQuery, imageUrl, thumbUrl, fileViewUrl } from './drive.js';
 import { openLightbox } from './lightbox.js';
 
 const MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
@@ -24,6 +24,7 @@ function renderEvents() {
     }
     box.replaceChildren(...upcoming.map((e) => {
         const [, month, day] = e.iso.split('-');
+        const thumb = getPosterThumb(e, 160);
         return h('a', {
             class: 'he-card', href: '#agenda', 'aria-label': `${e.titre}, le ${e.rawDate} : voir dans l'agenda`,
             onclick: (event) => { event.preventDefault(); showSection('agenda'); setTimeout(() => emit('events:focus', { iso: e.iso }), 150); }
@@ -34,23 +35,46 @@ function renderEvents() {
                 h('h3', {}, e.titre),
                 h('div', { class: 'he-meta' },
                     h('span', {}, icon('clock'), ` ${e.rawTime}`),
-                    h('span', {}, icon('pin'), ` ${e.lieu}`)))
+                    h('span', {}, icon('pin'), ` ${e.lieu}`))),
+            thumb && h('img', { class: 'he-poster', src: thumb, alt: '', loading: 'lazy', decoding: 'async' })
         );
     }));
 }
 
-/* ----- Prochaine séance ("Quand") ----- */
+/* ----- Prochaine séance (bandeau d'accueil) ----- */
 function renderNextSession() {
-    const el = $('#homeNextSession');
-    if (!el) return;
+    const value = $('#homeNextSession');
+    const label = $('#homeNextLabel');
+    if (!value || !label) return;
+    if (isVacationMode()) { label.textContent = 'Séances suspendues'; value.textContent = 'Pendant les vacances scolaires'; return; }
     const next = getNextSession();
-    if (!next) return; /* vacances ou données non chargées : le texte par défaut reste */
+    if (!next) return; /* données non chargées : le texte par défaut reste */
     const { item, status } = next;
-    el.replaceChildren(
-        h('strong', {}, status === 'live' ? 'En direct : ' : 'Prochaine séance : '),
-        `${item.jour} ${item.horaire}`,
-        h('br'),
-        `${item.commune}${item.lieu ? ' · ' + item.lieu : ''}`);
+    label.textContent = status === 'live' ? 'En direct' : 'Prochaine séance';
+    value.textContent = `${item.jour} · ${item.horaire} · ${item.commune}${item.lieu ? ', ' + item.lieu : ''}`;
+}
+
+/* ----- Nouvelle gazette : mise en avant pendant GAZETTE_NEW_DAYS après son ajout ----- */
+async function loadGazette() {
+    const box = $('#homeGazette');
+    if (!box || !isDriveConfigured()) return;
+    await loadWithCache('home-gazette', async () => {
+        const [file] = await listFiles({
+            query: childrenQuery(CONFIG.DRIVE.GAZETTE_FOLDER, "mimeType = 'application/pdf'"),
+            fields: 'id,name,createdTime', orderBy: 'createdTime desc', pageSize: 1, maxPages: 1
+        });
+        return file ? { id: file.id, name: file.name, created: Date.parse(file.createdTime) || 0 } : null;
+    }, {
+        onData: (gazette) => {
+            const recent = gazette?.created && (Date.now() - gazette.created) < CONFIG.GAZETTE_NEW_DAYS * 86400000;
+            box.hidden = !recent;
+            if (!recent) return;
+            $('#homeGazetteTitle').textContent = gazette.name.replace(/\.pdf$/i, '');
+            $('#homeGazetteDate').textContent = `ajoutée le ${new Date(gazette.created).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}`;
+            $('#homeGazetteLink').href = fileViewUrl(gazette.id);
+        },
+        onError: () => { box.hidden = true; }
+    });
 }
 
 /* ----- Chiffres : compteurs animés à l'affichage ----- */
@@ -103,6 +127,8 @@ async function loadPhotos() {
     });
 }
 
+export const refreshHomeEvents = renderEvents;
+
 export function initHome() {
     on('events:updated', renderEvents);
     on('planning:status', renderNextSession);
@@ -110,4 +136,5 @@ export function initHome() {
     renderEvents();
     initCounters();
     loadPhotos();
+    loadGazette();
 }

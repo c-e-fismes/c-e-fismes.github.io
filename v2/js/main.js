@@ -12,14 +12,13 @@ import { initNav, onFirstShow } from './nav.js';
 import { loadPlanning, updatePlanningStatus } from './planning.js';
 import { initEvents, loadEvents, render as renderEvents } from './events.js';
 import { initCalendar } from './calendar.js';
-import { initCountdown, updateCountdown } from './countdown.js';
 import { initMembers, loadMembers } from './members.js';
 import { initPuzzle } from './puzzle.js';
 import { initGallery } from './gallery.js';
 import { initGazettes } from './gazettes.js';
 import { initDocuments } from './documents.js';
 import { initContact } from './contact.js';
-import { initHome } from './home.js';
+import { initHome, refreshHomeEvents } from './home.js';
 
 /* Images : repli (data-fallback) ou masquage (data-hide-on-error) en cas d'erreur de chargement */
 function initImageFallbacks() {
@@ -74,7 +73,6 @@ function boot() {
     loadPlanning();
     initEvents();
     initCalendar();
-    initCountdown();
     initHome();
     initMembers();
     initPuzzle();
@@ -82,8 +80,8 @@ function boot() {
     /* Un seul minuteur : statuts "en direct", compte à rebours, badges des événements */
     setInterval(() => {
         updatePlanningStatus();
-        updateCountdown();
         renderEvents();
+        refreshHomeEvents();
     }, CONFIG.TICK_MS);
 
     registerServiceWorker();

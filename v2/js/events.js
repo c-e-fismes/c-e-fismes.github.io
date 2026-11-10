@@ -109,12 +109,17 @@ async function ensurePosterMap() {
         });
         return Object.fromEntries(files.map((file) => [file.name, file.id]));
     }, {
-        onData: (map) => { posterMap = map; render(true); }
+        onData: (map) => { posterMap = map; render(true); emit('events:updated'); }
     });
 }
 
 /* Retourne { thumb, full } ou null */
-function posterSources(event) {
+/* Miniature d'affiche pour d'autres modules (accueil) ; '' si l'événement n'a pas d'affiche exploitable */
+export function getPosterThumb(event, width = 160) {
+    return posterSources(event, width)?.thumb ?? '';
+}
+
+function posterSources(event, thumbWidth = 320) {
     const value = (event.lienAffiche || '').trim();
     if (!value) return null;
     if (/^https?:/i.test(value)) {
@@ -122,7 +127,7 @@ function posterSources(event) {
         return url ? { thumb: url, full: url } : null;
     }
     const id = posterMap?.[value];
-    return id ? { thumb: imageUrl(id, 320), full: imageUrl(id, 1600) } : null;
+    return id ? { thumb: imageUrl(id, thumbWidth), full: imageUrl(id, 1600) } : null;
 }
 
 /* ------------------------------ Affichage ------------------------------ */
@@ -144,6 +149,7 @@ function buildCard(event, state) {
         event.rondes && h('p', {}, icon('bar'), ' ', h('strong', {}, 'Nombre de rondes :'), ` ${event.rondes}`)
     );
 
+    /* Affiche : colonne de droite sur toute la hauteur de la carte */
     const poster = posterSources(event);
     let posterColumn = null;
     if (poster) {
@@ -153,17 +159,20 @@ function buildCard(event, state) {
                 type: 'button', class: 'poster-btn', 'aria-label': `Agrandir l'affiche : ${event.titre}`,
                 onclick: () => openLightbox([poster.full], 0, [`Affiche : ${event.titre}`])
             }, img));
-        img.addEventListener('error', () => { posterColumn.hidden = true; });
     }
 
-    return h('article', {
-        class: `card event-card${state === 'past' ? ' is-past' : ''}`,
+    const card = h('article', {
+        class: `card event-card${posterColumn ? ' has-poster' : ''}`,
         'data-date': event.iso, 'data-year': event.year, 'data-status': state
     },
-        h('div', { class: 'event-content-flex' }, info, posterColumn),
-        event.commentaire && h('p', { class: 'event-comment-text' }, icon('info'), ' ', event.commentaire),
-        buildActions(event, state)
+        h('div', { class: 'event-main' },
+            info,
+            event.commentaire && h('p', { class: 'event-comment-text' }, icon('info'), ' ', event.commentaire),
+            buildActions(event, state)),
+        posterColumn
     );
+    posterColumn?.querySelector('img').addEventListener('error', () => { posterColumn.hidden = true; card.classList.remove('has-poster'); });
+    return card;
 }
 
 /* Événement à venir ou en cours : "Ajouter à mon agenda" ; événement passé avec lien : "Résultats" */
