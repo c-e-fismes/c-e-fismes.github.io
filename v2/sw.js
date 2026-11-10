@@ -5,7 +5,7 @@
    - Images et bibliothèques : cache d'abord, rafraîchies en arrière-plan.
    - Google, Chess.com, Formspree... (autres domaines) : jamais interceptés.
    ================================================================ */
-const VERSION = 'v6'; /* À incrémenter à chaque mise en ligne (et CONFIG.APP_VERSION dans js/config.js si les données changent) */
+const VERSION = 'v7'; /* À incrémenter à chaque mise en ligne (et CONFIG.APP_VERSION dans js/config.js si les données changent) */
 const CACHE_NAME = `echecs-fismes-${VERSION}`;
 const NETWORK_TIMEOUT_MS = 4000;
 
@@ -17,7 +17,6 @@ const PRECACHE = [
     './js/calendar.js',
     './js/config.js',
     './js/contact.js',
-    './js/countdown.js',
     './js/documents.js',
     './js/drive.js',
     './js/events.js',

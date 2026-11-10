@@ -116,43 +116,25 @@
                     <p class="hero-lead">
                         Du débutant qui découvre le déplacement des pièces au compétiteur aguerri, le <strong>Cercle d'Échecs de Fismes</strong> vous accueille dans une ambiance à la fois studieuse et conviviale.
                     </p>
-                    <div class="hero-actions">
-                        <a href="#rejoindre" data-goto="rejoindre" class="btn btn-gold">Nous rejoindre</a>
-                        <a href="#agenda" data-goto="agenda" class="btn btn-ghost">Voir l'agenda <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-                    </div>
-                    <div id="countdownContainer" class="countdown-box">
-                        <span class="countdown-label"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg> À venir :</span>
-                        <span id="countdownTimer" class="countdown-timer-text">Recherche...</span>
-                    </div>
                 </div>
                 <div class="hero-visual">
-                    <img class="hero-logo" src="assets/logo-or.svg" alt="Logo du Cercle d'Échecs de Fismes" width="260" height="305">
+                    <img class="hero-logo" src="assets/logo-or.svg" alt="Logo du Cercle d'Échecs de Fismes" width="130" height="153">
                     <p class="hero-tagline">Passion, Stratégie et Convivialité</p>
                 </div>
-            </div>
-
-            <!-- Infos pratiques : la réponse en 5 secondes -->
-            <div class="info-grid">
-                <div class="info-tile">
-                    <span class="info-icon"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg></span>
-                    <h2 class="info-title">Où</h2>
-                    <p>Route nationale (ancien camping), 51170 Fismes</p>
-                </div>
-                <div class="info-tile">
-                    <span class="info-icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg></span>
-                    <h2 class="info-title">Quand</h2>
-                    <p id="homeNextSession">Séances chaque semaine</p>
-                    <a href="#rejoindre" data-goto="rejoindre#planning" class="info-link">Voir le planning <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-                </div>
-                <div class="info-tile">
-                    <span class="info-icon"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></span>
-                    <h2 class="info-title">Pour qui</h2>
-                    <p>Tout niveau, tout public</p>
-                </div>
-                <div class="info-tile">
-                    <span class="info-icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
-                    <h2 class="info-title">Nous joindre</h2>
-                    <p><a href="tel:+33627150251">06 27 15 02 51</a><br><a href="mailto:cercle.echecs.fismes@gmail.com">cercle.echecs.fismes@gmail.com</a></p>
+                <div class="hero-foot">
+                    <div class="hero-box">
+                        <span class="hero-box-icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg></span>
+                        <div class="hero-box-text">
+                            <span id="homeNextLabel" class="hero-box-label">Prochaine séance</span>
+                            <strong id="homeNextSession">Séances chaque semaine</strong>
+                        </div>
+                        <a href="#rejoindre" data-goto="rejoindre#planning" class="hero-box-link">Voir le planning <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                    </div>
+                    <a href="#contact" data-goto="contact" class="hero-box hero-box-contact">
+                        <span class="hero-box-icon"><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg></span>
+                        <div class="hero-box-text"><span class="hero-box-label">Une question ?</span><strong>Nous contacter</strong></div>
+                        <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+                    </a>
                 </div>
             </div>
 
@@ -163,6 +145,18 @@
                     <a href="#agenda" data-goto="agenda" class="block-link">Tout l'agenda <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
                 </div>
                 <div id="homeEvents" class="home-events"><p class="state-message">Chargement des événements...</p></div>
+            </div>
+
+            <!-- Nouvelle gazette : affichée seulement quand un numéro vient d'être ajouté -->
+            <div id="homeGazette" class="gazette-feature" hidden>
+                <span class="gazette-feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg></span>
+                <div class="gazette-feature-text">
+                    <span class="badge badge--new">Nouveau</span>
+                    <strong id="homeGazetteTitle">Gazette du Cavalier Jaune</strong>
+                    <span id="homeGazetteDate" class="gazette-feature-date"></span>
+                </div>
+                <a id="homeGazetteLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-small">Lire la gazette</a>
+                <a href="#leclub" data-goto="leclub" class="block-link">Toutes les gazettes <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
             </div>
 
             <!-- Le club en chiffres + défi du jour -->
@@ -194,19 +188,6 @@
                 </div>
             </div>
 
-            <!-- À la une (exemples : seront alimentés par un tableau Google Sheets) -->
-            <div class="block">
-                <div class="block-head">
-                    <h2 class="block-title">À la une</h2>
-                    <a href="#leclub" data-goto="leclub" class="block-link">Toute l'actualité du club <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-                </div>
-                <div class="news-grid">
-                    <article class="news-card"><span class="news-date">Exemple · 12 nov.</span><h3>Titre de l'actualité</h3><p>Un court résumé de la nouvelle : deux lignes maximum.</p></article>
-                    <article class="news-card"><span class="news-date">Exemple · 05 nov.</span><h3>Titre de l'actualité</h3><p>Un court résumé de la nouvelle : deux lignes maximum.</p></article>
-                    <article class="news-card"><span class="news-date">Exemple · 28 oct.</span><h3>Titre de l'actualité</h3><p>Un court résumé de la nouvelle : deux lignes maximum.</p></article>
-                </div>
-            </div>
-
             <!-- Extrait de la galerie -->
             <div class="block" id="homePhotosBlock" hidden>
                 <div class="block-head">
@@ -224,12 +205,6 @@
                     <a href="https://aisne-batiment.fr/" target="_blank" rel="noopener noreferrer" title="Aisne Bâtiment"><img src="images/partenaires/aisne-batiment.png" alt="Logo Aisne Bâtiment" loading="lazy"></a>
                     <a href="https://www.fismes.fr/" target="_blank" rel="noopener noreferrer" title="Ville de Fismes"><img src="images/partenaires/ville-fismes.png" alt="Logo Ville de Fismes" loading="lazy"></a>
                 </div>
-            </div>
-
-            <!-- Appel à l'action final -->
-            <div class="cta-band">
-                <div><h2>Une question ?</h2><p>Venez nous rencontrer lors d'une séance ou écrivez-nous.</p></div>
-                <a href="#contact" data-goto="contact" class="btn btn-gold">Nous contacter</a>
             </div>
         </section>
 
