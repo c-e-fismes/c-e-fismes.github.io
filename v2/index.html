@@ -7,11 +7,12 @@
     <title>Cercle d'Échecs de Fismes - Site Officiel</title>
     <meta name="description" content="Cercle d'Échecs de Fismes, club affilié à la FFE : planning des séances, calendrier des événements, classement des joueurs, galerie photos et contact.">
 
+    <!-- Réseaux sociaux : remplacer VOTRE-DOMAINE par l'adresse définitive du site -->
     <meta property="og:type" content="website">
     <meta property="og:locale" content="fr_FR">
     <meta property="og:title" content="Cercle d'Échecs de Fismes - Site Officiel">
     <meta property="og:description" content="Passion, Stratégie et Convivialité : retrouvez le planning, les événements et les résultats du club.">
-    <meta property="og:image" content="https://c-e-fismes.github.io/v2/assets/logo-or.png">
+    <meta property="og:image" content="https://VOTRE-DOMAINE/assets/logo-or.png">
 
     <!-- Marque la page comme "JavaScript actif" avant l'affichage (évite de voir toutes les sections un instant) -->
     <script src="js/init.js"></script>
@@ -75,6 +76,8 @@
         <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
         <symbol id="i-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
         <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+        <symbol id="i-facebook" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></symbol>
+        <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></symbol>
         <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></symbol>
     </svg>
 
@@ -122,20 +125,35 @@
                     <p class="hero-tagline">Passion, Stratégie et Convivialité</p>
                 </div>
                 <div class="hero-foot">
-                    <div class="hero-box">
-                        <span class="hero-box-icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg></span>
-                        <div class="hero-box-text">
-                            <span id="homeNextLabel" class="hero-box-label">Prochaine séance</span>
-                            <strong id="homeNextSession">Séances chaque semaine</strong>
-                        </div>
-                        <a href="#rejoindre" data-goto="rejoindre#planning" class="hero-box-link">Voir le planning <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-                    </div>
                     <a href="#contact" data-goto="contact" class="hero-box hero-box-contact">
                         <span class="hero-box-icon"><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg></span>
                         <div class="hero-box-text"><span class="hero-box-label">Une question ?</span><strong>Nous contacter</strong></div>
                         <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
                     </a>
+                    <div class="hero-box hero-social">
+                        <span class="hero-box-label">Suivez-nous</span>
+                        <a class="social-btn" href="https://www.facebook.com/p/Cercle-dEchecs-de-Fismes-61559241561957/" target="_blank" rel="noopener noreferrer" aria-label="Facebook du club (nouvel onglet)" title="Facebook"><svg class="icon" aria-hidden="true"><use href="#i-facebook"/></svg></a>
+                        <a class="social-btn" href="https://www.instagram.com/grandestechecs/" target="_blank" rel="noopener noreferrer" aria-label="Instagram du club (nouvel onglet)" title="Instagram"><svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg></a>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Séances | Dernières gazettes -->
+            <div class="duo-grid">
+                <section class="duo-col" aria-labelledby="homeSessionsTitle">
+                    <div class="block-head">
+                        <h2 id="homeSessionsTitle" class="block-title">Les séances</h2>
+                        <a href="#rejoindre" data-goto="rejoindre#planning" class="block-link">Toutes les séances <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                    </div>
+                    <div class="card duo-card"><div id="homeSessions"><p class="state-message">Chargement du planning...</p></div></div>
+                </section>
+                <section id="homeGazettesBlock" class="duo-col" aria-labelledby="homeGazettesTitle">
+                    <div class="block-head">
+                        <h2 id="homeGazettesTitle" class="block-title">Les dernières gazettes</h2>
+                        <a href="#leclub" data-goto="leclub#gazettes" class="block-link">Toutes les gazettes <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                    </div>
+                    <div class="card duo-card"><div id="homeGazettes"><p class="state-message">Chargement des gazettes...</p></div></div>
+                </section>
             </div>
 
             <!-- Prochains événements -->
@@ -147,24 +165,13 @@
                 <div id="homeEvents" class="home-events"><p class="state-message">Chargement des événements...</p></div>
             </div>
 
-            <!-- Nouvelle gazette : affichée seulement quand un numéro vient d'être ajouté -->
-            <div id="homeGazette" class="gazette-feature" hidden>
-                <span class="gazette-feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg></span>
-                <div class="gazette-feature-text">
-                    <span class="badge badge--new">Nouveau</span>
-                    <strong id="homeGazetteTitle">Gazette du Cavalier Jaune</strong>
-                    <span id="homeGazetteDate" class="gazette-feature-date"></span>
-                </div>
-                <a id="homeGazetteLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-small">Lire la gazette</a>
-                <a href="#leclub" data-goto="leclub" class="block-link">Toutes les gazettes <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-            </div>
-
-            <!-- Le club en chiffres + défi du jour -->
-            <div class="home-duo">
-                <div class="card">
-                    <h2 class="block-title">Le club en chiffres</h2>
-                    <p class="muted">Un aperçu en temps réel de notre communauté et de notre dynamique sportive :</p>
-                    <div class="stats-grid">
+            <!-- Le club en chiffres | Défi du jour -->
+            <div class="duo-grid duo-grid-stats">
+                <section class="duo-col" aria-labelledby="homeStatsTitle">
+                    <div class="block-head"><h2 id="homeStatsTitle" class="block-title">Le club en chiffres</h2></div>
+                    <div class="card duo-card">
+                        <p class="muted stats-intro">Un aperçu en temps réel de notre communauté et de notre dynamique sportive :</p>
+                        <div class="stats-grid">
                     <div class="stat-tile"><span class="stat-num accent-bold">419</span><span class="stat-label">Adhérents depuis la création</span></div>
                     <div class="stat-tile"><span id="stat-total-membres" class="stat-num accent-bold">-</span><span class="stat-label">Membres actuellement</span></div>
                     <div class="stat-tile"><span id="stat-feminines" class="stat-num accent-bold">-</span><span class="stat-label">Part des féminines</span></div>
@@ -172,20 +179,23 @@
                     <div class="stat-tile"><span id="stat-top-elo" class="stat-num accent-bold">-</span><span class="stat-label">Top Elo actuel</span></div>
                     <div class="stat-tile"><span id="stat-niveau-moyen" class="stat-num accent-bold">-</span><span class="stat-label">Moyenne Elo Rapide Top 5</span></div>
                 </div>
-                </div>
-                <div class="card puzzle-card">
-                    <div class="puzzle-header">
-                        <span class="puzzle-tag"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg> Défi du jour</span>
+                    </div>
+                </section>
+                <section class="duo-col" aria-labelledby="homePuzzleTitle">
+                    <div class="block-head">
+                        <h2 id="homePuzzleTitle" class="block-title">Défi du jour</h2>
                         <span id="puzzleDateNum" class="puzzle-week">Aujourd'hui</span>
                     </div>
-                    <div class="puzzle-board-container">
-                        <button type="button" id="puzzleBoardBtn" class="puzzle-board-btn" title="Cliquez pour jouer" aria-label="Jouer le défi du jour : ouvrir l'échiquier">
-                            <img id="puzzleImg" alt="Position du problème d'échecs" class="puzzle-board-img" width="200" height="200">
-                        </button>
+                    <div class="card duo-card puzzle-card">
+                        <div class="puzzle-board-container">
+                            <button type="button" id="puzzleBoardBtn" class="puzzle-board-btn" title="Cliquez pour jouer" aria-label="Jouer le défi du jour : ouvrir l'échiquier">
+                                <img id="puzzleImg" alt="Position du problème d'échecs" class="puzzle-board-img" width="200" height="200">
+                            </button>
+                        </div>
+                        <p id="puzzleDesc" class="puzzle-text" hidden></p>
+                        <p class="puzzle-hint">Cliquez sur l'échiquier pour jouer</p>
                     </div>
-                    <p id="puzzleDesc" class="puzzle-text" hidden></p>
-                    <p class="puzzle-hint">Cliquez sur l'échiquier pour jouer</p>
-                </div>
+                </section>
             </div>
 
             <!-- Extrait de la galerie -->
@@ -443,7 +453,7 @@
             </div>
 
             <div class="two-col">
-                                <div class="card">
+                                <div class="card" id="gazettes">
                     <h3><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg> Actualités</h3>
                     <p>Suivez les aventures du club au quotidien sur nos réseaux officiels :</p>
                     <div class="social-container">
