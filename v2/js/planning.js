@@ -2,7 +2,7 @@
    PLANNING DES SÉANCES (Google Sheet) + mode vacances + séance "en direct"
    ================================================================ */
 import { CONFIG } from './config.js';
-import { $, $$, h, normalizeText, parisParts, renderState, emit } from './utils.js';
+import { $, $$, h, normalizeText, parisParts, parisToTimestamp, renderState, emit } from './utils.js';
 import { loadWithCache } from './cache.js';
 import { fetchSheet, tableRows, cellValue, parseTimeCell } from './sheets.js';
 
@@ -66,6 +66,29 @@ function applyVacation() {
     $('#planningWrapperContainer')?.classList.toggle('planning-table-disabled', vacation);
     emit('planning:vacation', { vacation });
     updatePlanningStatus();
+}
+
+/* Occurrences réelles (avec dates) des séances hebdomadaires autour de maintenant :
+   { previous, current, after } ; current.status = 'live' (en cours) ou 'next' (à venir). null sans données. */
+export function getSessionTriplet(now = Date.now()) {
+    if (planning.length === 0) return null;
+    const today = parisParts(new Date(now));
+    const occurrences = [];
+    for (let offset = -8; offset <= 14; offset++) {
+        const date = new Date(Date.UTC(today.year, today.month - 1, today.day + offset));
+        const [year, month, day, weekday] = [date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate(), date.getUTCDay()];
+        for (const item of planning) {
+            if (item.jourNum !== weekday) continue;
+            const start = parisToTimestamp(year, month, day, Math.floor(item.debutMin / 60), item.debutMin % 60);
+            const length = (item.finMin ?? item.debutMin + DEFAULT_DURATION_MIN) - item.debutMin;
+            occurrences.push({ start, end: start + Math.max(length, 30) * 60000, item });
+        }
+    }
+    occurrences.sort((a, b) => a.start - b.start);
+    const index = occurrences.findIndex((o) => o.end >= now);
+    if (index < 0) return null;
+    const current = occurrences[index];
+    return { previous: occurrences[index - 1] ?? null, current: { ...current, status: current.start <= now ? 'live' : 'next' }, after: occurrences[index + 1] ?? null };
 }
 
 /* Séance en cours ("live") ou prochaine séance ; null en mode vacances ou sans données */

@@ -5,14 +5,14 @@
    ================================================================ */
 export const CONFIG = Object.freeze({
     /* Incrémenter à chaque changement de structure des données en cache (et dans sw.js : VERSION). */
-    APP_VERSION: 'v7',
+    APP_VERSION: 'v8',
 
     /* Cache navigateur (localStorage) */
     CACHE_FRESH_MS: 2 * 60 * 1000,              /* < 2 min : aucune requête réseau */
     CACHE_MAX_STALE_MS: 7 * 24 * 60 * 60 * 1000, /* > 7 jours : donnée ignorée (sinon utilisée hors-ligne) */
     NETWORK_TIMEOUT_MS: 10000,
     TICK_MS: 30000,                              /* rafraîchissement des statuts (en direct, prochaine séance) */
-    GAZETTE_NEW_DAYS: 45,                        /* une gazette est mise en avant sur l'accueil pendant ce nombre de jours après son ajout */
+    GAZETTE_NEW_DAYS: 30,                        /* l'étiquette "Nouveau" reste sur la dernière gazette pendant ce nombre de jours après son ajout */
     TIMEZONE: 'Europe/Paris',
 
     /* Google Sheets (partagés en "Lecteur" pour toute personne disposant du lien) */

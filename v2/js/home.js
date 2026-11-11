@@ -5,7 +5,7 @@ import { CONFIG } from './config.js';
 import { $, $$, h, icon, on, emit, prefersReducedMotion } from './utils.js';
 import { loadWithCache } from './cache.js';
 import { getEvents, getEventsStatus, eventStatus, getPosterThumb } from './events.js';
-import { getNextSession, isVacationMode } from './planning.js';
+import { getSessionTriplet, isVacationMode } from './planning.js';
 import { showSection } from './nav.js';
 import { isDriveConfigured, listFiles, childrenQuery, imageUrl, thumbUrl, fileViewUrl } from './drive.js';
 import { openLightbox } from './lightbox.js';
@@ -41,39 +41,69 @@ function renderEvents() {
     }));
 }
 
-/* ----- Prochaine séance (bandeau d'accueil) ----- */
-function renderNextSession() {
-    const value = $('#homeNextSession');
-    const label = $('#homeNextLabel');
-    if (!value || !label) return;
-    if (isVacationMode()) { label.textContent = 'Séances suspendues'; value.textContent = 'Pendant les vacances scolaires'; return; }
-    const next = getNextSession();
-    if (!next) return; /* données non chargées : le texte par défaut reste */
-    const { item, status } = next;
-    label.textContent = status === 'live' ? 'En direct' : 'Prochaine séance';
-    value.textContent = `${item.jour} · ${item.horaire} · ${item.commune}${item.lieu ? ', ' + item.lieu : ''}`;
+/* ----- Séances : précédente, prochaine (ou en cours) et suivante ----- */
+const dateFr = new Intl.DateTimeFormat('fr-FR', { timeZone: CONFIG.TIMEZONE, weekday: 'long', day: 'numeric', month: 'long' });
+const dayFr = new Intl.DateTimeFormat('fr-FR', { timeZone: CONFIG.TIMEZONE, day: 'numeric' });
+const monthFr = new Intl.DateTimeFormat('fr-FR', { timeZone: CONFIG.TIMEZONE, month: 'short' });
+const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+
+function sessionRow(occurrence, kind) {
+    const tag = { prev: 'Précédente', live: 'En direct', next: 'Prochaine séance', after: 'Ensuite' }[kind];
+    const { item, start } = occurrence;
+    return h('li', { class: `session-row session--${kind}`, 'data-start': String(start) },
+        h('div', { class: 'he-date' }, h('span', { class: 'he-day' }, dayFr.format(start)), h('span', { class: 'he-month' }, monthFr.format(start).replace('.', ''))),
+        h('div', { class: 'session-body' },
+            h('strong', {}, capitalize(dateFr.format(start))),
+            h('span', {}, icon('clock'), ` ${item.horaire}`),
+            h('span', {}, icon('pin'), ` ${item.commune}${item.lieu ? ', ' + item.lieu : ''}`)),
+        h('span', { class: `session-tag session-tag--${kind}` }, tag));
 }
 
-/* ----- Nouvelle gazette : mise en avant pendant GAZETTE_NEW_DAYS après son ajout ----- */
-async function loadGazette() {
-    const box = $('#homeGazette');
-    if (!box || !isDriveConfigured()) return;
-    await loadWithCache('home-gazette', async () => {
-        const [file] = await listFiles({
+function renderSessions() {
+    const box = $('#homeSessions');
+    if (!box) return;
+    if (isVacationMode()) {
+        box.replaceChildren(h('p', { class: 'state-message' }, 'Séances suspendues pendant les vacances scolaires.'));
+        return;
+    }
+    const triplet = getSessionTriplet();
+    if (!triplet) { box.replaceChildren(h('p', { class: 'state-message' }, 'Chargement du planning...')); return; }
+    const { previous, current, after } = triplet;
+    box.replaceChildren(h('ul', { class: 'session-list' },
+        previous && sessionRow(previous, 'prev'),
+        sessionRow(current, current.status === 'live' ? 'live' : 'next'),
+        after && sessionRow(after, 'after')));
+}
+
+/* ----- Les 3 dernières gazettes (la plus récente porte "Nouveau" si elle date de moins de GAZETTE_NEW_DAYS jours) ----- */
+const longDate = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long' });
+
+function renderGazettes(files) {
+    const box = $('#homeGazettes');
+    if (!box) return;
+    if (!files || files.length === 0) { box.replaceChildren(h('p', { class: 'state-message' }, 'Aucune gazette pour le moment.')); return; }
+    const recent = files[0].created && (Date.now() - files[0].created) < CONFIG.GAZETTE_NEW_DAYS * 86400000;
+    box.replaceChildren(h('ul', { class: 'gz-list' }, ...files.map((file, index) =>
+        h('li', {}, h('a', { class: 'gz-row', href: fileViewUrl(file.id), target: '_blank', rel: 'noopener noreferrer' },
+            h('span', { class: 'gz-icon' }, icon('file')),
+            h('span', { class: 'gz-body' },
+                h('strong', {}, file.name.replace(/\.pdf$/i, ''), index === 0 && recent && h('span', { class: 'badge badge--new' }, 'Nouveau')),
+                file.created && h('span', {}, `ajoutée le ${longDate.format(file.created)}`)),
+            icon('external'))))));
+}
+
+async function loadGazettes() {
+    if (!$('#homeGazettes')) return;
+    if (!isDriveConfigured()) { $('#homeGazettesBlock')?.setAttribute('hidden', ''); return; }
+    await loadWithCache('home-gazettes', async () => {
+        const files = await listFiles({
             query: childrenQuery(CONFIG.DRIVE.GAZETTE_FOLDER, "mimeType = 'application/pdf'"),
-            fields: 'id,name,createdTime', orderBy: 'createdTime desc', pageSize: 1, maxPages: 1
+            fields: 'id,name,createdTime', orderBy: 'createdTime desc', pageSize: 3, maxPages: 1
         });
-        return file ? { id: file.id, name: file.name, created: Date.parse(file.createdTime) || 0 } : null;
+        return files.slice(0, 3).map((f) => ({ id: f.id, name: f.name, created: Date.parse(f.createdTime) || 0 }));
     }, {
-        onData: (gazette) => {
-            const recent = gazette?.created && (Date.now() - gazette.created) < CONFIG.GAZETTE_NEW_DAYS * 86400000;
-            box.hidden = !recent;
-            if (!recent) return;
-            $('#homeGazetteTitle').textContent = gazette.name.replace(/\.pdf$/i, '');
-            $('#homeGazetteDate').textContent = `ajoutée le ${new Date(gazette.created).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}`;
-            $('#homeGazetteLink').href = fileViewUrl(gazette.id);
-        },
-        onError: () => { box.hidden = true; }
+        onData: renderGazettes,
+        onError: () => $('#homeGazettes').replaceChildren(h('p', { class: 'state-message is-error' }, 'Impossible de charger les gazettes pour le moment.'))
     });
 }
 
@@ -131,10 +161,11 @@ export const refreshHomeEvents = renderEvents;
 
 export function initHome() {
     on('events:updated', renderEvents);
-    on('planning:status', renderNextSession);
-    on('planning:vacation', renderNextSession);
+    on('planning:status', renderSessions);
+    on('planning:vacation', renderSessions);
     renderEvents();
+    renderSessions();
     initCounters();
     loadPhotos();
-    loadGazette();
+    loadGazettes();
 }
