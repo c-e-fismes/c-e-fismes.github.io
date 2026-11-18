@@ -27,7 +27,7 @@ function renderEvents() {
         const thumb = getPosterThumb(e, 160);
         return h('a', {
             class: 'he-card', href: '#agenda', 'aria-label': `${e.titre}, le ${e.rawDate} : voir dans l'agenda`,
-            onclick: (event) => { event.preventDefault(); showSection('agenda'); setTimeout(() => emit('events:focus', { iso: e.iso }), 150); }
+            onclick: (event) => { event.preventDefault(); emit('events:skip-autoscroll'); showSection('agenda'); setTimeout(() => emit('events:focus', { iso: e.iso }), 150); }
         },
             h('div', { class: 'he-date' }, h('span', { class: 'he-day' }, String(+day)), h('span', { class: 'he-month' }, MONTHS[+month - 1])),
             h('div', { class: 'he-body' },
@@ -62,8 +62,14 @@ function sessionRow(occurrence, kind) {
 function renderSessions() {
     const box = $('#homeSessions');
     if (!box) return;
+    const card = box.closest('.duo-card');
+    card?.classList.toggle('is-vacation', isVacationMode());
     if (isVacationMode()) {
-        box.replaceChildren(h('p', { class: 'state-message' }, 'Séances suspendues pendant les vacances scolaires.'));
+        box.replaceChildren(h('div', { class: 'vacation-home' },
+            h('span', { class: 'vacation-home-icon' }, icon('sun')),
+            h('strong', { class: 'vacation-home-title' }, 'Séances suspendues pendant les vacances scolaires'),
+            h('p', {}, 'Profitez bien de cette pause ! Reprise des séances habituelles dès la rentrée.'),
+            h('a', { href: '#rejoindre', 'data-goto': 'rejoindre#planning', class: 'block-link' }, 'Voir le planning ', icon('arrow'))));
         return;
     }
     const triplet = getSessionTriplet();

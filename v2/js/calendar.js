@@ -4,6 +4,7 @@
    ================================================================ */
 import { $, h, icon, emit, on, parisParts } from './utils.js';
 import { getEvents } from './events.js';
+import { holidayName } from './holidays.js';
 
 const MONTHS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 const view = { year: 0, month: 0 }; /* month : 0-11 */
@@ -65,13 +66,16 @@ function render() {
         const dayEvents = events.filter((e) => e.iso === iso);
         const isToday = today.year === view.year && today.month === view.month + 1 && today.day === day;
 
+        const holiday = holidayName(view.year, view.month + 1, day);
+        const holidayClass = holiday ? ' is-holiday' : '';
+
         if (dayEvents.length === 0) {
-            cells.push(h('div', { class: `cal-day${isToday ? ' is-today' : ''}` }, h('span', {}, day)));
+            cells.push(h('div', { class: `cal-day${isToday ? ' is-today' : ''}${holidayClass}`, title: holiday ? `Jour férié : ${holiday}` : null }, h('span', {}, day)));
             continue;
         }
 
-        const label = `${day} ${MONTHS[view.month].toLowerCase()} : ${dayEvents.length} événement${dayEvents.length > 1 ? 's' : ''}`;
-        const button = h('button', { type: 'button', class: `cal-day has-event${isToday ? ' is-today' : ''}`, 'aria-label': label },
+        const label = `${day} ${MONTHS[view.month].toLowerCase()} : ${dayEvents.length} événement${dayEvents.length > 1 ? 's' : ''}${holiday ? ` (jour férié : ${holiday})` : ''}`;
+        const button = h('button', { type: 'button', class: `cal-day has-event${isToday ? ' is-today' : ''}${holidayClass}`, 'aria-label': label },
             h('span', {}, day), h('span', { class: 'cal-dot', 'aria-hidden': 'true' }));
 
         button.addEventListener('mouseenter', () => { if (!isTouch()) showTooltip(button, dayEvents, iso); });

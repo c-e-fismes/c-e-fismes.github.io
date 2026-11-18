@@ -5,7 +5,7 @@
    ================================================================ */
 export const CONFIG = Object.freeze({
     /* Incrémenter à chaque changement de structure des données en cache (et dans sw.js : VERSION). */
-    APP_VERSION: 'v8',
+    APP_VERSION: 'v9',
 
     /* Cache navigateur (localStorage) */
     CACHE_FRESH_MS: 2 * 60 * 1000,              /* < 2 min : aucune requête réseau */

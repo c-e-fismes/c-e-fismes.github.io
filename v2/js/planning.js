@@ -5,6 +5,7 @@ import { CONFIG } from './config.js';
 import { $, $$, h, normalizeText, parisParts, parisToTimestamp, renderState, emit } from './utils.js';
 import { loadWithCache } from './cache.js';
 import { fetchSheet, tableRows, cellValue, parseTimeCell } from './sheets.js';
+import { holidayName } from './holidays.js';
 
 const DAYS = { dimanche: 0, lundi: 1, mardi: 2, mercredi: 3, jeudi: 4, vendredi: 5, samedi: 6 };
 const DEFAULT_DURATION_MIN = 180; /* durée supposée si l'heure de fin n'est pas renseignée */
@@ -68,62 +69,72 @@ function applyVacation() {
     updatePlanningStatus();
 }
 
-/* Occurrences réelles (avec dates) des séances hebdomadaires autour de maintenant :
-   { previous, current, after } ; current.status = 'live' (en cours) ou 'next' (à venir). null sans données. */
-export function getSessionTriplet(now = Date.now()) {
-    if (planning.length === 0) return null;
+/* Occurrences réelles (avec dates) des séances hebdomadaires autour de maintenant.
+   Chaque occurrence porte `holiday` (nom du jour férié) si elle tombe un jour férié. */
+function buildOccurrences(now) {
     const today = parisParts(new Date(now));
-    const occurrences = [];
+    const list = [];
     for (let offset = -8; offset <= 14; offset++) {
         const date = new Date(Date.UTC(today.year, today.month - 1, today.day + offset));
         const [year, month, day, weekday] = [date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate(), date.getUTCDay()];
-        for (const item of planning) {
-            if (item.jourNum !== weekday) continue;
+        const holiday = holidayName(year, month, day);
+        planning.forEach((item, index) => {
+            if (item.jourNum !== weekday) return;
             const start = parisToTimestamp(year, month, day, Math.floor(item.debutMin / 60), item.debutMin % 60);
             const length = (item.finMin ?? item.debutMin + DEFAULT_DURATION_MIN) - item.debutMin;
-            occurrences.push({ start, end: start + Math.max(length, 30) * 60000, item });
-        }
-    }
-    occurrences.sort((a, b) => a.start - b.start);
-    const index = occurrences.findIndex((o) => o.end >= now);
-    if (index < 0) return null;
-    const current = occurrences[index];
-    return { previous: occurrences[index - 1] ?? null, current: { ...current, status: current.start <= now ? 'live' : 'next' }, after: occurrences[index + 1] ?? null };
-}
-
-/* Séance en cours ("live") ou prochaine séance ; null en mode vacances ou sans données */
-export function getNextSession() {
-    if (vacation || planning.length === 0) return null;
-    const now = parisParts();
-    const nowMin = now.hour * 60 + now.minute;
-    let index = -1;
-    let status = 'pending';
-
-    planning.forEach((item, i) => {
-        const end = item.finMin ?? item.debutMin + DEFAULT_DURATION_MIN;
-        if (item.jourNum === now.weekday && nowMin >= item.debutMin && nowMin <= end) { index = i; status = 'live'; }
-    });
-
-    if (index === -1) {
-        let best = Infinity;
-        planning.forEach((item, i) => {
-            let gapDays = item.jourNum - now.weekday;
-            if (gapDays < 0 || (gapDays === 0 && item.debutMin <= nowMin)) gapDays += 7;
-            const gap = gapDays * 1440 + (item.debutMin - nowMin);
-            if (gap < best) { best = gap; index = i; }
+            list.push({ start, end: start + Math.max(length, 30) * 60000, item, index, holiday });
         });
     }
-    return index === -1 ? null : { index, status, item: planning[index] };
+    return list.sort((a, b) => a.start - b.start);
 }
 
-/* Met en évidence la séance en cours ("En direct") ou la prochaine. Appelée chaque minute. */
+/* Séances précédente, prochaine (ou en cours) et suivante : les jours fériés sont ignorés.
+   { previous, current, after } ; current.status = 'live' ou 'next'. null sans données. */
+export function getSessionTriplet(now = Date.now()) {
+    if (planning.length === 0) return null;
+    const held = buildOccurrences(now).filter((o) => !o.holiday);
+    const index = held.findIndex((o) => o.end >= now);
+    if (index < 0) return null;
+    const current = held[index];
+    return { previous: held[index - 1] ?? null, current: { ...current, status: current.start <= now ? 'live' : 'next' }, after: held[index + 1] ?? null };
+}
+
+/* Séance en cours ("live") ou prochaine séance réellement tenue ; null en mode vacances ou sans données */
+export function getNextSession() {
+    if (vacation) return null;
+    const triplet = getSessionTriplet();
+    return triplet ? { index: triplet.current.index, status: triplet.current.status, item: triplet.current.item } : null;
+}
+
+/* Pour chaque ligne du planning : jour férié concerné si sa PROCHAINE occurrence tombe un jour férié */
+function upcomingHolidays(now = Date.now()) {
+    const flags = new Map();
+    for (const occurrence of buildOccurrences(now)) {
+        if (occurrence.end < now || flags.has(occurrence.index)) continue;
+        flags.set(occurrence.index, occurrence.holiday ? { name: occurrence.holiday, start: occurrence.start } : null);
+    }
+    return flags;
+}
+
+const shortDate = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', day: 'numeric', month: 'short' });
+const longDate = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', weekday: 'long', day: 'numeric', month: 'long' });
+
+/* Met en évidence la séance en cours ("En direct") ou la prochaine ; grise les séances fériées. Appelée chaque minute. */
 export function updatePlanningStatus() {
     const rows = $$('#planningTableBody tr');
     rows.forEach((row) => {
-        row.classList.remove('seance-active-row');
-        row.querySelector('.table-badge')?.remove();
+        row.classList.remove('seance-active-row', 'seance-holiday-row');
+        row.querySelectorAll('.table-badge').forEach((badge) => badge.remove());
     });
-    if (rows.length === planning.length) {
+    if (rows.length === planning.length && planning.length > 0) {
+        if (!vacation) {
+            upcomingHolidays().forEach((holiday, index) => {
+                if (!holiday) return;
+                rows[index].classList.add('seance-holiday-row');
+                rows[index].lastElementChild?.append(h('span', { class: 'table-badge holiday', title: `Jour férié : ${holiday.name} (${longDate.format(holiday.start)})` },
+                    `Férié · ${shortDate.format(holiday.start).replace('.', '')}`));
+            });
+        }
         const next = getNextSession();
         if (next) {
             const row = rows[next.index];

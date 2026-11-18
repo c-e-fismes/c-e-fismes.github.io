@@ -17,7 +17,8 @@ let status = 'loading'; /* loading | ready | error */
 let posterMap = null;   /* nom de fichier -> id Drive */
 let posterRequested = false;
 let selectedYear = null;
-let initialScrollDone = false;
+let pendingAutoScroll = false; /* vrai à chaque ouverture de l'Agenda ; consommé dès que les cartes sont prêtes */
+let skipAutoScroll = false;    /* évite un double défilement quand on arrive depuis une carte de l'accueil */
 let lastSignature = '';
 
 export const getEvents = () => events;
@@ -229,22 +230,11 @@ export function render(force = false) {
     buildYearOptions();
     grid.replaceChildren(...events.map((e, i) => buildCard(e, states[i])));
     applyFilters();
-    maybeInitialScroll();
+    autoScrollToNext();
 }
 
-/* Au premier affichage de l'onglet, amène le prochain événement de l'année à l'écran (une seule fois). */
-function maybeInitialScroll() {
-    if (initialScrollDone || events.length === 0 || !$('#agenda').classList.contains('active')) return;
-    const year = String(parisParts().year);
-    const next = events.find((e) => e.year === year && eventStatus(e) !== 'past');
-    initialScrollDone = true;
-    if (!next) return;
-    const card = $(`#eventsGrid .event-card[data-date="${next.iso}"]:not([hidden])`);
-    if (card) setTimeout(() => card.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'center' }), 250);
-}
-
-/* Appelé par le calendrier : affiche et met en évidence la carte d'une date */
-function focusDate(iso) {
+/* Affiche la carte d'un événement en haut de l'écran (sous la barre du haut) ; la rend visible si un filtre la masquait */
+function revealEvent(iso, { flash = false } = {}) {
     const target = events.find((e) => e.iso === iso);
     if (!target) return;
     const hidePast = $('#hidePastCheckbox');
@@ -254,9 +244,22 @@ function focusDate(iso) {
     applyFilters();
     const card = $(`#eventsGrid .event-card[data-date="${iso}"]`);
     if (!card) return;
-    card.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'center' });
-    card.classList.add('is-flash');
-    setTimeout(() => card.classList.remove('is-flash'), 1600);
+    card.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+    if (flash) {
+        card.classList.add('is-flash');
+        setTimeout(() => card.classList.remove('is-flash'), 1600);
+    }
+}
+
+/* À l'ouverture de l'Agenda : la page défile pour mettre le prochain événement en haut (comme un clic dans le calendrier) */
+function autoScrollToNext() {
+    if (!pendingAutoScroll || events.length === 0 || !$('#agenda').classList.contains('active')) return;
+    pendingAutoScroll = false;
+    const next = events.find((e) => eventStatus(e) !== 'past');
+    if (!next) return;
+    /* attend la fin du chargement : sur un lien direct, la page est d'abord remise en haut (voir nav.js) */
+    const go = () => setTimeout(() => revealEvent(next.iso), 250);
+    if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
 }
 
 export async function loadEvents({ force = false } = {}) {
@@ -280,7 +283,15 @@ export async function loadEvents({ force = false } = {}) {
 export function initEvents() {
     $('#yearSelect').addEventListener('change', (e) => { selectedYear = e.target.value; applyFilters(); });
     $('#hidePastCheckbox').addEventListener('change', applyFilters);
-    on('events:focus', (e) => focusDate(e.detail.iso));
-    on('section:show', (e) => { if (e.detail.id === 'agenda') maybeInitialScroll(); });
+    /* lien direct (#agenda) : l'onglet est déjà ouvert avant l'abonnement ci-dessous */
+    if ($('#agenda').classList.contains('active')) pendingAutoScroll = true;
+    on('events:focus', (e) => revealEvent(e.detail.iso, { flash: true }));
+    on('events:skip-autoscroll', () => { skipAutoScroll = true; });
+    on('section:show', (e) => {
+        if (e.detail.id !== 'agenda') return;
+        if (skipAutoScroll) { skipAutoScroll = false; return; }
+        pendingAutoScroll = true;
+        autoScrollToNext();
+    });
     loadEvents();
 }
