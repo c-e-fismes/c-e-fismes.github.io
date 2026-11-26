@@ -610,7 +610,6 @@ th { background-color: var(--primary); color: #ffffff; }
 .event-comment-text { margin: 0.75rem 0 0; color: var(--text-muted); font-style: italic; }
 
 /* ----- Calendrier ----- */
-.calendar-toggle { display: none; margin-bottom: 1rem; }
 .calendar-card-sidebar { position: sticky; top: 70px; padding: 1rem; border-top: 3px solid var(--accent); }
 .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .calendar-nav-btn {
@@ -906,7 +905,6 @@ body.modal-open { overflow: hidden; }
     /* la colonne de gauche "se dissout" pour pouvoir intercaler le calendrier sous le bouton */
     .events-main-grid > div:first-child { display: contents; }
     .events-header-flex { order: 1; margin-bottom: 0; }
-    .calendar-toggle { display: inline-flex; order: 2; justify-self: start; margin: 0; }
     .calendar-card-sidebar { display: none; order: 3; position: static; }
     .calendar-card-sidebar.is-open { display: block; }
     #eventsGrid { order: 4; }
@@ -999,7 +997,7 @@ body.modal-open { overflow: hidden; }
 
 /* Impression (planning, classement...) : contenu de l'onglet affiché uniquement */
 @media print {
-    body::before, body::after, .topbar, .net-status, .skip-link, .overlay, .calendar-toggle, .calendar-card-sidebar,
+    body::before, body::after, .topbar, .net-status, .skip-link, .overlay, .calendar-card-sidebar,
     #contactForm, .map-box, .site-footer, .puzzle-card, .btn, .hero::after { display: none !important; }
     html, body { background: #ffffff !important; color: #000000; }
     .section { display: none !important; }
