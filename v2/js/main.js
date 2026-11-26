@@ -32,15 +32,14 @@ function safeInit(label, fn) {
     }
 }
 
-/* ---- OPTION 2 (test) : calendrier en panneau latéral (drawer) sur petits écrans ----
-   Tout est créé ici (HTML + CSS) pour que le test soit réversible en restaurant
-   uniquement js/main.js depuis js/tmp/main.js. */
+/* ---- Calendrier en panneau latéral (drawer) sur petits écrans (option 2 retenue) ----
+   L'habillage du tiroir est créé ici (HTML + CSS), sans toucher à calendar.js. */
 function injectCalendarDrawerStyles() {
     if ($('#calendarDrawerStyles')) return;
     const style = document.createElement('style');
     style.id = 'calendarDrawerStyles';
     style.textContent = `
-        .calendar-drawer-tab, .calendar-drawer-overlay { display: none; }
+        .calendar-drawer-tab, .calendar-drawer-overlay, .calendar-drawer-close { display: none; }
         @media (max-width: 850px) {
             /* Sans cela, le transform laissé par l'animation de .section.active sert de repère
                au position:fixed du panneau (il suivrait alors le scroll de la page). */
@@ -48,7 +47,7 @@ function injectCalendarDrawerStyles() {
             .calendar-drawer-overlay { display: block; }
             .calendar-drawer-tab {
                 position: fixed;
-                left: 0;
+                right: 0;
                 top: 50%;
                 transform: translateY(-50%);
                 z-index: 1400;
@@ -57,7 +56,7 @@ function injectCalendarDrawerStyles() {
                 gap: 0.35rem;
                 padding: 0.75rem 0.4rem;
                 border: 0;
-                border-radius: 0 12px 12px 0;
+                border-radius: 12px 0 0 12px;
                 background: var(--accent);
                 color: var(--on-accent);
                 font: inherit;
@@ -85,20 +84,22 @@ function injectCalendarDrawerStyles() {
             .calendar-card-sidebar.is-drawer {
                 display: block;
                 position: fixed;
-                inset: 0 auto 0 0;
+                top: 50%;
+                right: 0;
                 z-index: 1600;
                 width: min(360px, 88vw);
                 max-width: 88vw;
+                max-height: calc(100vh - 2rem);
                 padding: 1rem;
                 overflow-y: auto;
                 border-top: 3px solid var(--accent);
-                box-shadow: 8px 0 28px rgba(0, 0, 0, 0.3);
-                transform: translateX(-102%);
+                box-shadow: -8px 0 28px rgba(0, 0, 0, 0.3);
+                transform: translate(102%, -50%);
                 visibility: hidden;
                 transition: transform 0.28s ease, visibility 0s linear 0.28s;
             }
             .calendar-card-sidebar.is-drawer.is-open {
-                transform: translateX(0); visibility: visible;
+                transform: translate(0, -50%); visibility: visible;
                 transition: transform 0.28s ease, visibility 0s;
             }
 
@@ -125,8 +126,7 @@ function injectCalendarDrawerStyles() {
 
 function initCalendarDrawer() {
     const card = $('#calendarCard');
-    const toggle = $('#calendarToggle');
-    if (!card || !toggle || $('#calendarDrawerTab')) return;
+    if (!card || $('#calendarDrawerTab')) return;
 
     injectCalendarDrawerStyles();
     card.classList.add('is-drawer');
@@ -160,13 +160,10 @@ function initCalendarDrawer() {
 
     const isOpen = () => card.classList.contains('is-open');
 
-    /* L'état est piloté par calendar.js (bouton du haut, clic sur une date) : on synchronise
-       l'habillage du drawer à chaque changement de classe, sans toucher au module d'origine. */
+    /* L'état est piloté par la classe "is-open" (onglet latéral, croix, voile, Échap,
+       clic sur une date) : on synchronise l'habillage à chaque changement de classe. */
     const syncUi = () => {
         const open = isOpen();
-        const textNode = [...toggle.childNodes].reverse().find((node) => node.nodeType === Node.TEXT_NODE);
-        if (textNode) textNode.textContent = open ? ' Masquer le calendrier' : ' Afficher le calendrier';
-        toggle.setAttribute('aria-expanded', String(open));
         tab.setAttribute('aria-expanded', String(open));
         tab.setAttribute('aria-label', open ? 'Fermer le calendrier' : 'Ouvrir le calendrier');
         overlay.classList.toggle('is-open', open);
@@ -190,8 +187,6 @@ function initCalendarDrawer() {
     tab.addEventListener('click', () => setOpen(!isOpen(), { restoreFocus: true }));
     closeButton.addEventListener('click', () => setOpen(false, { restoreFocus: true }));
     overlay.addEventListener('click', () => setOpen(false, { restoreFocus: true }));
-    /* Le bouton du haut est géré par calendar.js : on place simplement le focus dans le panneau. */
-    toggle.addEventListener('click', () => { if (isOpen()) card.focus({ preventScroll: true }); });
 
     document.addEventListener('keydown', (event) => {
         if (!isOpen()) return;
@@ -213,9 +208,10 @@ function initCalendarDrawer() {
     });
     tab.classList.toggle('is-available', document.querySelector('.section.active')?.id === 'agenda');
 
-    /* Le clic sur une date referme le panneau APRÈS events:focus (calendar.js). On repositionne
-       la carte ciblée juste sous la barre fixe, comme pour l'option 1. */
+    /* Clic sur une date OU bouton "Voir l'événement" de l'info-bulle : on referme le panneau
+       (calendar.js ne le fait que pour le clic direct), puis on replace la carte sous la barre. */
     on('events:focus', (event) => {
+        if (window.matchMedia('(max-width: 850px)').matches && isOpen()) setOpen(false);
         const reposition = () => {
             const target = $(`#eventsGrid .event-card[data-date="${event.detail.iso}"]`);
             if (!target) return;
@@ -301,7 +297,7 @@ function boot() {
     safeInit('planning', () => loadPlanning());
     safeInit('événements', initEvents);
     safeInit('calendrier', initCalendar);
-    safeInit('calendrier drawer (option 2)', initCalendarDrawer);
+    safeInit('calendrier latéral', initCalendarDrawer);
     safeInit('accueil', initHome);
     safeInit('adhérents', initMembers);
     safeInit('puzzle', initPuzzle);
