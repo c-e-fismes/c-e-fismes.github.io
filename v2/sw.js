@@ -5,7 +5,7 @@
    - Images et bibliothèques : cache d'abord, rafraîchies en arrière-plan.
    - Google, Chess.com, Formspree... (autres domaines) : jamais interceptés.
    ================================================================ */
-const VERSION = 'v9'; /* À incrémenter à chaque mise en ligne (et CONFIG.APP_VERSION dans js/config.js si les données changent) */
+const VERSION = 'v3'; /* À incrémenter à chaque mise en ligne (et CONFIG.APP_VERSION dans js/config.js si les données changent) */
 const CACHE_NAME = `echecs-fismes-${VERSION}`;
 const NETWORK_TIMEOUT_MS = 4000;
 
@@ -13,35 +13,39 @@ const PRECACHE = [
     './',
     './index.html',
     './style.css',
-    './js/cache.js',
-    './js/calendar.js',
-    './js/config.js',
-    './js/contact.js',
-    './js/documents.js',
-    './js/drive.js',
-    './js/events.js',
-    './js/gallery.js',
-    './js/gazettes.js',
-    './js/holidays.js',
-    './js/home.js',
-    './js/ics.js',
-    './js/init.js',
-    './js/lightbox.js',
+    './robots.txt',
+    './sitemap.xml',
+    './js/core/cache.js',
+    './js/features/calendar.js',
+    './js/core/config.js',
+    './js/features/contact.js',
+    './js/features/documents.js',
+    './js/core/drive.js',
+    './js/features/events.js',
+    './js/features/gallery.js',
+    './js/features/gazettes.js',
+    './js/core/holidays.js',
+    './js/features/home.js',
+    './js/core/ics.js',
+    './js/core/init.js',
+    './js/core/lazyload.js',
+    './js/ui/lightbox.js',
     './js/main.js',
-    './js/members.js',
-    './js/modal.js',
-    './js/nav.js',
-    './js/planning.js',
-    './js/puzzle.js',
-    './js/sheets.js',
-    './js/utils.js',
-    './assets/logo-or.svg',
-    './assets/favicon.svg',
-    './assets/apple-touch-icon.png',
-    './images/logo-club.png',
-    './images/favicon/favicon.svg',
-    './images/favicon/favicon.ico',
-    './images/favicon/apple-touch-icon.png'
+    './js/features/members.js',
+    './js/ui/modal.js',
+    './js/ui/nav.js',
+    './js/core/parametres.js',
+    './js/features/planning.js',
+    './js/features/puzzle.js',
+    './js/ui/seo.js',
+    './js/core/sheets.js',
+    './js/ui/theme.js',
+    './js/core/utils.js',
+    './assets/brand/logo-or.svg',
+    './assets/brand/logo-or.png',
+    './assets/icons/favicon.svg',
+    './assets/icons/apple-touch-icon.png',
+    './assets/icons/site.webmanifest'
 ];
 
 self.addEventListener('install', (event) => {
@@ -98,7 +102,7 @@ async function cacheFirst(event) {
         if (response.ok && response.type === 'basic') event.waitUntil(cache.put(request, response.clone()));
         return response;
     } catch {
-        if (request.destination === 'image') return (await cache.match('./images/logo-club.png')) || Response.error();
+        if (request.destination === 'image') return (await cache.match('./assets/brand/logo-or.png')) || Response.error();
         return Response.error();
     }
 }

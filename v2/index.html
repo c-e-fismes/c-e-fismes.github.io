@@ -5,25 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#111827">
     <title>Cercle d'Échecs de Fismes - Site Officiel</title>
+    <link rel="canonical" href="https://c-e-fismes.github.io/v3/">
+    <link rel="sitemap" type="application/xml" title="Plan du site" href="sitemap.xml">
     <meta name="description" content="Cercle d'Échecs de Fismes, club affilié à la FFE : planning des séances, calendrier des événements, classement des joueurs, galerie photos et contact.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com https://docs.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://docs.google.com https://script.google.com https://api.chess.com https://formspree.io; frame-src https://maps.google.com https://www.google.com; form-action 'self' https://formspree.io; upgrade-insecure-requests">
 
     <meta property="og:type" content="website">
     <meta property="og:locale" content="fr_FR">
     <meta property="og:title" content="Cercle d'Échecs de Fismes - Site Officiel">
     <meta property="og:description" content="Passion, Stratégie et Convivialité : retrouvez le planning, les événements et les résultats du club.">
-    <meta property="og:image" content="https://c-e-fismes.github.io/v2/assets/logo-or.png">
+    <meta property="og:url" content="https://c-e-fismes.github.io/v3/">
+    <meta property="og:image" content="https://c-e-fismes.github.io/v3/assets/brand/logo-or.png">
 
     <!-- Marque la page comme "JavaScript actif" avant l'affichage (évite de voir toutes les sections un instant) -->
-    <script src="js/init.js"></script>
+    <script src="js/core/init.js"></script>
 
     <link rel="preconnect" href="https://docs.google.com" crossorigin>
+    <link rel="preconnect" href="https://script.google.com" crossorigin>
     <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
     <link rel="stylesheet" href="style.css">
 
-    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-    <link rel="icon" href="images/favicon/favicon.ico" sizes="any">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-    <link rel="manifest" href="images/favicon/site.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+    <link rel="icon" href="assets/icons/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+    <link rel="manifest" href="assets/icons/site.webmanifest">
 
     <script type="application/ld+json">
     {
@@ -78,6 +83,7 @@
         <symbol id="i-facebook" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></symbol>
         <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></symbol>
         <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
     </svg>
 
     <a href="#main" class="skip-link">Aller au contenu</a>
@@ -89,20 +95,23 @@
        ================================================================ -->
     <header class="topbar">
         <div class="topbar-inner">
-            <a class="brand" href="#accueil" data-goto="accueil" aria-label="Cercle d'Échecs de Fismes - Accueil">
-                <img id="clubLogo" class="brand-logo" src="assets/logo-or.svg" alt="" width="40" height="47">
+            <a class="brand" href="#accueil" data-goto="accueil">
+                <img id="clubLogo" class="brand-logo" src="assets/brand/logo-or.svg" alt="" width="40" height="47">
                 <span class="brand-name">Cercle d'Échecs <span>de Fismes</span></span>
             </a>
+            <button type="button" id="themeToggle" class="theme-toggle" aria-label="Activer le thème sombre" aria-pressed="false" title="Changer de thème">
+                <svg class="icon icon-sun" aria-hidden="true"><use href="#i-sun"/></svg><svg class="icon icon-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+            </button>
             <button type="button" id="menuToggle" class="menu-toggle" aria-expanded="false" aria-controls="mainNav" aria-label="Ouvrir le menu">
                 <svg class="icon icon-menu" aria-hidden="true"><use href="#i-menu"/></svg><svg class="icon icon-close" aria-hidden="true"><use href="#i-x"/></svg>
             </button>
             <nav id="mainNav" class="mainnav" aria-label="Navigation principale">
-                <button type="button" data-section="accueil" id="btn-accueil" class="active" aria-current="page" aria-controls="accueil">Accueil</button>
-                <button type="button" data-section="agenda" id="btn-agenda" aria-controls="agenda">Agenda</button>
-                <button type="button" data-section="leclub" id="btn-leclub" aria-controls="leclub">Le club</button>
-                <button type="button" data-section="adherents" id="btn-adherents" aria-controls="adherents">Adhérents</button>
-                <button type="button" data-section="contact" id="btn-contact" aria-controls="contact">Contact</button>
-                <button type="button" data-section="rejoindre" id="btn-rejoindre" class="nav-cta" aria-controls="rejoindre">Nous rejoindre</button>
+                <a href="#accueil" data-section="accueil" id="btn-accueil" class="active" aria-current="page" aria-controls="accueil">Accueil</a>
+                <a href="#agenda" data-section="agenda" id="btn-agenda" aria-controls="agenda">Agenda</a>
+                <a href="#leclub" data-section="leclub" id="btn-leclub" aria-controls="leclub">Le club</a>
+                <a href="#adherents" data-section="adherents" id="btn-adherents" aria-controls="adherents">Adhérents</a>
+                <a href="#contact" data-section="contact" id="btn-contact" aria-controls="contact">Contact</a>
+                <a href="#rejoindre" data-section="rejoindre" id="btn-rejoindre" class="nav-cta" aria-controls="rejoindre">Nous rejoindre</a>
             </nav>
         </div>
     </header>
@@ -120,14 +129,14 @@
                     </p>
                 </div>
                 <div class="hero-visual">
-                    <img class="hero-logo" src="assets/logo-or.svg" alt="Logo du Cercle d'Échecs de Fismes" width="130" height="153">
+                    <img class="hero-logo" src="assets/brand/logo-or.svg" alt="Logo du Cercle d'Échecs de Fismes" width="130" height="153">
                     <p class="hero-tagline">Passion, Stratégie et Convivialité</p>
                 </div>
                 <div class="hero-foot">
                     <div class="hero-box hero-social">
                         <span class="hero-box-label">Suivez-nous</span>
-                        <a class="social-btn" href="https://www.facebook.com/p/Cercle-dEchecs-de-Fismes-61559241561957/" target="_blank" rel="noopener noreferrer" aria-label="Facebook du club (nouvel onglet)" title="Facebook"><svg class="icon" aria-hidden="true"><use href="#i-facebook"/></svg></a>
-                        <a class="social-btn" href="https://www.instagram.com/grandestechecs/" target="_blank" rel="noopener noreferrer" aria-label="Instagram du club (nouvel onglet)" title="Instagram"><svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg></a>
+                        <a class="social-btn" id="socialFacebook" href="https://www.facebook.com/p/Cercle-dEchecs-de-Fismes-61559241561957/" target="_blank" rel="noopener noreferrer" aria-label="Facebook du club (nouvel onglet)" title="Facebook"><svg class="icon" aria-hidden="true"><use href="#i-facebook"/></svg></a>
+                        <a class="social-btn" id="socialInstagram" href="https://www.instagram.com/grandestechecs/" target="_blank" rel="noopener noreferrer" aria-label="Instagram de la Ligue Grand Est (nouvel onglet)" title="Instagram de la Ligue Grand Est"><svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg></a>
                     </div>
                     <a href="#contact" data-goto="contact" class="hero-box hero-box-contact">
                         <span class="hero-box-icon"><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg></span>
@@ -171,7 +180,7 @@
                     <div class="card duo-card">
                         <p class="muted stats-intro">Un aperçu en temps réel de notre communauté et de notre dynamique sportive :</p>
                         <div class="stats-grid">
-                    <div class="stat-tile"><span class="stat-num accent-bold">419</span><span class="stat-label">Adhérents depuis la création</span></div>
+                    <div class="stat-tile"><span class="stat-num accent-bold" id="stat-adherents-creation">419</span><span class="stat-label">Adhérents depuis la création</span></div>
                     <div class="stat-tile"><span id="stat-total-membres" class="stat-num accent-bold">-</span><span class="stat-label">Membres actuellement</span></div>
                     <div class="stat-tile"><span id="stat-feminines" class="stat-num accent-bold">-</span><span class="stat-label">Part des féminines</span></div>
                     <div class="stat-tile"><span id="stat-joueurs-fide" class="stat-num accent-bold">-</span><span class="stat-label">Joueurs classés FIDE</span></div>
@@ -189,6 +198,7 @@
                         <div class="puzzle-board-container">
                             <button type="button" id="puzzleBoardBtn" class="puzzle-board-btn" title="Cliquez pour jouer" aria-label="Jouer le défi du jour : ouvrir l'échiquier">
                                 <img id="puzzleImg" alt="Position du problème d'échecs" class="puzzle-board-img" width="200" height="200">
+                                <span id="puzzleFallbackBoard" class="puzzle-fallback-board" role="img" aria-label="Position du défi du jour" hidden></span>
                             </button>
                         </div>
                         <p id="puzzleDesc" class="puzzle-text" hidden></p>
@@ -245,6 +255,47 @@
                     <h3>Comment s'inscrire ?</h3>
                     <p class="todo">À compléter par le bureau : démarches, pièces à fournir, possibilité de venir essayer une séance.</p>
                     <a href="#contact" data-goto="contact" class="btn btn-small">Nous contacter</a>
+                </div>
+            </div>
+
+            <!-- Étapes d'adhésion : reprises de la version locale du site -->
+            <div class="block" aria-labelledby="stepsTitle">
+                <div class="block-head">
+                    <h2 id="stepsTitle" class="block-title">Les étapes de l'adhésion</h2>
+                </div>
+                <p class="steps-lead">La première séance est toujours gratuite et sans engagement : venez découvrir le club avant de vous décider.</p>
+                <div class="steps-grid">
+                    <article class="step-card">
+                        <span class="step-num">1</span>
+                        <h3>Venez nous rencontrer</h3>
+                        <p>Passez lors d'une séance du mercredi ou du samedi. Nous vous accueillons et vous présentons le club.</p>
+                    </article>
+                    <article class="step-card">
+                        <span class="step-num">2</span>
+                        <h3>Choisissez votre formule</h3>
+                        <p>Loisir, jeunes, famille ou compétition : nous adaptons l'adhésion à votre profil et à vos envies.</p>
+                    </article>
+                    <article class="step-card">
+                        <span class="step-num">3</span>
+                        <h3>Complétez votre dossier</h3>
+                        <p>Formulaire d'adhésion, licence FFE et, pour la compétition, un certificat médical.</p>
+                    </article>
+                    <article class="step-card">
+                        <span class="step-num">4</span>
+                        <h3>Réglez votre cotisation</h3>
+                        <p>Chèque, espèces ou virement. Un paiement en plusieurs fois est possible sur demande.</p>
+                    </article>
+                    <aside class="card step-aside">
+                        <h3>Documents à prévoir</h3>
+                        <ul class="step-list">
+                            <li>Le formulaire d'adhésion complété et signé</li>
+                            <li>Une pièce d'identité</li>
+                            <li>Une photo d'identité (pour la licence)</li>
+                            <li>Un certificat médical pour la compétition</li>
+                            <li>Le règlement intérieur signé</li>
+                        </ul>
+                        <a href="#contact" data-goto="contact" class="btn btn-small">Je souhaite adhérer</a>
+                    </aside>
                 </div>
             </div>
 
@@ -417,7 +468,6 @@
                         <div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div><div>D</div>
                     </div>
                     <div id="calendarDaysGrid" class="calendar-days-grid"></div>
-                    <p class="calendar-footer-text">Les jours colorés contiennent un événement. Les jours en rouge sont fériés.</p>
                 </aside>
             </div>
         </section>
@@ -457,10 +507,10 @@
                     <p>Suivez les aventures du club au quotidien sur nos réseaux officiels :</p>
                     <div class="social-container">
                         <a href="https://www.facebook.com/p/Cercle-dEchecs-de-Fismes-61559241561957/" target="_blank" rel="noopener noreferrer" class="link-social-only" title="Suivez-nous sur Facebook">
-                            <img src="images/logo-facebook.png" alt="Facebook du Club" class="social-logo-img" loading="lazy">
+                            <img src="assets/brand/logo-facebook.png" alt="Facebook du Club" class="social-logo-img" loading="lazy">
                         </a>
                         <a href="https://www.instagram.com/grandestechecs/" target="_blank" rel="noopener noreferrer" class="link-social-only" title="Suivez-nous sur Instagram">
-                            <img src="images/logo-instagram.png" alt="Instagram du Club" class="social-logo-img" loading="lazy">
+                            <img src="assets/brand/logo-instagram.png" alt="Instagram du Club" class="social-logo-img" loading="lazy">
                         </a>
                     </div>
                     <p class="gazette-title-margin"><strong>La Gazette du Cavalier Jaune (PDF) :</strong></p>
@@ -480,19 +530,19 @@
                     <div class="partners-grid">
                         <a href="https://ca-nordest.com/" target="_blank" rel="noopener noreferrer" class="partner-card" title="Visiter le site du Crédit Agricole Nord Est">
                             <div class="partner-logo-container">
-                                <img src="images/partenaires/credit-agricole.png" alt="Logo Crédit Agricole Nord Est" loading="lazy" data-fallback="images/logo-club.png">
+                                <img src="images/partenaires/credit-agricole.png" alt="Logo Crédit Agricole Nord Est" loading="lazy" >
                             </div>
                             <span class="partner-name">Crédit Agricole Nord Est</span>
                         </a>
                         <a href="https://aisne-batiment.fr/" target="_blank" rel="noopener noreferrer" class="partner-card" title="Visiter le site d'Aisne Bâtiment">
                             <div class="partner-logo-container">
-                                <img src="images/partenaires/aisne-batiment.png" alt="Logo Aisne Bâtiment" loading="lazy" data-fallback="images/logo-club.png">
+                                <img src="images/partenaires/aisne-batiment.png" alt="Logo Aisne Bâtiment" loading="lazy" >
                             </div>
                             <span class="partner-name">Aisne Bâtiment</span>
                         </a>
                         <a href="https://www.fismes.fr/" target="_blank" rel="noopener noreferrer" class="partner-card" title="Visiter le site officiel de la Ville de Fismes">
                             <div class="partner-logo-container">
-                                <img src="images/partenaires/ville-fismes.png" alt="Logo Ville de Fismes" loading="lazy" data-fallback="images/logo-club.png">
+                                <img src="images/partenaires/ville-fismes.png" alt="Logo Ville de Fismes" loading="lazy" >
                             </div>
                             <span class="partner-name">Ville de Fismes</span>
                         </a>
@@ -531,7 +581,6 @@
                 <div class="members-tip">
                     <p class="members-tip-p"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg> <strong>Astuce de tri :</strong> Cliquez sur les en-têtes <em>Classique, Rapide ou Blitz</em> pour basculer alternativement entre le tri Décroissant ➔ Ordre alphabétique.</p>
                     <p class="members-tip-p"><svg class="icon" aria-hidden="true"><use href="#i-bar"/></svg> Les classements de cette liste sont mis à jour périodiquement par le club.</p>
-                    <p id="membersResultsTip" class="members-tip-p" hidden><svg class="icon" aria-hidden="true"><use href="#i-trend"/></svg> Cliquez sur le nom d'un joueur classé FIDE pour consulter ses derniers résultats (site de la FIDE).</p>
                 </div>
 
                 <div class="table-scroll-container">
@@ -567,7 +616,7 @@
                         <li><a href="#" target="_blank" rel="noopener noreferrer">Règlement intérieur du club.pdf</a></li>
                     </ul>
 
-                    <!-- Explorateur de documents (affiché si DRIVE.DOCUMENTS_FOLDER est renseigné dans js/config.js) -->
+                    <!-- Explorateur de documents (affiché lorsque le service de fichiers répond) -->
                     <div id="documentsApp" class="documents-app" hidden>
                         <div class="doc-toolbar">
                             <label class="sr-only" for="docSearch">Rechercher un document</label>
@@ -608,10 +657,10 @@
             <div class="grid">
                 <div class="card contact-info-card">
                     <h2>Coordonnées</h2>
-                    <p><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg> <strong>Adresse :</strong> Route nationale (ancien camping), 51170 Fismes</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg> <strong>Email :</strong> <a href="mailto:cercle.echecs.fismes@gmail.com">cercle.echecs.fismes@gmail.com</a></p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg> <strong>Téléphone :</strong> <a href="tel:+33627150251">06 27 15 02 51</a> (Bureau du Club)</p>
-                    <p><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg> <strong>Fiche officielle du club :</strong> <a href="https://echecs.asso.fr/FicheClub.aspx?Ref=3111" target="_blank" rel="noopener noreferrer">page du club sur le site de la FFE</a></p>
+                    <p><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg> <strong>Adresse :</strong> <span id="contactAdresse">Route nationale (ancien camping), 51170 Fismes</span></p>
+                    <p><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg> <strong>Email :</strong> <a id="contactEmailLink" href="mailto:cercle.echecs.fismes@gmail.com">cercle.echecs.fismes@gmail.com</a></p>
+                    <p><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg> <strong>Téléphone :</strong> <a id="contactTelephone" href="tel:+33627150251">06 27 15 02 51</a> (Bureau du Club)</p>
+                    <p><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg> <strong>Fiche officielle du club :</strong> <a id="contactFfe" href="https://echecs.asso.fr/FicheClub.aspx?Ref=3111" target="_blank" rel="noopener noreferrer">page sur la FFE</a></p>
                     <div class="map-box">
                         <iframe id="mapFrame" class="map-frame" title="Carte : emplacement du Cercle d'Échecs de Fismes"
                                 data-src="https://maps.google.com/maps?q=route%20nationale%2C%2051170%20Fismes&amp;output=embed"
@@ -636,14 +685,38 @@
             </div>
         </section>
 
+        <!-- ========================== MENTIONS LÉGALES ========================== -->
+        <section id="mentions-legales" class="section" tabindex="-1">
+            <div class="page-head">
+                <span class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg> Informations légales</span>
+                <h1 class="page-title">Mentions légales &amp; RGPD</h1>
+                <p class="page-lead">Informations relatives à l'éditeur du site, à son hébergement et au traitement des données personnelles.</p>
+            </div>
+            <div class="card legal-section">
+                <p><strong>Éditeur du site :</strong> Cercle d'Échecs de Fismes (Association Loi 1901)</p>
+                <p><strong>Siège social :</strong> 26 rue Maurice Dézothez, 51170 Fismes</p>
+                <p><strong>Directeur de la publication :</strong> Didier FANTUZ</p>
+                <p><strong>Hébergeur :</strong> GitHub Pages</p>
+                <p><strong>Données personnelles (RGPD) :</strong> les données recueillies ne sont ni cédées ni vendues. Elles servent uniquement aux usages suivants :</p>
+                <ul class="legal-list">
+                    <li><strong>Formulaire de contact :</strong> votre nom, votre e-mail et votre message sont transmis via le service Formspree (qui peut traiter les données hors de l'Union européenne) pour répondre à votre demande.</li>
+                    <li><strong>Classement des joueurs :</strong> la rubrique « Adhérents » affiche publiquement les noms, catégories et classements des adhérents.</li>
+                    <li><strong>Carte Google Maps :</strong> la carte de la rubrique Contact est fournie par Google, qui peut déposer des cookies et collecter des données de navigation (dont l'adresse IP).</li>
+                    <li><strong>Autres services :</strong> le défi du jour (Chess.com) ainsi que les photos, documents et tableaux (Google) sont chargés depuis ces services, qui reçoivent alors l'adresse IP du visiteur. Le site n'utilise ni outil de suivi ni publicité.</li>
+                </ul>
+                <p>Pour exercer vos droits (accès, correction, suppression, y compris pour votre enfant), écrivez-nous à <a href="mailto:cercle.echecs.fismes@gmail.com">cercle.echecs.fismes@gmail.com</a>.</p>
+                <p class="legal-license">Le code source de ce site est publié sous licence <a href="LICENSE.txt" target="_blank" rel="noopener noreferrer">GPL-3.0</a>.</p>
+            </div>
+        </section>
+
     </main>
 
     <!-- =================================================================
        4. PIED DE PAGE
        ================================================================ -->
     <footer class="site-footer">
-        <img class="footer-logo" src="assets/logo-or.svg" alt="" width="34" height="40">
-        <p>© <span id="currentYear"></span> Cercle d'Échecs de Fismes - Tous droits réservés | <button type="button" class="link-btn" data-open-modal="legalModal">Mentions Légales &amp; RGPD</button></p>
+        <img class="footer-logo" src="assets/brand/logo-or.svg" alt="" width="34" height="40">
+        <p>© <span id="currentYear"></span> Cercle d'Échecs de Fismes - Tous droits réservés | <a href="#mentions-legales" data-goto="mentions-legales" class="link-btn">Mentions Légales &amp; RGPD</a></p>
     </footer>
 
     <!-- =================================================================
@@ -705,27 +778,6 @@
             <div id="gazetteModalListContainer" class="modal-list-container">
                 <ul id="gazetteModalList" class="modal-list-reset"></ul>
             </div>
-            <button type="button" class="btn modal-close-action-btn" data-close-modal>Fermer</button>
-        </div>
-    </div>
-
-    <!-- MODALE MENTIONS LÉGALES -->
-    <div id="legalModal" class="overlay" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle" aria-hidden="true">
-        <div class="card modal-card">
-            <h3 id="legalModalTitle" class="modal-title-simple">Mentions Légales &amp; RGPD</h3>
-            <p><strong>Éditeur du site :</strong> Cercle d'Échecs de Fismes (Association Loi 1901)</p>
-            <p><strong>Siège social :</strong> 26 rue Maurice Dézothez, 51170 Fismes</p>
-            <p><strong>Directeur de la publication :</strong> Didier FANTUZ</p>
-            <p><strong>Hébergeur :</strong> GitHub Pages</p>
-            <p><strong>Données personnelles (RGPD) :</strong> les données recueillies ne sont ni cédées ni vendues. Elles servent uniquement aux usages suivants :</p>
-            <ul class="legal-list">
-                <li><strong>Formulaire de contact :</strong> votre nom, votre e-mail et votre message sont transmis via le service Formspree (qui peut traiter les données hors de l'Union européenne) pour répondre à votre demande.</li>
-                <li><strong>Classement des joueurs :</strong> l'onglet « Résultats &amp; Membres » affiche publiquement les noms, catégories et classements des adhérents.</li>
-                <li><strong>Carte Google Maps :</strong> la carte de l'onglet Contact est fournie par Google, qui peut déposer des cookies et collecter des données de navigation (dont l'adresse IP).</li>
-                <li><strong>Autres services :</strong> le défi du jour (Chess.com) ainsi que les photos, documents et tableaux (Google) sont chargés depuis ces services, qui reçoivent alors l'adresse IP du visiteur. Le site n'utilise ni outil de suivi ni publicité.</li>
-            </ul>
-            <p>Pour exercer vos droits (accès, correction, suppression, y compris pour votre enfant), écrivez-nous à <a href="mailto:cercle.echecs.fismes@gmail.com">cercle.echecs.fismes@gmail.com</a>.</p>
-            <p class="legal-license">Le code source de ce site est publié sous licence <a href="LICENSE.txt" target="_blank" rel="noopener noreferrer">GPL-3.0</a>.</p>
             <button type="button" class="btn modal-close-action-btn" data-close-modal>Fermer</button>
         </div>
     </div>
