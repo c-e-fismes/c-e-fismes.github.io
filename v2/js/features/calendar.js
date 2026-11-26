@@ -103,8 +103,8 @@ function changeMonth(direction) {
 }
 
 function closeMobileCalendar() {
+    /* L'état aria du tiroir est synchronisé par main.js via l'onglet latéral. */
     $('#calendarCard').classList.remove('is-open');
-    $('#calendarToggle').setAttribute('aria-expanded', 'false');
 }
 
 export function initCalendar() {
@@ -114,10 +114,6 @@ export function initCalendar() {
 
     $('#calendarPrev').addEventListener('click', () => changeMonth(-1));
     $('#calendarNext').addEventListener('click', () => changeMonth(1));
-    $('#calendarToggle').addEventListener('click', () => {
-        const open = $('#calendarCard').classList.toggle('is-open');
-        $('#calendarToggle').setAttribute('aria-expanded', String(open));
-    });
 
     document.addEventListener('click', (event) => {
         if (tooltip && !event.target.closest('.cal-day') && !event.target.closest('.calendar-custom-tooltip')) hideTooltip();
